@@ -9,7 +9,7 @@ jobs:
       - name: Install rust nightly
         run: rustup update nightly && rustup default nightly && rustup component add rustfmt && rustup component add clippy && rustup component add rust-src && rustup component add llvm-tools
       - name: Build vmimage
-        run: cargo run --bin build-vmimage
+        run: cargo run -r --bin build-vmimage
       - name: Package (liblisa)
         run: cargo publish -p liblisa --token ${{ secrets.CRATES_IO_API_TOKEN }}
       - name: Package (liblisa-enc)
