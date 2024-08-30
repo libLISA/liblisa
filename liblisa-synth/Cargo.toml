@@ -2,6 +2,11 @@
 name = "liblisa-synth"
 version = "0.1.0"
 edition = "2021"
+description = "A tool for automated discovery and analysis of the ISA of a CPU."
+license = "AGPLv3"
+documentation = "https://docs.liblisa.nl/"
+homepage = "https://liblisa.nl/"
+repository = "https://github.com/liblisa/liblisa"
 
 [[bench]]
 name = "template_synthesis"
@@ -12,7 +17,7 @@ name = "term_searcher"
 harness = false
 
 [dependencies]
-liblisa = { path = "../liblisa" }
+liblisa = { version = "0.1.0", path = "../liblisa" }
 itertools = "0.12.0"
 arrayvec = { version = "0.7", features = [ "serde" ] }
 serde = { version = "1.0", features = [ "derive" ] }
@@ -26,7 +31,7 @@ hashbrown = "0.14.3"
 rayon = "1.5"
 
 [dev-dependencies]
-liblisa-x64-observer = { path = "../arch/x64/liblisa-x64-observer" }
+liblisa-x64-observer = { version = "0.1.0", path = "../arch/x64/liblisa-x64-observer" }
 criterion = "0.5"
 test-log = "0.2.10"
 env_logger = "0.10"

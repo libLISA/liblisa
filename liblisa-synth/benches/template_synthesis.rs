@@ -1,6 +1,7 @@
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 #![feature(const_mut_refs)]
+#![feature(generic_arg_infer)]
 
 use std::time::Duration;
 

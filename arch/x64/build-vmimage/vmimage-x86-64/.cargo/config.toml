@@ -1,0 +1,8 @@
+[target.'cfg(target_os = "none")']
+rustflags = [
+    "-C", "link-arg=-Tlink.x",
+    "-C", "target-feature=-mmx,-sse,+soft-float",
+    "-C", "link-arg=--image-base=0x00001eecb3620000",
+    "-C", "code-model=large",
+    "-C", "relocation-model=static",
+]

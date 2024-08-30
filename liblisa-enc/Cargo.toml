@@ -2,6 +2,11 @@
 name = "liblisa-enc"
 version = "0.1.0"
 edition = "2021"
+description = "A tool for automated discovery and analysis of the ISA of a CPU."
+license = "AGPLv3"
+documentation = "https://docs.liblisa.nl/"
+homepage = "https://liblisa.nl/"
+repository = "https://github.com/liblisa/liblisa"
 
 [[bench]]
 name = "validity"
@@ -24,7 +29,7 @@ name = "skip"
 harness = false
 
 [dependencies]
-liblisa = { path = "../liblisa" }
+liblisa = { version = "0.1.0", path = "../liblisa" }
 thiserror = "1"
 serde = { version = "1.0", features = [ "derive" ] }
 rand = "0.8"
@@ -38,6 +43,6 @@ fxhash = "0.2.1"
 criterion = "0.5"
 env_logger = "0.10"
 test-log = "0.2.10"
-liblisa-x64-observer = { path = "../arch/x64/liblisa-x64-observer" }
+liblisa-x64-observer = { version = "0.1.0", path = "../arch/x64/liblisa-x64-observer" }
 serde_json = "1.0"
 rmp-serde = "1.1.1"

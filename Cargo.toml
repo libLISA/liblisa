@@ -13,7 +13,7 @@ members = [
     # CLI tools
     "cli/liblisa-x64",
     "cli/liblisa-libcli",
-    "cli/liblisa-semantics-tool",
+    "cli/liblisa-semantics-tool", "arch/x64/build-vmimage",
 ]
 
 [profile.dev]

@@ -2,6 +2,11 @@
 name = "liblisa"
 version = "0.1.0"
 edition = "2021"
+description = "A tool for automated discovery and analysis of the ISA of a CPU."
+license = "AGPLv3"
+documentation = "https://docs.liblisa.nl/"
+homepage = "https://liblisa.nl/"
+repository = "https://github.com/liblisa/liblisa"
 
 [features]
 default = [ "z3", "x64-undef" ]

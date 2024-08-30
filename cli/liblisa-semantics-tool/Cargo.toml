@@ -2,13 +2,18 @@
 name = "liblisa-semantics-tool"
 version = "0.1.0"
 edition = "2021"
+description = "A tool for automated discovery and analysis of the ISA of a CPU."
+license = "AGPLv3"
+documentation = "https://docs.liblisa.nl/"
+homepage = "https://liblisa.nl/"
+repository = "https://github.com/liblisa/liblisa"
 
 [features]
 default = ["nolog"]
 nolog = ["log/release_max_level_off"]
 
 [dependencies]
-liblisa = { path = "../../liblisa", features = ["schemars", "z3"] }
+liblisa = { version = "0.1.0", path = "../../liblisa", features = ["schemars", "z3"] }
 serde_json = "1.0"
 clap = { version = "4.4.8", features = ["derive"] }
 schemars = "0.8.16"

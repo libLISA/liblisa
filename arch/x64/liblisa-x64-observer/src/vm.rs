@@ -28,7 +28,7 @@ use tempfile::NamedTempFile;
 pub const SHMEM_SIZE: usize = 1024 * FRAME_SIZE;
 
 #[doc(hidden)]
-pub const OBSERVER_IMAGE: &[u8] = include_bytes!(env!("BIOS_PATH"));
+pub const OBSERVER_IMAGE: &[u8] = include_bytes!("../image/bootdisk.img");
 
 #[derive(Clone)]
 struct ChildWrapper(Arc<Mutex<Child>>);

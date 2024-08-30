@@ -2,11 +2,16 @@
 name = "liblisa-libcli"
 version = "0.1.0"
 edition = "2021"
+description = "A tool for automated discovery and analysis of the ISA of a CPU."
+license = "AGPLv3"
+documentation = "https://docs.liblisa.nl/"
+homepage = "https://liblisa.nl/"
+repository = "https://github.com/liblisa/liblisa"
 
 [dependencies]
-liblisa = { path = "../../liblisa" }
-liblisa-enc = { path = "../../liblisa-enc" }
-liblisa-synth = { path = "../../liblisa-synth" }
+liblisa = { version = "0.1.0", path = "../../liblisa" }
+liblisa-enc = { version = "0.1.0", path = "../../liblisa-enc" }
+liblisa-synth = { version = "0.1.0", path = "../../liblisa-synth" }
 serde = { version = "1.0", features = [ "derive" ] }
 serde_json = "1.0"
 clap = { version = "4.4.8", features = ["derive"] }

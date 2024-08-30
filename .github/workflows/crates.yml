@@ -1,0 +1,24 @@
+on: workflow_dispatch
+name: Publish to crates.io
+jobs:
+  build:
+    name: Publish to crates.io
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install rust nightly
+        run: rustup update nightly && rustup default nightly && rustup component add rustfmt && rustup component add clippy && rustup component add rust-src && rustup component add llvm-tools
+      - name: Build vmimage
+        run: cargo run --bin build-vmimage
+      - name: Package (liblisa)
+        run: cargo publish -p liblisa --token ${{ secrets.CRATES_IO_API_TOKEN }}
+      - name: Package (liblisa-enc)
+        run: cargo publish -p liblisa-enc --token ${{ secrets.CRATES_IO_API_TOKEN }}
+      - name: Package (liblisa-synth)
+        run: cargo publish -p liblisa-synth --token ${{ secrets.CRATES_IO_API_TOKEN }}
+      - name: Package (liblisa-x64-observer-shmqueue)
+        run: cargo publish -p liblisa-x64-observer-shmqueue --token ${{ secrets.CRATES_IO_API_TOKEN }}
+      - name: Package (liblisa-x64-observer)
+        run: cargo publish -p liblisa-x64-observer --token ${{ secrets.CRATES_IO_API_TOKEN }}
+      - name: Package (liblisa-semantics-tool)
+        run: cargo publish -p liblisa-semantics-tool --token ${{ secrets.CRATES_IO_API_TOKEN }}

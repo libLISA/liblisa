@@ -2,6 +2,20 @@
 name = "liblisa-x64-observer"
 version = "0.1.0"
 edition = "2021"
+description = "A tool for automated discovery and analysis of the ISA of a CPU."
+license = "AGPLv3"
+documentation = "https://docs.liblisa.nl/"
+homepage = "https://liblisa.nl/"
+repository = "https://github.com/liblisa/liblisa"
+include = [
+    "src/**/*.rs",
+    "tests/**/*.rs",
+    "examples/**/*.rs",
+    "benches/**/*.rs",
+    "build.rs",
+    "Cargo.toml",
+    "image/bootdisk.img",
+]
 
 [[bench]]
 name = "vm"
@@ -15,11 +29,11 @@ harness = false
 itertools = "0.12.0"
 log = "0.4"
 nix = { version = "0.27.1", features = ["process", "signal", "sched"] }
-liblisa = { path = "../../../liblisa" }
+liblisa = { version = "0.1.0", path = "../../../liblisa" }
 shared_memory = "0.12.4"
 rand = "0.8"
 tempfile = "3.3"
-liblisa-x64-observer-shmqueue = { path = "../liblisa-x64-observer-shmqueue" }
+liblisa-x64-observer-shmqueue = { version = "0.1.0", path = "../liblisa-x64-observer-shmqueue" }
 thiserror = "1"
 
 [build-dependencies]
