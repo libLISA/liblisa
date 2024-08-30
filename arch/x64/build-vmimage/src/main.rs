@@ -30,7 +30,9 @@ fn main() {
     let root = root.display();
 
     let home = std::env::var("HOME").unwrap();
-    let rustflags = format!("-Clink-arg=-Tlink.x -Ccode-model=large -Crelocation-model=static -Ctarget-feature=-mmx,-sse,+soft-float --remap-path-prefix {root}=. --remap-path-prefix {home}=..");
+    let rustflags = format!(
+        "-Clink-arg=-Tlink.x -Ccode-model=large -Crelocation-model=static -Ctarget-feature=-mmx,-sse,+soft-float --remap-path-prefix {root}=. --remap-path-prefix {home}=.."
+    );
     cmd.env("RUSTFLAGS", rustflags);
 
     let status = cmd.spawn().unwrap().wait().unwrap();
