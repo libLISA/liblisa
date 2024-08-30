@@ -1,0 +1,17 @@
+[target.'cfg(target_os = "none")']
+# runner = "cargo run --package runner --"
+rustflags = [
+    "-C", "link-arg=-Tlink.x",
+    "-C", "target-feature=-mmx,-sse,+soft-float",
+    "-C", "link-arg=--image-base=0x00001eecb3620000",
+    "-C", "code-model=large",
+    "-C", "relocation-model=static",
+]
+
+# [target.custom-x86-64.json]
+
+# [alias]
+# build-image = "run --target custom-x86-64.json -Zbuild-std=core,alloc -Zbuild-std-features=compiler-builtins-mem -- build"
+# build-image-release = "run --release --target custom-x86-64.json -Zbuild-std=core,alloc -Zbuild-std-features=compiler-builtins-mem -- build"
+# run-qemu = "run --target custom-x86-64.json -Zbuild-std=core,alloc -Zbuild-std-features=compiler-builtins-mem -- run"
+# run-qemu-release = "run --release --target custom-x86-64.json -Zbuild-std=core,alloc -Zbuild-std-features=compiler-builtins-mem -- run"

@@ -1,0 +1,8 @@
+[package]
+name = "liblisa-x64-observer-shmqueue"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+memoffset = { version = "0.9", features = ["unstable_const"] }
+static_assertions = "1.1.0"

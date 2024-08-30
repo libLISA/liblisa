@@ -1,23 +1,33 @@
 [package]
 name = "liblisa-synth"
 version = "0.1.0"
-authors = ["Jos <Jos635@outlook.com>"]
-edition = "2018"
+edition = "2021"
 
 [[bench]]
-name = "synthesis"
+name = "template_synthesis"
+harness = false
+
+[[bench]]
+name = "term_searcher"
 harness = false
 
 [dependencies]
-liblisa-core = { path = "../liblisa-core" }
+liblisa = { path = "../liblisa" }
+itertools = "0.12.0"
+arrayvec = { version = "0.7", features = [ "serde" ] }
 serde = { version = "1.0", features = [ "derive" ] }
-itertools = "0.9"
-bumpalo = "3.4"
-arrayvec = "0.7"
+rand_xoshiro = "0.6"
 log = "0.4"
+rand = "0.8"
+fxhash = "0.2.1"
+lazy_static = "1.4"
+thiserror = "1"
+hashbrown = "0.14.3"
+rayon = "1.5"
 
 [dev-dependencies]
-rand = "0.7"
-criterion = "0.3"
-test-env-log = "0.2.0"
-env_logger = "0.6"
+liblisa-x64-observer = { path = "../arch/x64/liblisa-x64-observer" }
+criterion = "0.5"
+test-log = "0.2.10"
+env_logger = "0.10"
+rand_xoshiro = "0.6"

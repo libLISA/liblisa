@@ -1,0 +1,19 @@
+[package]
+name = "liblisa-x64"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+default = ["nolog"]
+nolog = ["log/release_max_level_off"]
+
+[dependencies]
+env_logger = "0.10"
+liblisa-libcli = { path = "../../cli/liblisa-libcli" }
+liblisa = { path = "../../liblisa" }
+liblisa-x64-observer = { path = "../../arch/x64/liblisa-x64-observer" }
+clap = { version = "4.4.8", features = ["derive"] }
+log = "0.4.0"
+
+[dev-dependencies]
+test-log = "0.2.10"

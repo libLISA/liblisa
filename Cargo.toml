@@ -1,18 +1,32 @@
 [workspace]
+resolver = "2"
 members = [
-    "liblisa-core",
+    # Main libraries
+    "liblisa",
     "liblisa-enc",
     "liblisa-synth",
-    "liblisa",
-    "liblisa-x64",
-    "liblisa-x64-kmod",
-    "liblisa-x64-kmod/kmodtest",
-    "lisacli",
+
+    # Architecture-specific
+    "arch/x64/liblisa-x64-observer",
+    "arch/x64/liblisa-x64-observer-shmqueue",
+
+    # CLI tools
+    "cli/liblisa-x64",
+    "cli/liblisa-libcli",
+    "cli/liblisa-semantics-tool",
 ]
 
 [profile.dev]
-opt-level = 1
+opt-level = 2
 
 [profile.release]
 lto = "fat"
 debug = true
+codegen-units = 1
+opt-level = 3
+
+[profile.test]
+opt-level = 2
+
+[profile.dev.package.liblisa-x64-observer]
+opt-level = 3

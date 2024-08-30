@@ -1,0 +1,55 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install rust nightly
+      run: rustup update nightly && rustup default nightly && rustup component add rustfmt && rustup component add clippy && rustup component add rust-src && rustup component add llvm-tools
+    - uses: Swatinem/rust-cache@v2
+    - name: Clippy
+      run: cargo clippy --no-deps
+    - name: Check formatting
+      run: cargo fmt --check
+    - name: Build
+      run: cargo build --verbose
+    - name: Run tests
+      run: cargo test -p liblisa # TODO: Run tests for the other crates as well
+  publish-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    name: Publish to Cloudflare Pages
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install rust nightly
+        run: rustup update nightly && rustup default nightly && rustup component add rustfmt && rustup component add clippy && rustup component add rust-src && rustup component add llvm-tools
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build documentation
+        run: cargo doc --workspace --lib --no-deps
+
+      - name: Add redirect
+        run: echo "/ /liblisa/ 302" > target/doc/_redirects
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: liblisa-docs
+          directory: target/doc/

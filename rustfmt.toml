@@ -1,0 +1,13 @@
+version = "Two"
+edition = "2021"
+max_width = 130
+newline_style = "Unix"
+group_imports = "StdExternalCrate"
+imports_granularity = "Module"
+struct_lit_single_line = false
+trailing_semicolon = false
+use_field_init_shorthand = true
+condense_wildcard_suffixes = true
+fn_params_layout = "Compressed"
+format_code_in_doc_comments = true
+match_block_trailing_comma = true

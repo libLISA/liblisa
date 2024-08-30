@@ -1,23 +1,52 @@
 [package]
 name = "liblisa"
 version = "0.1.0"
-authors = ["Jos <Jos635@outlook.com>"]
-edition = "2018"
+edition = "2021"
+
+[features]
+default = [ "z3", "x64-undef" ]
+x64-undef = [ "dep:rusty-xed" ]
+
+[[bench]]
+name = "randomization"
+harness = false
+
+[[bench]]
+name = "instantiation"
+harness = false
+
+[[bench]]
+name = "utils"
+harness = false
+
+[[bench]]
+name = "bitmap"
+harness = false
 
 [dependencies]
-liblisa-core = { path = "../liblisa-core" }
-liblisa-synth = { path = "../liblisa-synth" }
-liblisa-enc = { path = "../liblisa-enc" }
-liblisa-x64 = { path = "../liblisa-x64" }
-itertools = "0.9"
-log = "0.4"
-serde = { version = "1.0", features = [ "derive" ] }
-serde_json = "1.0"
-rand = "0.7"
 thiserror = "1"
-ctrlc = "3.1"
-crossbeam = "0.8"
+serde = { version = "1.0", features = [ "derive" ] }
+rand = "0.8"
+itertools = "0.12.0"
+log = "0.4"
+hex = "0.4"
+arrayvec = { version = "0.7", features = [ "serde" ] }
+hashbrown = "0.14.3"
+bitcode = "0.5.0"
+schemars = { version = "0.8.16", features = ["arrayvec07"], optional = true }
 rayon = "1.5"
+fxhash = "0.2.1"
+sha1 = "0.10.6"
+arbitrary = { version = "1", features = ["derive"] }
+z3 = { git = 'https://github.com/prove-rs/z3.rs', optional = true }
+rustc_apfloat = "0.2.0"
+rusty-xed = { version = "0.1.1", optional = true }
 
 [dev-dependencies]
-criterion = "0.3"
+env_logger = "0.10"
+test-log = "0.2.10"
+serde_json = "1.0"
+criterion = "0.5"
+rand_xoshiro = "0.6"
+memoffset = "0.9.1"
+clap = { version = "4.4.8", features = ["derive"] }

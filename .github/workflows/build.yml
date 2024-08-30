@@ -1,0 +1,39 @@
+on:
+  release:
+    types: [created]
+name: Build release binaries
+jobs:
+  build:
+    name: Create release artifacts
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install rust nightly
+        run: rustup update nightly && rustup default nightly && rustup component add rustfmt && rustup component add clippy && rustup component add rust-src && rustup component add llvm-tools
+      - name: Install cross
+        run: cargo install cross --git https://github.com/cross-rs/cross
+      - name: Build (x86_64)
+        run: cargo build -r --bin liblisa-semantics-tool --bin liblisa-x64
+      - name: Upload liblisa-x64 (x64)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_ID: ${{ needs.create_release.outputs.id }}
+          FILE: 'target/release/liblisa-x64'
+          FILENAME: 'liblisa-x64'
+        run: ./github_artifact_upload.sh
+      - name: Upload liblisa-semantics-tool (x64)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_ID: ${{ needs.create_release.outputs.id }}
+          FILE: 'target/release/liblisa-semantics-tool'
+          FILENAME: 'liblisa-semantics-tool-x64'
+        run: ./github_artifact_upload.sh
+      - name: Build (arm64)
+        run: cross build -r --target aarch64-unknown-linux-gnu --bin liblisa-semantics-tool
+      - name: Upload liblisa-semantics-tool (arm64)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_ID: ${{ needs.create_release.outputs.id }}
+          FILE: 'target/aarch64-unknown-linux-gnu/release/liblisa-semantics-tool'
+          FILENAME: 'liblisa-semantics-tool-arm64'
+        run: ./github_artifact_upload.sh
