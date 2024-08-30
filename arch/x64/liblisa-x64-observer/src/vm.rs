@@ -27,8 +27,12 @@ use tempfile::NamedTempFile;
 
 pub const SHMEM_SIZE: usize = 1024 * FRAME_SIZE;
 
-#[doc(hidden)]
+#[cfg(not(doc))]
 pub const OBSERVER_IMAGE: &[u8] = include_bytes!("../image/bootdisk.img");
+
+#[doc(hidden)]
+#[cfg(doc)]
+pub const OBSERVER_IMAGE: &[u8] = &[];
 
 #[derive(Clone)]
 struct ChildWrapper(Arc<Mutex<Child>>);

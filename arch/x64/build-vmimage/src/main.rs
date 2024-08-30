@@ -32,7 +32,7 @@ fn main() {
     let home = std::env::var("HOME").unwrap();
     let rustflags = format!("-Clink-arg=-Tlink.x -Ccode-model=large -Crelocation-model=static -Ctarget-feature=-mmx,-sse,+soft-float --remap-path-prefix {root}=. --remap-path-prefix {home}=..");
     cmd.env("RUSTFLAGS", rustflags);
-    
+
     let status = cmd.spawn().unwrap().wait().unwrap();
 
     assert!(status.success());
@@ -48,6 +48,8 @@ fn main() {
         .join("x86_64-unknown-none")
         .join("release")
         .join("vmimage-x86-64");
+
+    std::fs::create_dir_all(&out_dir).unwrap();
 
     // create a BIOS disk image
     let bios_path = out_dir.join("bootdisk.img");
