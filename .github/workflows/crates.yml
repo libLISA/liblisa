@@ -15,7 +15,7 @@ jobs:
       - name: Package (liblisa-x64-observer-shmqueue)
         run: ./crates.io_version_check.sh liblisa-x64-observer-shmqueue || cargo publish -p liblisa-x64-observer-shmqueue --token ${{ secrets.CRATES_IO_API_TOKEN }}
       - name: Package (liblisa-x64-observer)
-        run: ./crates.io_version_check.sh liblisa-x64-observer || cargo publish -p liblisa-x64-observer --token ${{ secrets.CRATES_IO_API_TOKEN }}
+        run: ./crates.io_version_check.sh liblisa-x64-observer || cargo publish -p liblisa-x64-observer --token ${{ secrets.CRATES_IO_API_TOKEN }} --allow-dirty
       - name: Package (liblisa-enc)
         run: ./crates.io_version_check.sh liblisa-enc || cargo publish -p liblisa-enc --token ${{ secrets.CRATES_IO_API_TOKEN }}
       - name: Package (liblisa-synth)
