@@ -16,6 +16,9 @@ use liblisa::semantics::default::computation::SynthesizedComputation;
 use log::info;
 use serde::{Deserialize, Serialize};
 
+/// Allows you to query semantics via stdin/stdout.
+///
+/// The semantics server *instantiates* semantics: it fills the correct registers, flags and immediate values from parts in the encoding.
 #[derive(Clone, Debug, clap::Parser)]
 pub struct Server {
     /// The path of the JSON file that contains the encodings.
@@ -23,6 +26,8 @@ pub struct Server {
 
     #[clap(long = "debug")]
     /// When enabled, human-readable semantics are printed to stderr.
+    ///
+    /// The JSON schema is also printed.
     debug: bool,
 
     #[clap(long = "cache")]

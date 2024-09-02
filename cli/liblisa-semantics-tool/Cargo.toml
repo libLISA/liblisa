@@ -1,12 +1,13 @@
 [package]
 name = "liblisa-semantics-tool"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
-description = "A tool for automated discovery and analysis of the ISA of a CPU."
+description = "A command-line tool that can query and manipulate libLISA's semantics."
 license = "AGPL-3.0-only"
 documentation = "https://docs.liblisa.nl/"
 homepage = "https://liblisa.nl/"
 repository = "https://github.com/liblisa/liblisa"
+readme = "README.md"
 
 [features]
 default = ["nolog"]

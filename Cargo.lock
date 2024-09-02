@@ -1196,7 +1196,7 @@ dependencies = [
 
 [[package]]
 name = "liblisa-semantics-tool"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "bincode",
  "clap",

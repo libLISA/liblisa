@@ -26,12 +26,16 @@ pub mod server;
 
 #[derive(Clone, Debug, clap::Parser)]
 enum Verb {
+    /// Queries semantics stored in a JSON file.
     Get {
+        /// The path to the raw semantics.
         encodings: PathBuf,
 
+        /// The operation to perform.
         #[clap(subcommand)]
         property: Property,
     },
+    /// Prints the JSON schema of the raw encodings.
     Schema,
     ArchCompare(#[clap(subcommand)] ArchCompareContainer),
     Merge(Merge),
@@ -40,14 +44,33 @@ enum Verb {
 
 #[derive(Clone, Debug, clap::Parser)]
 enum Property {
+    /// Prints general statistics.
     Stats,
+
+    /// Prints the encodings with unobservable outputs.
     UnobservableOutputs,
+
+    /// Prints the encodings with overlapping outputs.
     OverlappingOutputs,
+
+    /// Prints the encodings with >128-bit outputs.
     BigOutputs,
+
+    /// Prints the encodings without synthesized semantics.
     FailedSynthesis,
+
+    /// Prints the bitpatterns of all encodings.
     Bitpatterns,
+
+    /// Prints all encodings. (NOTE: This will print millions of lines of text)
     FullEncodings,
-    Encoding { instr: Instruction },
+
+    /// Prints all encodings that match `instr`.
+    /// This will generally only be a single encoding.
+    Encoding {
+        /// The instruction that should be matched by the encoding.
+        instr: Instruction,
+    },
 }
 
 #[derive(Copy, Clone, Debug, Default, clap::ValueEnum)]
