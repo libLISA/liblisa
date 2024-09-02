@@ -3,7 +3,7 @@
 # Usage: crates.io_version_check.sh liblisa || cargo publish ...
 
 PROJECT=$1
-LOCAL_VERSION=$(cargo tree -p liblisa | head -n 1 | cut -d ' ' -f2 | tail -c +2)
+LOCAL_VERSION=$(cargo tree -p $PROJECT | head -n 1 | cut -d ' ' -f2 | tail -c +2)
 
 echo "Checking version $LOCAL_VERSION"
 
