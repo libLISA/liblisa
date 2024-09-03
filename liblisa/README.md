@@ -11,7 +11,7 @@ Encodings support serde, and can be serialized and deserialized by any library t
 By default, libLISA uses JSON.
 You can import these semantics as follows:
 
-```rust
+```rust,ignore
 use std::fs::File;
 use std::io::BufReader;
 use std::path::PathBuf;
