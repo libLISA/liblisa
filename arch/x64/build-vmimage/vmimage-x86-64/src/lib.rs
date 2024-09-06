@@ -2,7 +2,7 @@
 
 #![no_std]
 #![cfg_attr(test, no_main)]
-#![feature(custom_test_frameworks, abi_x86_interrupt, const_ptr_offset_from, alloc_error_handler, naked_functions, asm_sym, asm_const)]
+#![feature(custom_test_frameworks, abi_x86_interrupt, const_ptr_offset_from, alloc_error_handler, naked_functions, asm_sym)]
 #![feature(generic_const_exprs)]
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]

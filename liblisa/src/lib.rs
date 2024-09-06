@@ -1,7 +1,6 @@
 #![allow(incomplete_features)]
 #![deny(rustdoc::missing_crate_level_docs, rustdoc::invalid_codeblock_attributes)]
 #![warn(missing_docs)]
-#![feature(asm_const)]
 #![feature(let_chains)]
 #![feature(generic_const_exprs)]
 #![feature(const_intrinsic_copy)]
