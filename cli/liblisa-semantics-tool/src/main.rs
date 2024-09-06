@@ -63,7 +63,10 @@ enum Property {
     Bitpatterns,
 
     /// Prints all encodings. (NOTE: This will print millions of lines of text)
-    FullEncodings,
+    FullEncodings {
+        #[clap(long, default_value = "0")]
+        min_access_count: usize,
+    },
 
     /// Prints all encodings that match `instr`.
     /// This will generally only be a single encoding.
@@ -184,9 +187,20 @@ where
                         }
                     }
                 },
-                Property::FullEncodings => {
+                Property::FullEncodings {
+                    min_access_count,
+                } => {
+                    let mut num_printed = 0;
                     for e in encodings.iter() {
-                        println!("{e}");
+                        if e.dataflows.addresses.len() > min_access_count {
+                            num_printed += 1;
+                            println!("{e}");
+                        }
+                    }
+
+                    let num_ignored = encodings.len() - num_printed;
+                    if num_ignored != 0 {
+                        eprintln!("Printed {num_printed} encodings. Ignored {num_ignored} encodings that did not match filters");
                     }
                 },
                 Property::Bitpatterns => {
