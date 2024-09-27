@@ -17,7 +17,7 @@ use crate::semantics::default::codegen::smt::Z3CodeGen;
 use crate::semantics::default::computation::AsComputationRef;
 use crate::semantics::Computation;
 use crate::smt::{SmtBV, SmtBool, SmtSolver};
-use crate::state::Location;
+use crate::state::{Location, SplitDests};
 use crate::utils::bitmap::{BitmapSlice, GrowingBitmap};
 use crate::utils::EitherIter;
 use crate::value::ValueType;
@@ -498,82 +498,6 @@ pub struct Z3Model<'ctx, A: Arch, S: SmtSolver<'ctx>> {
     intermediate_outputs: Vec<IntermediateOutput<'ctx, A, S>>,
 }
 
-struct OutputSplits<A: Arch> {
-    outputs: HashMap<Location<A>, Vec<Size>>,
-}
-
-impl<A: Arch> OutputSplits<A> {
-    pub fn new() -> Self {
-        Self {
-            outputs: HashMap::new(),
-        }
-    }
-
-    pub fn split(&mut self, dest: Dest<A>) {
-        let location = Location::from(dest);
-        let size = dest.size();
-        let existing_sizes = self.outputs.remove(&location).unwrap_or_default();
-
-        trace!("Splitting {dest:?} with existing sizes {existing_sizes:?}");
-
-        let mut split_sizes = Vec::new();
-        let mut covered = GrowingBitmap::new_all_zeros(size.end_byte + 1);
-        for existing_size in existing_sizes {
-            covered.set_range(existing_size.start_byte..existing_size.end_byte + 1);
-            trace!("Checking {existing_size:?} vs {size:?}");
-            if let Some((before, overlapping, after)) = size.split_by_overlap(existing_size) {
-                trace!("Split into: {before:?} {overlapping:?} {after:?}");
-                split_sizes.push(overlapping);
-
-                for item in [before, after].into_iter().flatten() {
-                    if existing_size.contains(&item) {
-                        split_sizes.push(item);
-                    }
-                }
-            } else {
-                split_sizes.push(existing_size);
-            }
-        }
-
-        trace!("Covered: {covered:?}");
-        let mut index = size.start_byte;
-        while index <= size.end_byte {
-            if !covered[index] {
-                let num = covered.iter().skip(index).take_while(|&b| !b).count();
-
-                let uncovered_size = Size::new(index, index + num - 1);
-                trace!("Adding uncovered {uncovered_size:?}");
-                split_sizes.push(uncovered_size);
-                index += num;
-            } else {
-                index += 1;
-            }
-        }
-
-        trace!("Result: {split_sizes:?}");
-        self.outputs.insert(location, split_sizes);
-    }
-
-    pub fn get(&self, loc: Dest<A>) -> impl Iterator<Item = Dest<A>> + '_ {
-        let loc_size = loc.size();
-        self.outputs
-            .get(&Location::from(loc))
-            .iter()
-            .flat_map(|v| v.iter())
-            .flat_map(move |size| {
-                if loc_size.contains(size) {
-                    Some(loc.with_size(*size))
-                } else {
-                    // No partial overlaps!
-                    assert!(!loc_size.overlaps(size));
-                    None
-                }
-            })
-            .collect::<Vec<_>>()
-            .into_iter()
-    }
-}
-
 impl<'ctx, A: Arch, S: SmtSolver<'ctx>> Z3Model<'ctx, A, S> {
     fn build_outputs<C: Computation + AsComputationRef>(
         encoding: &Encoding<A, C>,
@@ -669,7 +593,7 @@ impl<'ctx, A: Arch, S: SmtSolver<'ctx>> Z3Model<'ctx, A, S> {
     pub fn compute_concrete_outputs<C: Computation>(
         &self, encoding: &Encoding<A, C>, storage: &mut StorageLocations<'ctx, A, S>, context: &mut S,
     ) -> ConcreteZ3Model<'ctx, A, S> {
-        let mut output_splits = OutputSplits::<A>::new();
+        let mut output_splits = SplitDests::<A>::new();
         for part in encoding.parts.iter() {
             if let PartMapping::Register {
                 mapping,

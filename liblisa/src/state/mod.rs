@@ -13,11 +13,13 @@ pub mod jit;
 mod locs;
 mod memory;
 pub mod random;
+mod split_dests;
 
 pub use addr::{Addr, Area, Page};
 pub use byteview::*;
 pub use locs::*;
 pub use memory::*;
+pub use split_dests::SplitDests;
 
 /// The maximum number of bytes that a single memory mapping can be.
 pub const MAX_MEMORY_SIZE: usize = 128;
