@@ -1,7 +1,6 @@
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 #![feature(generic_arg_infer)]
-#![feature(const_mut_refs)]
 #![feature(let_chains)]
 #![doc(html_no_source)]
 

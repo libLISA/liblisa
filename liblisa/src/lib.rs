@@ -3,8 +3,6 @@
 #![warn(missing_docs)]
 #![feature(let_chains)]
 #![feature(generic_const_exprs)]
-#![feature(const_intrinsic_copy)]
-#![feature(const_mut_refs)]
 #![feature(const_size_of_val)]
 #![doc(html_no_source)]
 #![doc = include_str!("../README.md")]
