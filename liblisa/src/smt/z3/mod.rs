@@ -7,7 +7,7 @@ mod tests;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::fmt::{Debug, Display};
-use std::ops::{Add, BitAnd, BitOr, BitXor, Mul, Not, Sub};
+use std::ops::{Add, BitAnd, BitOr, BitXor, Mul, Neg, Not, Sub};
 use std::time::Duration;
 
 use z3::ast::{forall_const, Ast};
@@ -61,6 +61,16 @@ impl<'ctx> Z3Solver<'ctx> {
             context,
             solver,
         }
+    }
+
+    /// Returns the [`z3::Context`] wrapped by this struct.
+    pub fn context(&self) -> &'ctx Context {
+        self.context
+    }
+
+    /// Returns the [`z3::Solver`] wrapped by this struct.
+    pub fn solver(&self) -> &z3::Solver<'ctx> {
+        &self.solver
     }
 }
 
@@ -190,6 +200,18 @@ pub struct BV<'ctx>(z3::ast::BV<'ctx>);
 impl<'ctx> Display for BV<'ctx> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         Display::fmt(&self.0, f)
+    }
+}
+
+impl<'ctx> BV<'ctx> {
+    /// Wraps a [`z3::ast::BV`].
+    pub fn from_z3(bv: z3::ast::BV<'ctx>) -> Self {
+        Self(bv)
+    }
+
+    /// Returns the wrapped [`z3::ast::BV`].
+    pub fn as_z3(&self) -> &z3::ast::BV {
+        &self.0
     }
 }
 
@@ -351,6 +373,14 @@ impl<'ctx> Not for BV<'ctx> {
     }
 }
 
+impl<'ctx> Neg for BV<'ctx> {
+    type Output = Self;
+
+    fn neg(self) -> Self::Output {
+        BV(self.0.neg())
+    }
+}
+
 /// A Z3 Int.
 #[derive(Clone, Debug)]
 pub struct Int<'ctx>(z3::ast::Int<'ctx>);
@@ -358,6 +388,18 @@ pub struct Int<'ctx>(z3::ast::Int<'ctx>);
 impl<'ctx> Display for Int<'ctx> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         Display::fmt(&self.0, f)
+    }
+}
+
+impl<'ctx> Int<'ctx> {
+    /// Wraps a [`z3::ast::Int`].
+    pub fn from_z3(int: z3::ast::Int<'ctx>) -> Self {
+        Self(int)
+    }
+
+    /// Returns the wrapped [`z3::ast::Int`].
+    pub fn as_z3(&self) -> &z3::ast::Int {
+        &self.0
     }
 }
 
@@ -410,6 +452,18 @@ pub struct Bool<'ctx>(z3::ast::Bool<'ctx>);
 impl<'ctx> Display for Bool<'ctx> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         Display::fmt(&self.0, f)
+    }
+}
+
+impl<'ctx> Bool<'ctx> {
+    /// Wraps a [`z3::ast::Bool`].
+    pub fn from_z3(bool: z3::ast::Bool<'ctx>) -> Self {
+        Self(bool)
+    }
+
+    /// Returns the wrapped [`z3::ast::Bool`].
+    pub fn as_z3(&self) -> &z3::ast::Bool {
+        &self.0
     }
 }
 
