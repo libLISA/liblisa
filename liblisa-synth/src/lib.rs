@@ -237,8 +237,10 @@ impl SynthesizerOutput for bool {
 }
 
 impl<'a> SynthesizerOutput for Value<'a> {
-    type Borrowed<'o> = Value<'o>
-        where Self: 'o;
+    type Borrowed<'o>
+        = Value<'o>
+    where
+        Self: 'o;
 
     fn borrow(&self) -> Self::Borrowed<'_> {
         *self

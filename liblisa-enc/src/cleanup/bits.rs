@@ -30,7 +30,11 @@ pub fn remove_useless_bits<A: Arch>(encoding: &mut Encoding<A, ()>) {
                     .filter(|(index, _)| (index >> bit_index) & 1 != bit_value as usize)
                     .any(|(_, reg)| reg.as_ref().map(|reg| !reg.is_zero()).unwrap_or(false));
 
-                if any_useful { None } else { Some(real_bit_index) }
+                if any_useful {
+                    None
+                } else {
+                    Some(real_bit_index)
+                }
             }))),
             PartMapping::MemoryComputation {
                 mapping, ..
@@ -51,7 +55,11 @@ pub fn remove_useless_bits<A: Arch>(encoding: &mut Encoding<A, ()>) {
                     .filter(|(index, _)| (index >> bit_index) & 1 != bit_value as usize)
                     .any(|(_, computation)| computation.is_some());
 
-                if any_useful { None } else { Some(real_bit_index) }
+                if any_useful {
+                    None
+                } else {
+                    Some(real_bit_index)
+                }
             }))),
             _ => None,
         })

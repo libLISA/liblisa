@@ -199,10 +199,8 @@ mod tests {
     #[test]
     pub fn test_paths_match() {
         assert!(Path(vec![(0, Some(Op::Hole(0)))]).matches(&Path(vec![(0, Some(Op::Hole(0)))])));
-        assert!(
-            Path(vec![(0, Some(Op::Hole(0))), (0, Some(Op::Add))])
-                .matches(&Path(vec![(0, Some(Op::Hole(1))), (1, Some(Op::Add))]))
-        );
+        assert!(Path(vec![(0, Some(Op::Hole(0))), (0, Some(Op::Add))])
+            .matches(&Path(vec![(0, Some(Op::Hole(1))), (1, Some(Op::Add))])));
     }
 
     #[test]

@@ -341,8 +341,10 @@ struct InputEntry<'j, A: Arch> {
 }
 
 impl<'j, A: Arch> AsSystemState<A> for InputEntry<'j, A> {
-    type Output<'a> = <MaybeJitState<'j, A> as AsSystemState<A>>::Output<'a>
-        where Self: 'a;
+    type Output<'a>
+        = <MaybeJitState<'j, A> as AsSystemState<A>>::Output<'a>
+    where
+        Self: 'a;
 
     fn as_system_state(&self) -> Self::Output<'_> {
         self.state_in.as_system_state()
@@ -611,7 +613,11 @@ impl<'a, A: Arch, M: MappableArea> FlowAnalyzer3<'a, A, M> {
                 panic!("Spec was not upheld: {spec:#?} with base = {base:X?} and modified = {modified_in:X?}");
             }
 
-            if adapt_success { Some(modified_in) } else { None }
+            if adapt_success {
+                Some(modified_in)
+            } else {
+                None
+            }
         })) {
             if modified_out.is_ok() {
                 trace!("Non-erroring state: {:?} modified to {:?}", base, modified_in);
@@ -741,7 +747,11 @@ impl<'a, A: Arch, M: MappableArea> FlowAnalyzer3<'a, A, M> {
             num_changed += 1;
         });
 
-        if num_changed <= 1 { changed } else { None }
+        if num_changed <= 1 {
+            changed
+        } else {
+            None
+        }
     }
 
     pub fn run<O: Oracle<A>>(

@@ -53,8 +53,10 @@ impl<'j, A: Arch> From<ComplexJitState<'j, A>> for MaybeJitState<'j, A> {
 }
 
 impl<'j, A: Arch> AsSystemState<A> for MaybeJitState<'j, A> {
-    type Output<'a> = MaybeRef<'a, A>
-        where Self: 'a;
+    type Output<'a>
+        = MaybeRef<'a, A>
+    where
+        Self: 'a;
 
     fn as_system_state(&self) -> Self::Output<'_> {
         match self {
@@ -74,8 +76,10 @@ impl<'j, A: Arch> AsSystemState<A> for MaybeJitState<'j, A> {
 }
 
 impl<'j, A: Arch> AsSystemState<A> for &'_ MaybeJitState<'j, A> {
-    type Output<'a> = MaybeRef<'a, A>
-        where Self: 'a;
+    type Output<'a>
+        = MaybeRef<'a, A>
+    where
+        Self: 'a;
 
     fn as_system_state(&self) -> Self::Output<'_> {
         match self {

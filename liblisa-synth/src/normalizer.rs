@@ -3010,14 +3010,12 @@ mod tests {
 
     #[test]
     pub fn real_world_1() {
-        let expr = expr!(
-            (and(
-                not(is_zero((shr(mul(hole::<0>(), hole::<1>()), c::<0x3F>())).crop::<64>())),
-                not(c::<0>())
-            ))
-            .crop::<1>()
-            .if_zero(c::<0>().crop::<1>(), c::<1>().crop::<1>())
-        )
+        let expr = expr!((and(
+            not(is_zero((shr(mul(hole::<0>(), hole::<1>()), c::<0x3F>())).crop::<64>())),
+            not(c::<0>())
+        ))
+        .crop::<1>()
+        .if_zero(c::<0>().crop::<1>(), c::<1>().crop::<1>()))
         .to_owned();
         let template = SynthesizedComputation::new(
             expr,

@@ -42,8 +42,10 @@ impl<'a, A: Arch> AsRef<SystemState<A>> for SimpleStateRef<'a, A> {
 }
 
 impl<A: Arch> AsSystemState<A> for SimpleJitState<'_, A> {
-    type Output<'a> = SimpleStateRef<'a, A>
-        where Self: 'a;
+    type Output<'a>
+        = SimpleStateRef<'a, A>
+    where
+        Self: 'a;
 
     fn as_system_state(&self) -> Self::Output<'_> {
         if self.data.borrow().active != self.id {
@@ -105,11 +107,9 @@ impl<'a, A: Arch> SimpleJitState<'a, A> {
                 };
 
                 // Make sure only the bytes specified in bytes_affected were modified
-                debug_assert!(
-                    (0..view.size())
-                        .map(StateByte::new)
-                        .all(|b| bytes_affected.contains(&b) || view.get(base_state, b) == view.get(&s.state, b))
-                );
+                debug_assert!((0..view.size())
+                    .map(StateByte::new)
+                    .all(|b| bytes_affected.contains(&b) || view.get(base_state, b) == view.get(&s.state, b)));
 
                 if !need_address_update || state_gen.adapt(&mut s.state, false) {
                     Some(SimpleJitState {

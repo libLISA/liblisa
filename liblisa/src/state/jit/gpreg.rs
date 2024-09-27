@@ -49,8 +49,10 @@ impl<'a, A: Arch> AsRef<SystemState<A>> for GpRegStateRef<'a, A> {
 }
 
 impl<A: Arch> AsSystemState<A> for GpRegJitState<'_, A> {
-    type Output<'a> = GpRegStateRef<'a, A>
-        where Self: 'a;
+    type Output<'a>
+        = GpRegStateRef<'a, A>
+    where
+        Self: 'a;
 
     fn as_system_state(&self) -> Self::Output<'_> {
         if self.data.borrow().active != self.id {

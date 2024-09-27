@@ -377,8 +377,10 @@ struct TestCase<A: Arch> {
 }
 
 impl<A: Arch> AsSystemState<A> for TestCase<A> {
-    type Output<'a> = &'a SystemState<A>
-        where Self: 'a;
+    type Output<'a>
+        = &'a SystemState<A>
+    where
+        Self: 'a;
 
     fn as_system_state(&self) -> Self::Output<'_> {
         &self.state

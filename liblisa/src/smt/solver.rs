@@ -392,19 +392,31 @@ impl<'a, S: SmtSolver<'a>> Dynamic<'a, S> {
     /// If the expression is a bitvector, returns the bitvector.
     /// Otherwise, returns `None`.
     pub fn as_bv(self) -> Option<S::BV> {
-        if let Dynamic::BV(bv) = self { Some(bv) } else { None }
+        if let Dynamic::BV(bv) = self {
+            Some(bv)
+        } else {
+            None
+        }
     }
 
     /// If the expression is an integer, returns the integer.
     /// Otherwise, returns `None`.
     pub fn as_int(self) -> Option<S::Int> {
-        if let Dynamic::Int(int) = self { Some(int) } else { None }
+        if let Dynamic::Int(int) = self {
+            Some(int)
+        } else {
+            None
+        }
     }
 
     /// If the expression is a bool, returns the bool.
     /// Otherwise, returns `None`.
     pub fn as_bool(self) -> Option<S::Bool> {
-        if let Dynamic::Bool(b) = self { Some(b) } else { None }
+        if let Dynamic::Bool(b) = self {
+            Some(b)
+        } else {
+            None
+        }
     }
 
     /// Returns the sort kind of the expression.

@@ -186,7 +186,11 @@ pub fn find_memory_access_imm<A: Arch>(
                 .into_iter()
                 .flat_map(|change| {
                     let change = check_change(base_accesses, new_accesses, change);
-                    if change != Change::Invalid { Some(change) } else { None }
+                    if change != Change::Invalid {
+                        Some(change)
+                    } else {
+                        None
+                    }
                 })
                 .collect(),
         )

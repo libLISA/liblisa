@@ -236,8 +236,11 @@ impl<'ctx, S: SmtSolver<'ctx> + 'ctx, C: SolverCache> SmtSolver<'ctx> for Cached
     type Int = CacheInt<'ctx, S>;
     type Bool = CacheBool<'ctx, S>;
 
-    type ModelRef<'r> = CacheModelRef<'r, 'ctx, S>
-        where Self: 'r, S: 'r;
+    type ModelRef<'r>
+        = CacheModelRef<'r, 'ctx, S>
+    where
+        Self: 'r,
+        S: 'r;
 
     type Model = CacheModel<'ctx, S>;
 

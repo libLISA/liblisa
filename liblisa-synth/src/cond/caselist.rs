@@ -1338,46 +1338,42 @@ mod tests {
 
         println!("{l:?}");
 
-        assert!(
-            l.find_case(&[
+        assert!(l
+            .find_case(&[
                 Value::Num(0xFFB),
                 Value::Num(1),
                 Value::Num(0),
                 Value::Num(0),
                 Value::Num(0x103)
             ])
-            .is_some()
-        );
-        assert!(
-            l.find_case(&[
+            .is_some());
+        assert!(l
+            .find_case(&[
                 Value::Num(0xFFB),
                 Value::Num(0),
                 Value::Num(1),
                 Value::Num(0),
                 Value::Num(0x103)
             ])
-            .is_some()
-        );
-        assert!(
-            l.find_case(&[
+            .is_some());
+        assert!(l
+            .find_case(&[
                 Value::Num(0xFFB),
                 Value::Num(0),
                 Value::Num(0),
                 Value::Num(1),
                 Value::Num(0x103)
             ])
-            .is_some()
-        );
-        assert!(
-            l.find_case(&[
+            .is_some());
+        assert!(l
+            .find_case(&[
                 Value::Num(0xFFB),
                 Value::Num(0),
                 Value::Num(0),
                 Value::Num(0),
                 Value::Num(0x61)
             ])
-            .is_some()
-        );
+            .is_some());
         // assert_eq!(l.group(1).case_indices().count(), 2);
         // assert_eq!(l.group(2).case_indices().count(), 1);
     }

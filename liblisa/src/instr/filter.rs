@@ -210,7 +210,11 @@ impl ByteFilter {
     /// Returns the value matched by the filter, if the filter does not contain any wildcard bits.
     /// Otherwise, returns `None`.
     pub fn as_value(&self) -> Option<u8> {
-        if self.mask == 0xff { Some(self.value) } else { None }
+        if self.mask == 0xff {
+            Some(self.value)
+        } else {
+            None
+        }
     }
 
     fn consistency_check(&self) {
@@ -454,7 +458,11 @@ impl InstructionFilter {
         let mask = (byte.mask >> bit) & 1;
 
         if mask == 1 {
-            if val == 1 { FilterBit::Is1 } else { FilterBit::Is0 }
+            if val == 1 {
+                FilterBit::Is1
+            } else {
+                FilterBit::Is0
+            }
         } else {
             FilterBit::Wildcard
         }

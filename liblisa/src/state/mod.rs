@@ -71,8 +71,10 @@ impl<A: Arch> AsSystemState<A> for SystemState<A> {
 }
 
 impl<'s, A: Arch> AsSystemState<A> for &'s SystemState<A> {
-    type Output<'a> = &'a SystemState<A>
-        where Self: 'a;
+    type Output<'a>
+        = &'a SystemState<A>
+    where
+        Self: 'a;
 
     fn as_system_state(&self) -> Self::Output<'_> {
         self
@@ -306,8 +308,10 @@ pub trait AsSystemState<A: Arch> {
 }
 
 impl<A: Arch, T> AsSystemState<A> for (SystemState<A>, T) {
-    type Output<'a> = &'a SystemState<A>
-        where Self: 'a;
+    type Output<'a>
+        = &'a SystemState<A>
+    where
+        Self: 'a;
 
     fn as_system_state(&self) -> Self::Output<'_> {
         &self.0

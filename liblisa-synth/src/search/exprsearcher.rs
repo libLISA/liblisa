@@ -733,7 +733,11 @@ mod tests {
 
                 let output = if shift & 0x1f != 0 {
                     let result = n << (shift & 0x1f);
-                    if (result >> 32) & 1 == (result >> 31) & 1 { 0 } else { 1 }
+                    if (result >> 32) & 1 == (result >> 31) & 1 {
+                        0
+                    } else {
+                        1
+                    }
                 } else {
                     of
                 };

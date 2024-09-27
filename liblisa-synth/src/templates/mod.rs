@@ -92,8 +92,10 @@ impl<'a> AnyTemplate for Template<'a> {
         &self.ordering_indexes
     }
 
-    type IterActiveIndices<'me> = Range<usize>
-        where Self: 'me;
+    type IterActiveIndices<'me>
+        = Range<usize>
+    where
+        Self: 'me;
 
     fn active_indices(&self) -> Self::IterActiveIndices<'_> {
         0..self.num_holes

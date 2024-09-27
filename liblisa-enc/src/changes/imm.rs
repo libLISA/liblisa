@@ -49,7 +49,10 @@ impl<'a, A: Arch, O: Oracle<A>> ImmAnalysis<'a, A, O> {
         let right_val = right.get_dest(&right_loc);
         trace!(
             "Comparing {:?} vs {:?} ==> {:?} vs {:?}",
-            left_loc, right_loc, left_val, right_val
+            left_loc,
+            right_loc,
+            left_val,
+            right_val
         );
         if left_val != right_val {
             let location = index;
@@ -113,7 +116,10 @@ impl<'a, A: Arch, O: Oracle<A>> ImmAnalysis<'a, A, O> {
 
                     trace!(
                         "Trying to find an imm value with inputs: {:X?} {:X?}; Outputs: {:X?} {:X?}",
-                        state_old, state_new, base_result, new_result
+                        state_old,
+                        state_new,
+                        base_result,
+                        new_result
                     );
 
                     // We compare the two results we got. One from instr and one from new_instr. If the results aren't equal, this might be an immediate value.
@@ -337,7 +343,10 @@ impl<'a, A: Arch, O: Oracle<A>> ImmAnalysis<'a, A, O> {
                     if let (Ok(old_state_out), Ok(new_state_out)) = (old_state_out, new_state_out) {
                         trace!(
                             "Compared {:?} with {:?} resulting in {:?} vs {:?}",
-                            old_state_in, new_state_in, old_state_out, new_state_out
+                            old_state_in,
+                            new_state_in,
+                            old_state_out,
+                            new_state_out
                         );
                         let old_value = old_state_out.get_dest(&old_dest);
                         let new_value = new_state_out.get_dest(&new_dest);
@@ -762,7 +771,10 @@ impl<A: Arch> ThresholdValues<A> {
 
         trace!(
             "low = {:X?}, high = {:X?}, out_low = {:X?}, out_high = {:X?}",
-            low, high, out_low, _out_high
+            low,
+            high,
+            out_low,
+            _out_high
         );
 
         while let Some(mid) = Self::middle(&low, &high, little_endian) {
@@ -843,7 +855,10 @@ impl<A: Arch> ThresholdValues<A> {
                                     );
                                     trace!(
                                         "Number threshold (little_endian={}) found for {:X?} -> {:X?}: {:X?}",
-                                        little_endian, source, single_dest_byte, threshold
+                                        little_endian,
+                                        source,
+                                        single_dest_byte,
+                                        threshold
                                     );
 
                                     if let Some(threshold) = threshold {
@@ -910,7 +925,10 @@ impl<A: Arch> ThresholdValues<A> {
 
                             trace!(
                                 "Adding bit check for {:X?} -> {:X?}: {:X?} = {:X?}",
-                                source, single_dest_byte, base_inputs, new_value
+                                source,
+                                single_dest_byte,
+                                base_inputs,
+                                new_value
                             );
 
                             values

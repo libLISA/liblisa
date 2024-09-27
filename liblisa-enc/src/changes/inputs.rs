@@ -345,7 +345,10 @@ impl<'a, A: Arch> Dfs<'a, A> {
                 {
                     trace!(
                         "Considering {:?}, .. -> {:?} changing into {:?}, .. -> {:?}",
-                        item_from.source, item_from.dest, match_target.source, item_from.dest
+                        item_from.source,
+                        item_from.dest,
+                        match_target.source,
+                        item_from.dest
                     );
                     self.assignments.push(item_from.location);
                     self.enumerate_folds(num_not_assigned, Some(&from_loc), Some(&to_loc));
@@ -363,7 +366,9 @@ impl<'a, A: Arch> Dfs<'a, A> {
             {
                 trace!(
                     "Considering {:?}, .. -> {:?} changing into 0, .. -> {:?}",
-                    item_from.source, item_from.dest, item_from.dest
+                    item_from.source,
+                    item_from.dest,
+                    item_from.dest
                 );
                 self.assignments.push(item_from.location);
                 self.enumerate_folds(num_not_assigned, Some(&from_loc), Some(&zero_loc));
@@ -392,7 +397,10 @@ impl<'a, A: Arch> Dfs<'a, A> {
             {
                 trace!(
                     "Considering id({:?}) -> {:?} changing into id({:?}) -> {:?}",
-                    item_from.source, item_from.dest, to_loc, item_from.dest
+                    item_from.source,
+                    item_from.dest,
+                    to_loc,
+                    item_from.dest
                 );
 
                 for r in self.removed.iter().filter(|&flow| {
@@ -432,7 +440,10 @@ impl<'a, A: Arch> Dfs<'a, A> {
             {
                 trace!(
                     "Considering id({:?}) -> {:?} changing into id({:?}) -> {:?}",
-                    item_from.source, item_from.dest, item_from.source, to_loc
+                    item_from.source,
+                    item_from.dest,
+                    item_from.source,
+                    to_loc
                 );
 
                 let len_before = self.assignments.len();

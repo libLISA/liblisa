@@ -84,8 +84,10 @@ impl<'ctx> SmtSolver<'ctx> for Z3Solver<'ctx> {
     type BV = BV<'ctx>;
     type Int = Int<'ctx>;
     type Bool = Bool<'ctx>;
-    type ModelRef<'a> = ModelRef<'a, 'ctx>
-        where Self: 'a;
+    type ModelRef<'a>
+        = ModelRef<'a, 'ctx>
+    where
+        Self: 'a;
     type Model = Model<'ctx>;
 
     fn bv_from_i64(&mut self, val: i64, size: u32) -> Self::BV {

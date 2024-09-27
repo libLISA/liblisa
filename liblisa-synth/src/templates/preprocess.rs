@@ -97,8 +97,10 @@ impl<'a> AnyTemplate for PreprocessedTemplate<'a> {
         self.arg_indices.len()
     }
 
-    type IterActiveIndices<'me> = ActiveIndicesIter
-        where Self: 'me;
+    type IterActiveIndices<'me>
+        = ActiveIndicesIter
+    where
+        Self: 'me;
 
     fn active_indices(&self) -> Self::IterActiveIndices<'_> {
         ActiveIndicesIter {

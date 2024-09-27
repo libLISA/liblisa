@@ -1,26 +1,35 @@
 use std::collections::HashMap;
-use crate::{arch::Arch, encoding::dataflows::{Dest, IntoDestWithSize, Size}, state::Location, utils::bitmap::GrowingBitmap};
+
 use log::trace;
 
+use crate::arch::Arch;
+use crate::encoding::dataflows::{Dest, IntoDestWithSize, Size};
+use crate::state::Location;
+use crate::utils::bitmap::GrowingBitmap;
+
 /// Splits dests into smaller, non-overlapping chunks.
-/// 
+///
 /// # Example
 /// ```rust
-/// use liblisa::arch::x64::{X64Arch, X64Reg, GpReg};
+/// use liblisa::arch::x64::{GpReg, X64Arch, X64Reg};
 /// use liblisa::encoding::dataflows::{Dest, Size};
 /// use liblisa::state::SplitDests;
 /// const Rax: X64Reg = X64Reg::GpReg(GpReg::Rax);
-/// 
+///
 /// let mut split = SplitDests::<X64Arch>::new();
 /// split.split(Dest::Reg(Rax, Size::new(0, 3)));
 /// split.split(Dest::Reg(Rax, Size::new(2, 5)));
-/// 
-/// assert_eq!(split.get(Dest::Reg(Rax, Size::new(2, 5))).collect::<Vec<_>>(), vec![
-///     Dest::Reg(Rax, Size::new(2, 3)),
-///     Dest::Reg(Rax, Size::new(4, 5)),
-/// ])
+///
+/// assert_eq!(
+///     split
+///         .get(Dest::Reg(Rax, Size::new(2, 5)))
+///         .collect::<Vec<_>>(),
+///     vec![
+///         Dest::Reg(Rax, Size::new(2, 3)),
+///         Dest::Reg(Rax, Size::new(4, 5)),
+///     ]
+/// )
 /// ```
-/// 
 #[derive(Clone, Debug, Default)]
 pub struct SplitDests<A: Arch> {
     outputs: HashMap<Location<A>, Vec<Size>>,
@@ -34,7 +43,7 @@ impl<A: Arch> SplitDests<A> {
 
     /// Splits the location in `dest` into non-overlapping chunks.
     /// If the location has not been inserted before, the entire size is added as one chunk.
-    /// If the location has been inserted before, the sizes are split such that only subsets 
+    /// If the location has been inserted before, the sizes are split such that only subsets
     /// of one or more of the previously inserted [`Dest`]s are included.
     pub fn split(&mut self, dest: Dest<A>) {
         let location = Location::from(dest);
@@ -66,7 +75,8 @@ impl<A: Arch> SplitDests<A> {
         let mut index = size.start_byte;
         while index <= size.end_byte {
             if !covered[index] {
-                let num = covered.iter()
+                let num = covered
+                    .iter()
                     .skip(index)
                     .take(size.end_byte + 1 - index)
                     .take_while(|&b| !b)
@@ -88,7 +98,7 @@ impl<A: Arch> SplitDests<A> {
     /// Returns the non-overlapping chunks for the specified location `loc`.
     /// You must have called `split(loc)` at least once.
     /// If you have not, this function may panick.
-    /// 
+    ///
     /// Returns only the chunks that `loc` contains.
     pub fn get(&self, loc: Dest<A>) -> impl Iterator<Item = Dest<A>> + '_ {
         let loc_size = loc.size();
@@ -111,7 +121,8 @@ impl<A: Arch> SplitDests<A> {
 
     /// Returns all non-overlapping chunks for all locations.
     pub fn iter(&self) -> impl Iterator<Item = Dest<A>> + '_ {
-        self.outputs.iter()
+        self.outputs
+            .iter()
             .flat_map(|(loc, sizes)| sizes.iter().map(|&size| loc.into_dest_with_size(size)))
     }
 }

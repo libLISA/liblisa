@@ -38,8 +38,10 @@ struct TestState<'j, A: Arch> {
 }
 
 impl<'j, A: Arch> AsSystemState<A> for TestState<'j, A> {
-    type Output<'a> = <MaybeJitState<'j, A> as AsSystemState<A>>::Output<'a>
-        where Self: 'a;
+    type Output<'a>
+        = <MaybeJitState<'j, A> as AsSystemState<A>>::Output<'a>
+    where
+        Self: 'a;
 
     fn as_system_state(&self) -> Self::Output<'_> {
         self.state_in.as_system_state()
@@ -56,8 +58,10 @@ struct TestState2<'j, A: Arch> {
 }
 
 impl<'j, A: Arch> AsSystemState<A> for TestState2<'j, A> {
-    type Output<'a> = <MaybeJitState<'j, A> as AsSystemState<A>>::Output<'a>
-        where Self: 'a;
+    type Output<'a>
+        = <MaybeJitState<'j, A> as AsSystemState<A>>::Output<'a>
+    where
+        Self: 'a;
 
     fn as_system_state(&self) -> Self::Output<'_> {
         self.state_in.as_system_state()
@@ -75,8 +79,10 @@ struct TestState3<'borrow, 'j, A: Arch> {
 }
 
 impl<A: Arch> AsSystemState<A> for TestState3<'_, '_, A> {
-    type Output<'a> = &'a SystemState<A>
-        where Self: 'a;
+    type Output<'a>
+        = &'a SystemState<A>
+    where
+        Self: 'a;
 
     fn as_system_state(&self) -> Self::Output<'_> {
         self.state_in.as_system_state()

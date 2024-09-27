@@ -63,8 +63,10 @@ impl CaseMap {
 }
 
 impl SynthesizerOutput for CaseMap {
-    type Borrowed<'o> = &'o CaseMap
-        where Self: 'o;
+    type Borrowed<'o>
+        = &'o CaseMap
+    where
+        Self: 'o;
 
     fn borrow(&self) -> Self::Borrowed<'_> {
         self

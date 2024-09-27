@@ -162,7 +162,8 @@ pub fn encoding_addresses_equal<A: Arch, C: Clone + Debug>(
                 if !addresses_equal(mapping, options, &dataflows_a.addresses, &dataflows_b.addresses) {
                     trace!(
                         "Addresses not equal in {instr:?}: {:#?} vs {:#?}",
-                        dataflows_a.addresses, dataflows_b.addresses
+                        dataflows_a.addresses,
+                        dataflows_b.addresses
                     );
                     return false
                 }

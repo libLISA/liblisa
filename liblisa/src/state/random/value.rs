@@ -331,7 +331,11 @@ pub fn randomized_bytes_select_nth<R: Rng>(rng: &mut R, index: usize) -> u8 {
 pub fn randomized_bytes_into_buffer<R: Rng>(rng: &mut R, buf: &mut [u8]) {
     fn gen10<R: Rng>(buf: &mut [u8], swap_bytes: bool, rng: &mut R, mut f: impl FnMut(&mut R) -> ExtendedFloatingPoint) {
         fn swap(swap_bytes: bool, v: ExtendedFloatingPoint) -> [u8; 10] {
-            if swap_bytes { v.to_le_bytes() } else { v.to_be_bytes() }
+            if swap_bytes {
+                v.to_le_bytes()
+            } else {
+                v.to_be_bytes()
+            }
         }
 
         let size = (buf.len() + 9) / 10;
@@ -365,7 +369,11 @@ pub fn randomized_bytes_into_buffer<R: Rng>(rng: &mut R, buf: &mut [u8]) {
 
     fn gen8<R: Rng>(buf: &mut [u8], swap_bytes: bool, rng: &mut R, mut f: impl FnMut(&mut R) -> u64) {
         fn swap(swap_bytes: bool, v: u64) -> u64 {
-            if swap_bytes { v.swap_bytes() } else { v }
+            if swap_bytes {
+                v.swap_bytes()
+            } else {
+                v
+            }
         }
 
         if let (&mut [], buf, &mut []) = unsafe { buf.align_to_mut::<u64>() } {
@@ -405,7 +413,11 @@ pub fn randomized_bytes_into_buffer<R: Rng>(rng: &mut R, buf: &mut [u8]) {
 
     fn gen4<R: Rng>(buf: &mut [u8], swap_bytes: bool, rng: &mut R, mut f: impl FnMut(&mut R) -> u32) {
         fn swap(swap_bytes: bool, v: u32) -> u32 {
-            if swap_bytes { v.swap_bytes() } else { v }
+            if swap_bytes {
+                v.swap_bytes()
+            } else {
+                v
+            }
         }
 
         if let (&mut [], buf, &mut []) = unsafe { buf.align_to_mut::<u32>() } {

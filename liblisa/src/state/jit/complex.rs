@@ -86,8 +86,10 @@ impl<'a, A: Arch> AsRef<SystemState<A>> for ComplexStateRef<'a, A> {
 }
 
 impl<A: Arch> AsSystemState<A> for ComplexJitState<'_, A> {
-    type Output<'a> = ComplexStateRef<'a, A>
-        where Self: 'a;
+    type Output<'a>
+        = ComplexStateRef<'a, A>
+    where
+        Self: 'a;
 
     fn as_system_state(&self) -> Self::Output<'_> {
         if self.data.borrow().active != self.id {

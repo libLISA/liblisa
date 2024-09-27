@@ -1101,7 +1101,11 @@ impl<T> FlowValueLocationMap<T> {
             },
         };
 
-        if data.len() <= index { None } else { data[index].as_ref() }
+        if data.len() <= index {
+            None
+        } else {
+            data[index].as_ref()
+        }
     }
 }
 
@@ -1964,32 +1968,30 @@ impl<A: Arch, C: Computation> Encoding<A, C> {
                 .collect::<Vec<_>>();
             let mut done = false;
 
-            repeat_with(move || {
-                loop {
-                    if done {
-                        return None
-                    }
+            repeat_with(move || loop {
+                if done {
+                    return None
+                }
 
-                    let instantiation = self.instantiate(&current);
+                let instantiation = self.instantiate(&current);
 
-                    let mut carry = 1;
-                    for ((current, val), part) in current.iter_mut().zip(fixed_value).zip(self.parts.iter()) {
-                        if val.is_none() {
-                            *current += carry;
-                            if *current >= (1 << part.size) as u64 {
-                                *current = 0;
-                                carry = 1;
-                            } else {
-                                carry = 0;
-                            }
+                let mut carry = 1;
+                for ((current, val), part) in current.iter_mut().zip(fixed_value).zip(self.parts.iter()) {
+                    if val.is_none() {
+                        *current += carry;
+                        if *current >= (1 << part.size) as u64 {
+                            *current = 0;
+                            carry = 1;
+                        } else {
+                            carry = 0;
                         }
                     }
+                }
 
-                    done = carry != 0;
+                done = carry != 0;
 
-                    if let Ok(result) = instantiation {
-                        return Some(*result.instr())
-                    }
+                if let Ok(result) = instantiation {
+                    return Some(*result.instr())
                 }
             })
             .take_while(|x| x.is_some())

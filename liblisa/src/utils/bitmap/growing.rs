@@ -880,7 +880,11 @@ impl Index<usize> for GrowingBitmap {
 
     #[inline]
     fn index(&self, index: usize) -> &Self::Output {
-        if self.get(index) { &true } else { &false }
+        if self.get(index) {
+            &true
+        } else {
+            &false
+        }
     }
 }
 

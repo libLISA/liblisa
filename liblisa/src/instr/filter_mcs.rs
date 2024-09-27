@@ -885,11 +885,9 @@ mod tests {
         println!("Picked: {result:?}");
 
         for filter in filters.iter().flat_map(|f| f.0.iter()) {
-            assert!(
-                result
-                    .iter()
-                    .any(|f| f.0.iter().any(|f| f.matches(&filter.smallest_matching_instruction())))
-            );
+            assert!(result
+                .iter()
+                .any(|f| f.0.iter().any(|f| f.matches(&filter.smallest_matching_instruction()))));
             assert!(
                 result
                     .iter()
@@ -1180,11 +1178,9 @@ mod tests {
         ];
 
         let result = assert_covering_set_selected(&filters, &[]);
-        assert!(
-            result
-                .iter()
-                .any(|f| f.0.iter().any(|f| f.matches(&Instruction::new(&[0xe3, 0xed, 0xf7]))))
-        );
+        assert!(result
+            .iter()
+            .any(|f| f.0.iter().any(|f| f.matches(&Instruction::new(&[0xe3, 0xed, 0xf7])))));
     }
 
     #[test]
@@ -1485,11 +1481,9 @@ mod tests {
         ];
 
         let result = assert_covering_set_selected(&filters, &[]);
-        assert!(
-            result
-                .iter()
-                .any(|f| f.0.iter().any(|f| f.matches(&Instruction::new(&[0x15, 0x4b, 0x26, 0x21]))))
-        );
+        assert!(result
+            .iter()
+            .any(|f| f.0.iter().any(|f| f.matches(&Instruction::new(&[0x15, 0x4b, 0x26, 0x21])))));
     }
 
     #[test]

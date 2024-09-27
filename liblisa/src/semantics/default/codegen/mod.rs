@@ -273,14 +273,11 @@ impl<T> Term<T> {
         'repeat: loop {
             for (index, items) in ops.windows(2).enumerate() {
                 match [items[0], items[1]] {
-                    [
-                        TermOp::SwapBytes {
-                            num_bits: a,
-                        },
-                        TermOp::SwapBytes {
-                            num_bits: b,
-                        },
-                    ] if a == b => {
+                    [TermOp::SwapBytes {
+                        num_bits: a,
+                    }, TermOp::SwapBytes {
+                        num_bits: b,
+                    }] if a == b => {
                         ops.remove(index);
                         ops.remove(index);
                         continue 'repeat;

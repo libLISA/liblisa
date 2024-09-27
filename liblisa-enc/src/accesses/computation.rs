@@ -243,8 +243,10 @@ struct Test<'b, A: Arch> {
 }
 
 impl<'b, A: Arch> AsSystemState<A> for Test<'b, A> {
-    type Output<'a> = <GpRegJitState<'b, A> as AsSystemState<A>>::Output<'a>
-        where Self: 'a;
+    type Output<'a>
+        = <GpRegJitState<'b, A> as AsSystemState<A>>::Output<'a>
+    where
+        Self: 'a;
 
     fn as_system_state(&self) -> Self::Output<'_> {
         self.state_in.as_system_state()
@@ -448,7 +450,10 @@ impl<'a, A: Arch, M: MappableArea> InferComputation<'a, A, M> {
                     result => {
                         trace!(
                             "Result {:?} when changing {:?} in: {:X?} to {:X?}",
-                            result, gpreg, original_input, test_input
+                            result,
+                            gpreg,
+                            original_input,
+                            test_input
                         );
                     },
                 }

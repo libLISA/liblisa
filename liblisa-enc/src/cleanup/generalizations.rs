@@ -19,8 +19,10 @@ struct Test<'a, A: Arch> {
 }
 
 impl<A: Arch> AsSystemState<A> for Test<'_, A> {
-    type Output<'a> = &'a SystemState<A>
-        where Self: 'a;
+    type Output<'a>
+        = &'a SystemState<A>
+    where
+        Self: 'a;
 
     fn as_system_state(&self) -> Self::Output<'_> {
         &self.state

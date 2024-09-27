@@ -310,5 +310,9 @@ fn resolve_order(order: &HashSet<After>) -> Option<Vec<usize>> {
         order.retain(|v| v.0 != next && v.1 != next);
     }
 
-    if output_indices.is_empty() { Some(result) } else { None }
+    if output_indices.is_empty() {
+        Some(result)
+    } else {
+        None
+    }
 }

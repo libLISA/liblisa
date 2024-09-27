@@ -1,4 +1,4 @@
-version = "Two"
+style_edition = "2021"
 edition = "2021"
 max_width = 130
 newline_style = "Unix"

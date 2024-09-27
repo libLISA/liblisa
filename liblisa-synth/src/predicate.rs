@@ -135,7 +135,11 @@ impl Term {
                             num_bits: 1,
                         },
                     );
-                    if *negate { t.not() } else { t }
+                    if *negate {
+                        t.not()
+                    } else {
+                        t
+                    }
                 }
             },
         }
