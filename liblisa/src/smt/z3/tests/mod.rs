@@ -8,9 +8,10 @@
 mod computations;
 mod equivalence;
 
-
 use std::time::Duration;
-use crate::smt::{z3::Z3Solver, SatResult, SmtBV, SmtBVArray, SmtSolver};
+
+use crate::smt::z3::Z3Solver;
+use crate::smt::{SatResult, SmtBV, SmtBVArray, SmtSolver};
 
 #[test]
 pub fn array_store_select_equals() {
@@ -18,9 +19,8 @@ pub fn array_store_select_equals() {
         let arr = context.new_bv_array_const("mem", 64, 8);
         let arr = arr.store(context.bv_from_u64(15, 64), context.bv_from_u64(42, 8));
 
-        let eq = !arr.select(context.bv_from_u64(15, 64))
-            ._eq(context.bv_from_u64(42, 8));
+        let eq = !arr.select(context.bv_from_u64(15, 64))._eq(context.bv_from_u64(42, 8));
 
-        assert!(matches!(context.check_assertions(&[ eq ]), SatResult::Unsat));
+        assert!(matches!(context.check_assertions(&[eq]), SatResult::Unsat));
     });
 }

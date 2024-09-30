@@ -417,7 +417,7 @@ impl<'ctx, S: SmtSolver<'ctx> + 'ctx, C: SolverCache> SmtSolver<'ctx> for Cached
             }
         }
     }
-    
+
     fn new_bv_array_const(&mut self, name: impl AsRef<str>, index_size: u32, element_size: u32) -> Self::BvArray {
         CacheBVArray {
             inner: self.inner.new_bv_array_const(name, index_size, element_size),
@@ -1026,24 +1026,35 @@ impl<'ctx, S: SmtSolver<'ctx> + 'ctx, C: SolverCache> SmtBVArray<'ctx, CachedSol
         }
     }
 
-    fn select(self, index: <CachedSolver<'ctx, S, C> as SmtSolver<'ctx>>::BV) -> <CachedSolver<'ctx, S, C> as SmtSolver<'ctx>>::BV {
+    fn select(
+        self, index: <CachedSolver<'ctx, S, C> as SmtSolver<'ctx>>::BV,
+    ) -> <CachedSolver<'ctx, S, C> as SmtSolver<'ctx>>::BV {
         CacheBV {
             inner: self.inner.select(index.inner),
-            tree: Tree::Select { array: Box::new(self.tree), index: Box::new(index.tree) },
+            tree: Tree::Select {
+                array: Box::new(self.tree),
+                index: Box::new(index.tree),
+            },
         }
     }
 
-    fn store(self, index: <CachedSolver<'ctx, S, C> as SmtSolver<'ctx>>::BV, value: <CachedSolver<'ctx, S, C> as SmtSolver<'ctx>>::BV) -> Self {
+    fn store(
+        self, index: <CachedSolver<'ctx, S, C> as SmtSolver<'ctx>>::BV, value: <CachedSolver<'ctx, S, C> as SmtSolver<'ctx>>::BV,
+    ) -> Self {
         CacheBVArray {
             inner: self.inner.store(index.inner, value.inner),
-            tree: Tree::Store { array: Box::new(self.tree), index: Box::new(index.tree), value: Box::new(value.tree) }
+            tree: Tree::Store {
+                array: Box::new(self.tree),
+                index: Box::new(index.tree),
+                value: Box::new(value.tree),
+            },
         }
     }
-    
+
     fn element_size(&self) -> u32 {
         self.inner.element_size()
     }
-    
+
     fn index_size(&self) -> u32 {
         self.inner.index_size()
     }

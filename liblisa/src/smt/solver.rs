@@ -332,9 +332,7 @@ pub trait SmtBool<'a, S: SmtSolver<'a, Bool = Self>>:
 }
 
 /// Array expressions in the SMT solver.
-pub trait SmtBVArray<'a, S: SmtSolver<'a, BvArray = Self>>:
-    Clone + Debug + Display
-{
+pub trait SmtBVArray<'a, S: SmtSolver<'a, BvArray = Self>>: Clone + Debug + Display {
     /// Returns true if both expressions are structurally identical.
     fn is_identical(&self, other: &Self) -> bool;
 
@@ -428,10 +426,7 @@ pub enum Sort {
     Bool,
 
     /// An array
-    Array {
-        index: Box<Sort>,
-        element: Box<Sort>,
-    },
+    Array { index: Box<Sort>, element: Box<Sort> },
 }
 
 impl<'a, S: SmtSolver<'a>> Dynamic<'a, S> {

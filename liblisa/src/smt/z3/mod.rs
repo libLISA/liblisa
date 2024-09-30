@@ -13,9 +13,8 @@ use std::time::Duration;
 use z3::ast::{forall_const, Ast};
 use z3::{Config, Context, Params, Solver};
 
-use crate::smt::{Dynamic, SatResult, SmtBV, SmtBool, SmtInt, SmtModel, SmtModelRef, SmtSolver, SolverProvider};
-
 use super::SmtBVArray;
+use crate::smt::{Dynamic, SatResult, SmtBV, SmtBool, SmtInt, SmtModel, SmtModelRef, SmtSolver, SolverProvider};
 
 /// A [`SolverProvider`] that uses a thread-local Z3 instance.
 pub struct ThreadLocalZ3 {
@@ -165,7 +164,7 @@ impl<'ctx> SmtSolver<'ctx> for Z3Solver<'ctx> {
     fn new_bool_const(&mut self, name: impl AsRef<str>) -> Self::Bool {
         Bool(z3::ast::Bool::new_const(self.context, name.as_ref()))
     }
-    
+
     fn new_bv_array_const(&mut self, name: impl AsRef<str>, index_size: u32, element_size: u32) -> Self::BvArray {
         let domain = z3::Sort::bitvector(&self.context, index_size);
         let range = z3::Sort::bitvector(&self.context, element_size);
@@ -543,8 +542,6 @@ impl<'ctx> Not for Bool<'ctx> {
     }
 }
 
-
-
 /// A Z3 Array.
 #[derive(Clone, Debug)]
 pub struct BvArray<'ctx> {
@@ -603,11 +600,11 @@ impl<'ctx> SmtBVArray<'ctx, Z3Solver<'ctx>> for BvArray<'ctx> {
             index_size: self.index_size,
         }
     }
-    
+
     fn element_size(&self) -> u32 {
         self.element_size
     }
-    
+
     fn index_size(&self) -> u32 {
         self.index_size
     }

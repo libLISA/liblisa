@@ -49,19 +49,49 @@ pub(super) enum UnOp {
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub(super) enum Tree {
-    FixedBV { val: u64, size: u32 },
-    FixedInt { val: u64 },
-    FixedBool { val: bool },
-    BV { id: ConstId, size: u32 },
+    FixedBV {
+        val: u64,
+        size: u32,
+    },
+    FixedInt {
+        val: u64,
+    },
+    FixedBool {
+        val: bool,
+    },
+    BV {
+        id: ConstId,
+        size: u32,
+    },
     Bool(ConstId),
-    BinOp { op: BinOp, args: Box<[Tree; 2]> },
-    UnOp { op: UnOp, arg: Box<Tree> },
+    BinOp {
+        op: BinOp,
+        args: Box<[Tree; 2]>,
+    },
+    UnOp {
+        op: UnOp,
+        arg: Box<Tree>,
+    },
     Ite(Box<[Tree; 3]>),
     ConstInterp,
-    ForAll { bounds: Vec<Tree>, condition: Box<Tree> },
-    Select { array: Box<Tree>, index: Box<Tree> },
-    Store { array: Box<Tree>, index: Box<Tree>, value: Box<Tree> },
-    Array { id: ConstId, index_size: u32, element_size: u32 },
+    ForAll {
+        bounds: Vec<Tree>,
+        condition: Box<Tree>,
+    },
+    Select {
+        array: Box<Tree>,
+        index: Box<Tree>,
+    },
+    Store {
+        array: Box<Tree>,
+        index: Box<Tree>,
+        value: Box<Tree>,
+    },
+    Array {
+        id: ConstId,
+        index_size: u32,
+        element_size: u32,
+    },
 }
 
 impl Tree {
@@ -182,18 +212,29 @@ impl Tree {
                 out.extend(num.to_ne_bytes());
                 arg.to_bytes_internal(map, out);
             },
-            Tree::Select { array, index } => {
+            Tree::Select {
+                array,
+                index,
+            } => {
                 out.push(14);
                 array.to_bytes_internal(map, out);
                 index.to_bytes_internal(map, out);
             },
-            Tree::Store { array, index, value } => {
+            Tree::Store {
+                array,
+                index,
+                value,
+            } => {
                 out.push(15);
                 array.to_bytes_internal(map, out);
                 index.to_bytes_internal(map, out);
                 value.to_bytes_internal(map, out);
             },
-            Tree::Array { id, index_size, element_size } => {
+            Tree::Array {
+                id,
+                index_size,
+                element_size,
+            } => {
                 let n = map.len() as u8;
                 let id = *map.entry(*id).or_insert(n);
 
@@ -201,7 +242,7 @@ impl Tree {
                 out.push(id);
                 out.extend(index_size.to_ne_bytes());
                 out.extend(element_size.to_ne_bytes());
-            }
+            },
             Tree::BinOp {
                 op,
                 args,
