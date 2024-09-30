@@ -15,6 +15,8 @@ use z3::{Config, Context, Params, Solver};
 
 use crate::smt::{Dynamic, SatResult, SmtBV, SmtBool, SmtInt, SmtModel, SmtModelRef, SmtSolver, SolverProvider};
 
+use super::SmtBVArray;
+
 /// A [`SolverProvider`] that uses a thread-local Z3 instance.
 pub struct ThreadLocalZ3 {
     timeout: Duration,
@@ -94,6 +96,7 @@ impl<'ctx> SmtSolver<'ctx> for Z3Solver<'ctx> {
     type BV = BV<'ctx>;
     type Int = Int<'ctx>;
     type Bool = Bool<'ctx>;
+    type BvArray = BvArray<'ctx>;
     type ModelRef<'a>
         = ModelRef<'a, 'ctx>
     where
@@ -153,6 +156,7 @@ impl<'ctx> SmtSolver<'ctx> for Z3Solver<'ctx> {
                 Dynamic::BV(v) => &v.0 as &dyn Ast,
                 Dynamic::Int(v) => &v.0 as &dyn Ast,
                 Dynamic::Bool(v) => &v.0 as &dyn Ast,
+                Dynamic::BvArray(v) => &v.inner as &dyn Ast,
             })
             .collect::<Vec<_>>();
         Bool(forall_const(self.context, &bounds, &[], &condition.0))
@@ -160,6 +164,16 @@ impl<'ctx> SmtSolver<'ctx> for Z3Solver<'ctx> {
 
     fn new_bool_const(&mut self, name: impl AsRef<str>) -> Self::Bool {
         Bool(z3::ast::Bool::new_const(self.context, name.as_ref()))
+    }
+    
+    fn new_bv_array_const(&mut self, name: impl AsRef<str>, index_size: u32, element_size: u32) -> Self::BvArray {
+        let domain = z3::Sort::bitvector(&self.context, index_size);
+        let range = z3::Sort::bitvector(&self.context, element_size);
+        BvArray {
+            inner: z3::ast::Array::new_const(&self.context, name.as_ref(), &domain, &range),
+            element_size,
+            index_size,
+        }
     }
 }
 
@@ -526,5 +540,75 @@ impl<'ctx> Not for Bool<'ctx> {
 
     fn not(self) -> Self::Output {
         Bool(self.0.not())
+    }
+}
+
+
+
+/// A Z3 Array.
+#[derive(Clone, Debug)]
+pub struct BvArray<'ctx> {
+    inner: z3::ast::Array<'ctx>,
+    element_size: u32,
+    index_size: u32,
+}
+
+impl<'ctx> Display for BvArray<'ctx> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        Display::fmt(&self.inner, f)
+    }
+}
+
+impl<'ctx> BvArray<'ctx> {
+    /// Wraps a [`z3::ast::Array`].
+    pub fn from_z3(array: z3::ast::Array<'ctx>, element_size: u32, index_size: u32) -> Self {
+        Self {
+            inner: array,
+            element_size,
+            index_size,
+        }
+    }
+
+    /// Returns the wrapped [`z3::ast::Array`].
+    pub fn as_z3(&self) -> &z3::ast::Array {
+        &self.inner
+    }
+}
+
+impl<'ctx> SmtBVArray<'ctx, Z3Solver<'ctx>> for BvArray<'ctx> {
+    fn simplify(self) -> Self {
+        BvArray {
+            inner: self.inner.simplify(),
+            element_size: self.element_size,
+            index_size: self.index_size,
+        }
+    }
+
+    fn _eq(self, other: Self) -> Bool<'ctx> {
+        Bool(self.inner._eq(&other.inner))
+    }
+
+    fn is_identical(&self, other: &Self) -> bool {
+        self.to_string() == other.to_string()
+    }
+
+    fn select(self, index: BV<'ctx>) -> BV<'ctx> {
+        BV(self.inner.select(&index.0).as_bv().unwrap())
+    }
+
+    fn store(self, index: BV<'ctx>, value: BV<'ctx>) -> Self {
+        Self {
+            inner: self.inner.store(&index.0, &value.0),
+            element_size: self.element_size,
+            index_size: self.index_size,
+        }
+    }
+    
+    fn element_size(&self) -> u32 {
+        self.element_size
+    }
+    
+    fn index_size(&self) -> u32 {
+        self.index_size
     }
 }

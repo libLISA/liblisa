@@ -9,6 +9,7 @@ use sha1::{Digest, Sha1};
 
 use super::solver::SolverProvider;
 use super::tree::{BinOp, ConstId, Tree, UnOp};
+use super::SmtBVArray;
 use crate::smt::{Dynamic, SatResult, SmtBV, SmtBool, SmtInt, SmtModel, SmtModelRef, SmtSolver};
 
 /// A hash for a set of assertions executed on a solver.
@@ -184,6 +185,12 @@ pub struct CacheBool<'ctx, S: SmtSolver<'ctx>> {
     tree: Tree,
 }
 
+/// Cacheable SMT Array type.
+pub struct CacheBVArray<'ctx, S: SmtSolver<'ctx>> {
+    inner: S::BvArray,
+    tree: Tree,
+}
+
 /// Cacheable SMT model that is returned when the assertions are satisfiable.
 pub struct CacheModel<'ctx, S: SmtSolver<'ctx>>(S::Model);
 
@@ -235,6 +242,7 @@ impl<'ctx, S: SmtSolver<'ctx> + 'ctx, C: SolverCache> SmtSolver<'ctx> for Cached
     type BV = CacheBV<'ctx, S>;
     type Int = CacheInt<'ctx, S>;
     type Bool = CacheBool<'ctx, S>;
+    type BvArray = CacheBVArray<'ctx, S>;
 
     type ModelRef<'r>
         = CacheModelRef<'r, 'ctx, S>
@@ -335,6 +343,7 @@ impl<'ctx, S: SmtSolver<'ctx> + 'ctx, C: SolverCache> SmtSolver<'ctx> for Cached
                 Dynamic::BV(v) => v.inner.clone().into_dynamic(),
                 Dynamic::Int(v) => v.inner.clone().into_dynamic(),
                 Dynamic::Bool(v) => v.inner.clone().into_dynamic(),
+                Dynamic::BvArray(v) => v.inner.clone().into_dynamic(),
             })
             .collect::<Vec<_>>();
         CacheBool {
@@ -346,6 +355,7 @@ impl<'ctx, S: SmtSolver<'ctx> + 'ctx, C: SolverCache> SmtSolver<'ctx> for Cached
                         Dynamic::BV(v) => v.tree.clone(),
                         Dynamic::Int(v) => v.tree.clone(),
                         Dynamic::Bool(v) => v.tree.clone(),
+                        Dynamic::BvArray(v) => v.tree.clone(),
                     })
                     .collect::<Vec<_>>(),
                 condition: Box::new(condition.tree),
@@ -405,6 +415,17 @@ impl<'ctx, S: SmtSolver<'ctx> + 'ctx, C: SolverCache> SmtSolver<'ctx> for Cached
                     SatResult::Unsat
                 },
             }
+        }
+    }
+    
+    fn new_bv_array_const(&mut self, name: impl AsRef<str>, index_size: u32, element_size: u32) -> Self::BvArray {
+        CacheBVArray {
+            inner: self.inner.new_bv_array_const(name, index_size, element_size),
+            tree: Tree::Array {
+                id: self.next_const_id(),
+                index_size,
+                element_size,
+            },
         }
     }
 }
@@ -971,6 +992,72 @@ impl<'ctx, S: SmtSolver<'ctx>> Not for CacheBool<'ctx, S> {
                 arg: Box::new(self.tree),
             },
         }
+    }
+}
+
+impl<'ctx, S: SmtSolver<'ctx>> Clone for CacheBVArray<'ctx, S> {
+    fn clone(&self) -> Self {
+        Self {
+            inner: self.inner.clone(),
+            tree: self.tree.clone(),
+        }
+    }
+}
+
+impl<'ctx, S: SmtSolver<'ctx> + 'ctx, C: SolverCache> SmtBVArray<'ctx, CachedSolver<'ctx, S, C>> for CacheBVArray<'ctx, S> {
+    fn is_identical(&self, other: &Self) -> bool {
+        self.inner.is_identical(&other.inner)
+    }
+
+    fn _eq(self, other: Self) -> CacheBool<'ctx, S> {
+        CacheBool {
+            inner: self.inner._eq(other.inner),
+            tree: Tree::BinOp {
+                op: BinOp::Eq,
+                args: Box::new([self.tree, other.tree]),
+            },
+        }
+    }
+
+    fn simplify(self) -> Self {
+        Self {
+            inner: self.inner.simplify(),
+            tree: self.tree,
+        }
+    }
+
+    fn select(self, index: <CachedSolver<'ctx, S, C> as SmtSolver<'ctx>>::BV) -> <CachedSolver<'ctx, S, C> as SmtSolver<'ctx>>::BV {
+        CacheBV {
+            inner: self.inner.select(index.inner),
+            tree: Tree::Select { array: Box::new(self.tree), index: Box::new(index.tree) },
+        }
+    }
+
+    fn store(self, index: <CachedSolver<'ctx, S, C> as SmtSolver<'ctx>>::BV, value: <CachedSolver<'ctx, S, C> as SmtSolver<'ctx>>::BV) -> Self {
+        CacheBVArray {
+            inner: self.inner.store(index.inner, value.inner),
+            tree: Tree::Store { array: Box::new(self.tree), index: Box::new(index.tree), value: Box::new(value.tree) }
+        }
+    }
+    
+    fn element_size(&self) -> u32 {
+        self.inner.element_size()
+    }
+    
+    fn index_size(&self) -> u32 {
+        self.inner.index_size()
+    }
+}
+
+impl<'ctx, S: SmtSolver<'ctx>> Display for CacheBVArray<'ctx, S> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        Display::fmt(&self.inner, f)
+    }
+}
+
+impl<'ctx, S: SmtSolver<'ctx>> Debug for CacheBVArray<'ctx, S> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        Debug::fmt(&self.inner, f)
     }
 }
 

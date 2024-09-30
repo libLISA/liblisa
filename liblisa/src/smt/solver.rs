@@ -34,6 +34,9 @@ pub trait SmtSolver<'a>: Sized + Debug {
     /// Boolean expressions
     type Bool: SmtBool<'a, Self>;
 
+    /// Bitvector array expressions
+    type BvArray: SmtBVArray<'a, Self>;
+
     /// References to models for satisfied assertions.
     type ModelRef<'r>: SmtModelRef<'a, Self>
     where
@@ -56,6 +59,9 @@ pub trait SmtSolver<'a>: Sized + Debug {
 
     /// Declares a new boolean constant.
     fn new_bool_const(&mut self, name: impl AsRef<str>) -> Self::Bool;
+
+    /// Declare a new bitvector array constant.
+    fn new_bv_array_const(&mut self, name: impl AsRef<str>, index_size: u32, element_size: u32) -> Self::BvArray;
 
     /// Creates an int from an i64.
     fn int_from_i64(&mut self, val: i64) -> Self::Int;
@@ -325,6 +331,37 @@ pub trait SmtBool<'a, S: SmtSolver<'a, Bool = Self>>:
     }
 }
 
+/// Array expressions in the SMT solver.
+pub trait SmtBVArray<'a, S: SmtSolver<'a, BvArray = Self>>:
+    Clone + Debug + Display
+{
+    /// Returns true if both expressions are structurally identical.
+    fn is_identical(&self, other: &Self) -> bool;
+
+    /// Returns an SMT expression that performs an equality comparison between the two bools.
+    fn _eq(self, other: Self) -> S::Bool;
+
+    /// Simplifies, if possible, the SMT expression.
+    fn simplify(self) -> Self;
+
+    /// Returns the value at the provided `index` in the array.
+    fn select(self, index: S::BV) -> S::BV;
+
+    /// Returns an updated array that contains `value` at index `index`.
+    fn store(self, index: S::BV, value: S::BV) -> S::BvArray;
+
+    /// Returns the size of the bitvector elements in the array.
+    fn element_size(&self) -> u32;
+
+    /// Returns the size of the bitvector indices in the array.
+    fn index_size(&self) -> u32;
+
+    /// Converts the bool into a [`Dynamic`] expression.
+    fn into_dynamic(self) -> Dynamic<'a, S> {
+        Dynamic::BvArray(self)
+    }
+}
+
 /// An expression that is dynamically typed.
 pub enum Dynamic<'a, S: SmtSolver<'a>> {
     /// A bitvector.
@@ -335,6 +372,9 @@ pub enum Dynamic<'a, S: SmtSolver<'a>> {
 
     /// A boolean.
     Bool(S::Bool),
+
+    /// An array.
+    BvArray(S::BvArray),
 }
 
 impl<'a, S: SmtSolver<'a>> Debug for Dynamic<'a, S> {
@@ -343,6 +383,7 @@ impl<'a, S: SmtSolver<'a>> Debug for Dynamic<'a, S> {
             Self::BV(arg0) => f.debug_tuple("BV").field(arg0).finish(),
             Self::Int(arg0) => f.debug_tuple("Int").field(arg0).finish(),
             Self::Bool(arg0) => f.debug_tuple("Bool").field(arg0).finish(),
+            Self::BvArray(arg0) => f.debug_tuple("Array").field(arg0).finish(),
         }
     }
 }
@@ -353,6 +394,7 @@ impl<'a, S: SmtSolver<'a>> Clone for Dynamic<'a, S> {
             Self::BV(arg0) => Self::BV(arg0.clone()),
             Self::Int(arg0) => Self::Int(arg0.clone()),
             Self::Bool(arg0) => Self::Bool(arg0.clone()),
+            Self::BvArray(arg0) => Self::BvArray(arg0.clone()),
         }
     }
 }
@@ -368,6 +410,9 @@ pub enum SortKind {
 
     /// A boolean
     Bool,
+
+    /// An array
+    Array,
 }
 
 /// The sort of an expression.
@@ -381,6 +426,12 @@ pub enum Sort {
 
     /// A boolean
     Bool,
+
+    /// An array
+    Array {
+        index: Box<Sort>,
+        element: Box<Sort>,
+    },
 }
 
 impl<'a, S: SmtSolver<'a>> Dynamic<'a, S> {
@@ -425,6 +476,7 @@ impl<'a, S: SmtSolver<'a>> Dynamic<'a, S> {
             Dynamic::BV(_) => SortKind::BV,
             Dynamic::Int(_) => SortKind::Int,
             Dynamic::Bool(_) => SortKind::Bool,
+            Dynamic::BvArray(_) => SortKind::Array,
         }
     }
 
@@ -434,6 +486,10 @@ impl<'a, S: SmtSolver<'a>> Dynamic<'a, S> {
             Dynamic::BV(bv) => Sort::BV(bv.get_size()),
             Dynamic::Int(_) => Sort::Int,
             Dynamic::Bool(_) => Sort::Bool,
+            Dynamic::BvArray(a) => Sort::Array {
+                index: Box::new(Sort::BV(a.index_size())),
+                element: Box::new(Sort::BV(a.element_size())),
+            },
         }
     }
 
@@ -443,6 +499,7 @@ impl<'a, S: SmtSolver<'a>> Dynamic<'a, S> {
             Dynamic::BV(v) => Dynamic::BV(v.simplify()),
             Dynamic::Int(v) => Dynamic::Int(v.simplify()),
             Dynamic::Bool(v) => Dynamic::Bool(v.simplify()),
+            Dynamic::BvArray(v) => Dynamic::BvArray(v.simplify()),
         }
     }
 
@@ -454,6 +511,7 @@ impl<'a, S: SmtSolver<'a>> Dynamic<'a, S> {
             (Dynamic::BV(v), Dynamic::BV(w)) => v.is_identical(w),
             (Dynamic::Int(v), Dynamic::Int(w)) => v.is_identical(w),
             (Dynamic::Bool(v), Dynamic::Bool(w)) => v.is_identical(w),
+            (Dynamic::BvArray(v), Dynamic::BvArray(w)) => v.is_identical(w),
             (v, w) => panic!("Cannot compare {v:?} with {w:?}"),
         }
     }
@@ -466,6 +524,7 @@ impl<'a, S: SmtSolver<'a>> Dynamic<'a, S> {
             (Dynamic::BV(v), Dynamic::BV(w)) => v._eq(w),
             (Dynamic::Int(v), Dynamic::Int(w)) => v._eq(w),
             (Dynamic::Bool(v), Dynamic::Bool(w)) => v._eq(w),
+            (Dynamic::BvArray(v), Dynamic::BvArray(w)) => v._eq(w),
             (v, w) => panic!("Cannot compare {v:?} with {w:?}"),
         }
     }
