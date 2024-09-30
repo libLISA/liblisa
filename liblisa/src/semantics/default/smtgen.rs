@@ -194,6 +194,11 @@ impl<'ctx, A: Arch, S: SmtSolver<'ctx>> StorageLocations<'ctx, A, S> {
             .reduce(|a, b| b.concat(a))
             .unwrap()
     }
+
+    /// Iterates over all locations in this container
+    pub fn iter(&self) -> impl Iterator<Item = (&FilledLocation<A>, &S::BV)> {
+        self.map.iter()
+    }
 }
 
 #[derive(Clone, Debug)]
