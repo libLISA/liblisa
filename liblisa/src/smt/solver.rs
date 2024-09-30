@@ -465,6 +465,16 @@ impl<'a, S: SmtSolver<'a>> Dynamic<'a, S> {
         }
     }
 
+    /// If the expression is a bitvector array, returns the array.
+    /// Otherwise, returns `None`.
+    pub fn as_bv_array(self) -> Option<S::BvArray> {
+        if let Dynamic::BvArray(a) = self {
+            Some(a)
+        } else {
+            None
+        }
+    }
+
     /// Returns the sort kind of the expression.
     pub fn sort_kind(&self) -> SortKind {
         match self {
