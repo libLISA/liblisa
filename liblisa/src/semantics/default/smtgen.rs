@@ -209,6 +209,35 @@ pub struct Sizes {
     part_sizes: Vec<usize>,
 }
 
+impl Sizes {
+    /// Extracts the part sizes from the encoding.
+    pub fn from_encoding<C, A: Arch>(encoding: &Encoding<A, C>) -> Sizes {
+        Sizes {
+            part_sizes: encoding
+                .parts
+                .iter()
+                .map(|part| match &part.mapping {
+                    PartMapping::Imm {
+                        ..
+                    } => part.size,
+                    PartMapping::MemoryComputation {
+                        ..
+                    } => 0,
+                    PartMapping::Register {
+                        mapping, ..
+                    } => {
+                        let sizes = mapping.iter().flatten().map(|reg| reg.byte_size()).collect::<Vec<_>>();
+
+                        assert!(sizes.windows(2).all(|x| x[0] == x[1]));
+
+                        sizes[0] * 8
+                    },
+                })
+                .collect(),
+        }
+    }
+}
+
 impl<'a, 'ctx, C, S: SmtSolver<'ctx>> PreparedComputation<'a, 'ctx, C, S> {
     fn create_part_assertions<A: Arch>(
         context: &mut S, encoding: &'a Encoding<A, C>, location_to_bv: &mut StorageLocations<'ctx, A, S>, sizes: &Sizes,
@@ -358,29 +387,7 @@ impl<'a, 'ctx, C, S: SmtSolver<'ctx>> PreparedComputation<'a, 'ctx, C, S> {
     pub fn prepare<A: Arch>(
         encoding: &'a Encoding<A, C>, output_index: usize, storage_locations: &mut StorageLocations<'ctx, A, S>, context: &mut S,
     ) -> Option<PreparedComputation<'a, 'ctx, C, S>> {
-        let sizes = Sizes {
-            part_sizes: encoding
-                .parts
-                .iter()
-                .map(|part| match &part.mapping {
-                    PartMapping::Imm {
-                        ..
-                    } => part.size,
-                    PartMapping::MemoryComputation {
-                        ..
-                    } => 0,
-                    PartMapping::Register {
-                        mapping, ..
-                    } => {
-                        let sizes = mapping.iter().flatten().map(|reg| reg.byte_size()).collect::<Vec<_>>();
-
-                        assert!(sizes.windows(2).all(|x| x[0] == x[1]));
-
-                        sizes[0] * 8
-                    },
-                })
-                .collect(),
-        };
+        let sizes = Sizes::from_encoding(encoding);
         let flow = encoding.dataflows.output_dataflow(output_index);
         let computation = flow.computation.as_ref()?;
 
