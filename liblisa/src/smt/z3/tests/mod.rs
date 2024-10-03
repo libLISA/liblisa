@@ -35,7 +35,7 @@ pub fn zero_register_is_zero() {
     Z3Solver::with_thread_local(Duration::from_secs(900), |mut context| {
         let mut s = StorageLocations::<X64Arch, _>::new(&mut context);
         let key = FilledLocation::Concrete(Location::Reg(X64Reg::GpReg(GpReg::Riz)));
-        
+
         // StorageLocations::get
         let riz = s.get(&mut context, key, &Sizes::default());
         let eq = !riz._eq(context.bv_from_u64(0, 64));

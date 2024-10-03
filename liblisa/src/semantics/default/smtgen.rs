@@ -144,7 +144,7 @@ impl<'ctx, A: Arch, S: SmtSolver<'ctx>> StorageLocations<'ctx, A, S> {
         match key {
             FilledLocation::Concrete(Location::Reg(reg)) if reg.is_zero() => {
                 return context.bv_from_u64(0, reg.byte_size() as u32 * 8)
-            }
+            },
             _ => (),
         }
 
@@ -191,7 +191,7 @@ impl<'ctx, A: Arch, S: SmtSolver<'ctx>> StorageLocations<'ctx, A, S> {
         match key {
             FilledLocation::Concrete(Location::Reg(reg)) if reg.is_zero() => {
                 return context.bv_from_u64(0, reg.byte_size() as u32 * 8)
-            }
+            },
             _ => (),
         }
 
