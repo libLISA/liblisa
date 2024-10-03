@@ -137,9 +137,17 @@ impl<'ctx, A: Arch, S: SmtSolver<'ctx>> StorageLocations<'ctx, A, S> {
 
     /// Retrieves the mapping for the provided location `key`.
     /// If the location has no mapping, a new SMT bitvector constant is created.
+    /// If the register is a zero register, a bitvector with value 0 is returned.
     ///
     /// Masks the result by the mask of the location.
     pub fn get(&mut self, context: &mut S, key: FilledLocation<A>, sizes: &Sizes) -> S::BV {
+        match key {
+            FilledLocation::Concrete(Location::Reg(reg)) if reg.is_zero() => {
+                return context.bv_from_u64(0, reg.byte_size() as u32 * 8)
+            }
+            _ => (),
+        }
+
         let mask = match key {
             FilledLocation::Concrete(Location::Reg(reg)) => reg.mask(),
             _ => None,
@@ -158,6 +166,7 @@ impl<'ctx, A: Arch, S: SmtSolver<'ctx>> StorageLocations<'ctx, A, S> {
 
     /// Retrieves the mapping for the provided location `key`.
     /// If the location has no mapping, a new SMT bitvector constant is created.
+    /// If the register is a zero register, a bitvector with value 0 is returned.
     ///
     /// Crops the result to the provided `input_size`.
     pub fn get_sized(
@@ -175,12 +184,21 @@ impl<'ctx, A: Arch, S: SmtSolver<'ctx>> StorageLocations<'ctx, A, S> {
 
     /// Retrieves the mapping for the provided location `key`.
     /// If the location has no mapping, a new SMT bitvector constant is created.
+    /// If the register is a zero register, a bitvector with value 0 is returned.
     ///
     /// Does not mask or crop the result in any way.
-    pub fn get_raw(&mut self, context: &mut S, key: FilledLocation<A>, sizes: &Sizes) -> &S::BV {
+    pub fn get_raw(&mut self, context: &mut S, key: FilledLocation<A>, sizes: &Sizes) -> S::BV {
+        match key {
+            FilledLocation::Concrete(Location::Reg(reg)) if reg.is_zero() => {
+                return context.bv_from_u64(0, reg.byte_size() as u32 * 8)
+            }
+            _ => (),
+        }
+
         self.map
             .entry(key)
             .or_insert_with_key(|key: &FilledLocation<A>| context.new_bv_const(Self::name(key), key.bit_size(sizes)))
+            .clone()
     }
 
     /// Returns the bitvector constant representing the instruction bitstring.
