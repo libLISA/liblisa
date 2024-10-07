@@ -505,6 +505,22 @@ impl<'ctx> SmtBool<'ctx, Z3Solver<'ctx>> for Bool<'ctx> {
         Bool(self.0.ite(&lhs.0, &rhs.0))
     }
 
+    fn ite_bv_array(self, lhs: BvArray<'ctx>, rhs: BvArray<'ctx>) -> BvArray<'ctx> {
+        assert_eq!(
+            lhs.element_size, rhs.element_size,
+            "element size mismatch in ite_bv_array({lhs:?}, {rhs:?})"
+        );
+        assert_eq!(
+            lhs.index_size, rhs.index_size,
+            "index size mismatch in ite_bv_array({lhs:?}, {rhs:?})"
+        );
+        BvArray {
+            element_size: lhs.element_size,
+            index_size: lhs.index_size,
+            inner: self.0.ite(&lhs.inner, &rhs.inner),
+        }
+    }
+
     fn is_identical(&self, other: &Self) -> bool {
         self.to_string() == other.to_string()
     }

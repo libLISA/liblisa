@@ -913,6 +913,13 @@ impl<'ctx, S: SmtSolver<'ctx> + 'ctx, C: SolverCache> SmtBool<'ctx, CachedSolver
         }
     }
 
+    fn ite_bv_array(self, lhs: CacheBVArray<'ctx, S>, rhs: CacheBVArray<'ctx, S>) -> CacheBVArray<'ctx, S> {
+        CacheBVArray {
+            inner: self.inner.ite_bv_array(lhs.inner, rhs.inner),
+            tree: Tree::Ite(Box::new([self.tree, lhs.tree, rhs.tree])),
+        }
+    }
+
     fn as_bool(&self) -> Option<bool> {
         self.inner.as_bool()
     }

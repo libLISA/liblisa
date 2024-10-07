@@ -310,6 +310,11 @@ pub trait SmtBool<'a, S: SmtSolver<'a, Bool = Self>>:
     /// `lhs` is returned if the boolean value is true, `rhs` if it is false.
     fn ite_bool(self, lhs: S::Bool, rhs: S::Bool) -> S::Bool;
 
+    /// Creates an If-Then-Else expression that returns bitvector arrays.
+    ///
+    /// `lhs` is returned if the boolean value is true, `rhs` if it is false.
+    fn ite_bv_array(self, lhs: S::BvArray, rhs: S::BvArray) -> S::BvArray;
+
     /// Creates an If-Then-Else expression that returns [`Dynamic`]s.
     ///
     /// `lhs` is returned if the boolean value is true, `rhs` if it is false.
@@ -318,6 +323,7 @@ pub trait SmtBool<'a, S: SmtSolver<'a, Bool = Self>>:
             (Dynamic::BV(a), Dynamic::BV(b)) => self.ite_bv(a, b).into_dynamic(),
             (Dynamic::Int(a), Dynamic::Int(b)) => self.ite_int(a, b).into_dynamic(),
             (Dynamic::Bool(a), Dynamic::Bool(b)) => self.ite_bool(a, b).into_dynamic(),
+            (Dynamic::BvArray(a), Dynamic::BvArray(b)) => self.ite_bv_array(a, b).into_dynamic(),
             (a, b) => panic!("ITE branches must have same sort: {a:?} vs {b:?}"),
         }
     }
