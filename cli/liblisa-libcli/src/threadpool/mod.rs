@@ -233,7 +233,7 @@ impl<'borrow, 'scope, S: OracleSource> ThreadPool<'borrow, 'scope, (), S> {
     }
 }
 
-impl<'scope, F, P: OracleSource> Drop for ThreadPool<'_, 'scope, F, P> {
+impl<F, P: OracleSource> Drop for ThreadPool<'_, '_, F, P> {
     fn drop(&mut self) {
         for thread in self.threads.iter() {
             thread.thread_active.store(false, Ordering::Release);

@@ -74,7 +74,7 @@ struct InvocationCounterIter<'a, A: Arch, S, I: Iterator<Item = Observation<S, A
     _phantom: PhantomData<A>,
 }
 
-impl<'a, A: Arch, S, I: Iterator<Item = Observation<S, A>>> Iterator for InvocationCounterIter<'a, A, S, I> {
+impl<A: Arch, S, I: Iterator<Item = Observation<S, A>>> Iterator for InvocationCounterIter<'_, A, S, I> {
     type Item = Observation<S, A>;
 
     fn next(&mut self) -> Option<Self::Item> {

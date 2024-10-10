@@ -1,4 +1,5 @@
 //! Semantics are defined in terms of [`Computation`]s.
+//!
 //! In order to support different kinds of definitions, [`Computation`] is a trait.
 //! The default implementation used by `liblisa-synth` can be found [here](default).
 

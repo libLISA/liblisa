@@ -113,7 +113,7 @@ impl<'a> PartialEq<Value<'a>> for OwnedValue {
     }
 }
 
-impl<'a> PartialEq<OwnedValue> for Value<'a> {
+impl PartialEq<OwnedValue> for Value<'_> {
     fn eq(&self, other: &OwnedValue) -> bool {
         other.eq(self)
     }
@@ -129,7 +129,7 @@ impl AsValue for OwnedValue {
     }
 }
 
-impl<'a> AsValue for Value<'a> {
+impl AsValue for Value<'_> {
     #[inline]
     fn as_value(&self) -> Value<'_> {
         *self
@@ -265,7 +265,7 @@ pub enum Value<'a> {
     Bytes(&'a [u8]),
 }
 
-impl<'a> Debug for Value<'a> {
+impl Debug for Value<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for b in self.to_le_bytes().iter().rev() {
             write!(f, "{b:02X}")?;
@@ -275,7 +275,7 @@ impl<'a> Debug for Value<'a> {
     }
 }
 
-impl<'a> UpperHex for Value<'a> {
+impl UpperHex for Value<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for b in self.to_le_bytes().iter().rev() {
             write!(f, "{b:02X}")?;
@@ -285,7 +285,7 @@ impl<'a> UpperHex for Value<'a> {
     }
 }
 
-impl<'a> Value<'a> {
+impl Value<'_> {
     /// Converts the value to little-endian bytes.
     #[inline]
     pub fn to_le_bytes(&self) -> Vec<u8> {

@@ -121,7 +121,7 @@ pub fn extract_io<'i, 'o, A: Arch>(
     (inputs, output)
 }
 
-impl<'a, A: Arch> Output<'a, A> {
+impl<A: Arch> Output<'_, A> {
     pub fn evaluate_once_internal<const DEBUG: bool, V: AsValue, O: Oracle<A>>(
         &self, oracle: &mut O, inputs: &[V],
     ) -> Result<OwnedValue, EvaluationError> {

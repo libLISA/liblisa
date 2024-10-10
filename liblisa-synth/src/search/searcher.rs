@@ -123,7 +123,7 @@ pub struct Searcher<'a, C: CheckResult> {
     _phantom: PhantomData<fn() -> C>,
 }
 
-impl<'a, C: CheckResult> Clone for Searcher<'a, C> {
+impl<C: CheckResult> Clone for Searcher<'_, C> {
     fn clone(&self) -> Self {
         Self {
             iter: self.iter.clone(),

@@ -65,6 +65,7 @@ impl MemoryMapping {
 
 #[repr(C)]
 /// A structure that can contain up to 64 memory mappings.
+///
 /// ! **NOTE:** This is not an "absurd" amount of memory mappings for a single instruction.
 /// The `enter` instruction can access up to 63 individual memory locations.
 pub struct MemoryMappings([MemoryMapping; MemoryMappings::MAX_LEN], u8);
@@ -115,6 +116,7 @@ impl FromIterator<MemoryMapping> for MemoryMappings {
 }
 
 /// The command frame is structured such that important values will be nicely aligned.
+///
 /// The extended register data is at the front, which means it will be aligned on a page bound.
 /// The GpRegs are aligned on a 1024-byte boundary.
 /// Memory mappings and other configuration follow after that.

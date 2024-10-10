@@ -255,8 +255,8 @@ struct ObservationResultIter<'a, A: Arch, I: Iterator<Item = (SystemState<A>, Re
     scope: &'a S,
 }
 
-impl<'a, A: Arch, I: Iterator<Item = (SystemState<A>, Result<SystemState<A>, OracleError>)>, S: Scope> Iterator
-    for ObservationResultIter<'a, A, I, S>
+impl<A: Arch, I: Iterator<Item = (SystemState<A>, Result<SystemState<A>, OracleError>)>, S: Scope> Iterator
+    for ObservationResultIter<'_, A, I, S>
 {
     type Item = Validity;
 

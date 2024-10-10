@@ -354,7 +354,7 @@ struct AllRegsIter<'a, A: Arch, I> {
     current_index: usize,
 }
 
-impl<'a, A: Arch, I: Iterator<Item = A::Reg>> Iterator for AllRegsIter<'a, A, I> {
+impl<A: Arch, I: Iterator<Item = A::Reg>> Iterator for AllRegsIter<'_, A, I> {
     type Item = SystemStateByteViewReg<A::Reg>;
 
     fn next(&mut self) -> Option<Self::Item> {

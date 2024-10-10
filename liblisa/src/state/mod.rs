@@ -70,7 +70,7 @@ impl<A: Arch> AsSystemState<A> for SystemState<A> {
     }
 }
 
-impl<'s, A: Arch> AsSystemState<A> for &'s SystemState<A> {
+impl<A: Arch> AsSystemState<A> for &SystemState<A> {
     type Output<'a>
         = &'a SystemState<A>
     where

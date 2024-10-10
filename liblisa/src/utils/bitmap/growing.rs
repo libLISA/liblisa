@@ -796,7 +796,7 @@ impl BitAnd for GrowingBitmap {
     }
 }
 
-impl<'a> BitAnd for &'a GrowingBitmap {
+impl BitAnd for &GrowingBitmap {
     type Output = GrowingBitmap;
 
     fn bitand(self, rhs: Self) -> Self::Output {
@@ -837,7 +837,7 @@ impl BitOr for GrowingBitmap {
     }
 }
 
-impl<'a> BitOr for &'a GrowingBitmap {
+impl BitOr for &GrowingBitmap {
     type Output = GrowingBitmap;
 
     fn bitor(self, rhs: Self) -> Self::Output {
@@ -1116,13 +1116,13 @@ mod tests {
         b1.remove_front(2);
         assert_eq!(b1, [true, false].into_iter().collect::<GrowingBitmap>());
 
-        let mut b2 = (0..300u32).map(|n| n.count_ones() == 1).collect::<GrowingBitmap>();
+        let mut b2 = (0..300u32).map(|n| n.is_power_of_two()).collect::<GrowingBitmap>();
 
         println!("{:X?}", b2.data());
         b2.remove_front(50);
         println!("{:X?}", b2.data());
 
-        let expected = (50..300u32).map(|n| n.count_ones() == 1).collect::<GrowingBitmap>();
+        let expected = (50..300u32).map(|n| n.is_power_of_two()).collect::<GrowingBitmap>();
         println!("{:X?}", expected.data());
 
         assert_eq!(b2, expected);

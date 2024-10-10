@@ -235,7 +235,7 @@ impl SynthesizerOutput for bool {
     }
 }
 
-impl<'a> SynthesizerOutput for Value<'a> {
+impl SynthesizerOutput for Value<'_> {
     type Borrowed<'o>
         = Value<'o>
     where
@@ -287,7 +287,7 @@ pub trait Synthesizer<Output: SynthesizerOutput = bool>: SynthesizerBase {
 
 struct FnRequester<'a, O: SynthesizerOutput + 'a>(&'a mut dyn for<'r> FnMut(&'r [Value<'_>]) -> Option<O>);
 
-impl<'a, Output: SynthesizerOutput> Requester<Output> for FnRequester<'a, Output> {
+impl<Output: SynthesizerOutput> Requester<Output> for FnRequester<'_, Output> {
     fn request<V: AsValue>(&mut self, inputs: &[V]) -> Option<Output> {
         let inputs = inputs.as_values();
         (self.0)(&inputs)

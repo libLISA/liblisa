@@ -35,7 +35,7 @@ struct SimpleState<A: Arch> {
 /// A reference to a [`SimpleJitState`].
 pub struct SimpleStateRef<'a, A: Arch>(Ref<'a, SimpleState<A>>);
 
-impl<'a, A: Arch> AsRef<SystemState<A>> for SimpleStateRef<'a, A> {
+impl<A: Arch> AsRef<SystemState<A>> for SimpleStateRef<'_, A> {
     fn as_ref(&self) -> &SystemState<A> {
         self.0.state.as_ref()
     }

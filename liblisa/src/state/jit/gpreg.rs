@@ -42,7 +42,7 @@ struct GpRegState<'a, A: Arch> {
 /// A reference to a [`GpRegJitState`].
 pub struct GpRegStateRef<'a, A: Arch>(Ref<'a, GpRegState<'a, A>>);
 
-impl<'a, A: Arch> AsRef<SystemState<A>> for GpRegStateRef<'a, A> {
+impl<A: Arch> AsRef<SystemState<A>> for GpRegStateRef<'_, A> {
     fn as_ref(&self) -> &SystemState<A> {
         self.0.state.as_ref()
     }
@@ -106,7 +106,7 @@ impl<'a, A: Arch> GpRegJitState<'a, A> {
     }
 }
 
-impl<'a, 's, A: Arch, M: MappableArea> GpRegJitStateBuilder<'a, 's, A, M> {
+impl<'a, A: Arch, M: MappableArea> GpRegJitStateBuilder<'a, '_, A, M> {
     /// Creates a new state using the same base state.
     pub fn create(&mut self, reg: A::GpReg, mut create: impl FnMut(&mut SystemState<A>) -> bool) -> Option<GpRegJitState<'a, A>> {
         let need_address_update = self.state_gen.needs_adapt_from_gpregs(&[reg]);

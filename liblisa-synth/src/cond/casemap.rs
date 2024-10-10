@@ -75,7 +75,7 @@ impl SynthesizerOutput for CaseMap {
 
 impl Debug for CaseMap {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        if self.0.count_ones() == 1 {
+        if self.0.is_power_of_two() {
             write!(f, "{}", self.first_index())
         } else {
             write!(f, "<")?;

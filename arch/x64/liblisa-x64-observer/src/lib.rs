@@ -482,7 +482,7 @@ struct MemoryAccessDebugScan<'r> {
     region: RangeInclusive<u64>,
 }
 
-impl<'r> ObservationRequest for MemoryAccessDebugScan<'r> {
+impl ObservationRequest for MemoryAccessDebugScan<'_> {
     type Result = Result<[Option<u64>; 4], OracleError>;
 
     fn setup(

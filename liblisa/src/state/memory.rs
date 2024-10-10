@@ -75,7 +75,7 @@ pub struct MemoryStateItemMut<'m> {
     index: usize,
 }
 
-impl<'m> MemoryStateItemMut<'m> {
+impl MemoryStateItemMut<'_> {
     /// Replaces the current data in the memory mapping with `new_data`.
     #[inline]
     pub fn set_data(&mut self, new_data: &[u8]) {

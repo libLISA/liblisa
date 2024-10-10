@@ -84,7 +84,7 @@ impl<'a> PreprocessedTemplate<'a> {
     }
 }
 
-impl<'a> AnyTemplate for PreprocessedTemplate<'a> {
+impl AnyTemplate for PreprocessedTemplate<'_> {
     fn num_unfilled_holes(&self) -> usize {
         self.num_holes
     }

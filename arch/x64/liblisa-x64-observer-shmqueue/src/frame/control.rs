@@ -84,7 +84,7 @@ pub struct ControlFrame<'a, K> {
     _kind: K,
 }
 
-impl<'a, K> Debug for ControlFrame<'a, K> {
+impl<K> Debug for ControlFrame<'_, K> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         f.debug_struct("ControlFrame")
             .field("next", &self.data.next.load(Ordering::Acquire))
@@ -132,7 +132,7 @@ impl<'a, K: Default> ControlFrame<'a, K> {
     }
 }
 
-impl<'a> ControlFrame<'a, Host> {
+impl ControlFrame<'_, Host> {
     /// Returns the command frame index that's currently being processed or waited on by the observer.
     /// If the command queue is empty, the observer is waiting for us to fill the command frame pointed to by `current`.
     /// If the command queue is not empty, the observer is currently processing the command frame pointed to by `current`.
@@ -149,7 +149,7 @@ impl<'a> ControlFrame<'a, Host> {
     }
 }
 
-impl<'a> ControlFrame<'a, Client> {
+impl ControlFrame<'_, Client> {
     #[inline]
     pub fn next(&self) -> u32 {
         self.data.next.load(Ordering::Acquire) % self.data.num_command_frames

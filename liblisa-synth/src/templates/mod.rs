@@ -83,7 +83,7 @@ impl<'a> Template<'a> {
     }
 }
 
-impl<'a> AnyTemplate for Template<'a> {
+impl AnyTemplate for Template<'_> {
     fn num_unfilled_holes(&self) -> usize {
         self.num_holes
     }

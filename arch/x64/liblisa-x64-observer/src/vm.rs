@@ -75,6 +75,7 @@ pub struct Vm {
 }
 
 /// The VM Observer maps a large region of shared memory.
+///
 /// This region is referred to in 4KiB frames.
 /// The first frame is the control frame.
 /// After the control frame follow some number of command frames.
@@ -108,7 +109,7 @@ pub struct PageAllocator<'a> {
     mapper: &'a mut PageMapper,
 }
 
-impl<'a> PageAllocator<'a> {
+impl PageAllocator<'_> {
     pub fn fill_and_allocate_page(&mut self, address: u64, data: &[u8], permissions: Permissions) -> MemoryMapping {
         let frame_index = *self.next_page_frame + self.mapper.min_index() as u32;
         *self.next_page_frame = (*self.next_page_frame + 1) % self.mapper.num_page_frames() as u32;
@@ -207,7 +208,7 @@ pub struct MemoryMapper<'a> {
     mappings: &'a mut MemoryMappings,
 }
 
-impl<'a> MemoryMapper<'a> {
+impl MemoryMapper<'_> {
     #[inline(always)]
     pub fn set<I: Iterator<Item = MemoryMapping>>(self, mappings: I) {
         self.mappings.recycle(mappings);
@@ -220,7 +221,7 @@ impl<'a> MemoryMapper<'a> {
 /// This drop implementation ensures memory mappings are always reset;
 /// You can set new memory mappings by calling [`MemoryMapper::set`].
 /// If you don't call that method, the memory mappings will be reset here.
-impl<'a> Drop for MemoryMapper<'a> {
+impl Drop for MemoryMapper<'_> {
     #[inline]
     fn drop(&mut self) {
         self.mappings.recycle([].into_iter());
@@ -229,7 +230,7 @@ impl<'a> Drop for MemoryMapper<'a> {
 
 pub struct DebugRegsWriter<'a>(&'a mut DebugRegs);
 
-impl<'a> DebugRegsWriter<'a> {
+impl DebugRegsWriter<'_> {
     #[inline(always)]
     pub fn set(self, regs: DebugRegs) {
         *self.0 = regs;
@@ -239,7 +240,7 @@ impl<'a> DebugRegsWriter<'a> {
     }
 }
 
-impl<'a> Drop for DebugRegsWriter<'a> {
+impl Drop for DebugRegsWriter<'_> {
     #[inline]
     fn drop(&mut self) {
         self.0.dr7 = 0;
@@ -256,7 +257,7 @@ const XSTATE_X87: u64 = 1 << 0;
 const XSTATE_SSE: u64 = 1 << 1;
 const XSTATE_XMM: u64 = 1 << 2;
 
-impl<'a> ExtendedRegsWriter<'a> {
+impl ExtendedRegsWriter<'_> {
     #[inline]
     pub fn set_legacy(&mut self, regs: XsaveLegacyArea) {
         *self.regs.legacy_area_mut() = regs;
@@ -279,7 +280,7 @@ impl<'a> ExtendedRegsWriter<'a> {
     }
 }
 
-impl<'a> Drop for ExtendedRegsWriter<'a> {
+impl Drop for ExtendedRegsWriter<'_> {
     #[inline]
     fn drop(&mut self) {
         let header = self.regs.header_mut();
@@ -293,7 +294,7 @@ pub struct ResultMemoryAccess<'a> {
     active: &'a [MemoryMapping],
 }
 
-impl<'a> Index<usize> for ResultMemoryAccess<'a> {
+impl Index<usize> for ResultMemoryAccess<'_> {
     type Output = [u8];
 
     #[inline]

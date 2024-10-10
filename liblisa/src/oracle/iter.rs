@@ -20,9 +20,7 @@ impl<'a, A: Arch, O: Oracle<A>, S: AsSystemState<A>, I: Iterator<Item = S>> Fall
     }
 }
 
-impl<'a, A: Arch, O: Oracle<A>, S: AsSystemState<A>, I: Iterator<Item = S>> Iterator
-    for FallbackBatchObserveIter<'a, A, O, S, I>
-{
+impl<A: Arch, O: Oracle<A>, S: AsSystemState<A>, I: Iterator<Item = S>> Iterator for FallbackBatchObserveIter<'_, A, O, S, I> {
     type Item = Observation<S, A>;
 
     fn next(&mut self) -> Option<Self::Item> {

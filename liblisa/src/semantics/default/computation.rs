@@ -24,19 +24,19 @@ pub struct ExprComputation<'a> {
     output_type: OutputType,
 }
 
-impl<'a> Default for ExprComputation<'a> {
+impl Default for ExprComputation<'_> {
     fn default() -> Self {
         Self::const_default()
     }
 }
 
-impl<'a> Default for &ExprComputation<'a> {
+impl Default for &ExprComputation<'_> {
     fn default() -> Self {
         ExprComputation::const_default_ref()
     }
 }
 
-impl<'a> ExprComputation<'a> {
+impl ExprComputation<'_> {
     /// Returns a default identity function expression
     pub const fn const_default() -> Self {
         Self {

@@ -271,7 +271,7 @@ pub struct InferredComputation<A: Arch> {
     pub bases: Vec<(SystemState<A>, Addr)>,
 }
 
-impl<'a, A: Arch, M: MappableArea> InferComputation<'a, A, M> {
+impl<A: Arch, M: MappableArea> InferComputation<'_, A, M> {
     fn find_register_candidates<O: Oracle<A>, R: Rng>(
         &self, o: &mut O, rng: &mut R, assume_last_memory_access: bool,
     ) -> Result<RegisterCandidates<A>, RandomizationError> {

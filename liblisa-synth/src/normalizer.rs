@@ -382,7 +382,7 @@ impl Node {
     }
 
     fn reduce_internal(&mut self, bits_needed: u128, argument_use: &ArgumentUse) {
-        if bits_needed.count_ones() == 1
+        if bits_needed.is_power_of_two()
             && let Some((arg_index, arg_bits)) = argument_use.single_arg()
             && arg_bits.count_ones() < 8
             && self.num_nodes() > 7

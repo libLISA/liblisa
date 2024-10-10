@@ -138,7 +138,7 @@ impl ByteFilter {
             return false;
         }
 
-        self.mask == other.mask && ((self.value ^ other.value) & other.mask).count_ones() == 1
+        self.mask == other.mask && ((self.value ^ other.value) & other.mask).is_power_of_two()
     }
 
     /// Merges the other filter into self.
@@ -166,7 +166,7 @@ impl ByteFilter {
 
         let combined_mask = self.mask & other.mask;
 
-        (!self.mask & other.mask).count_ones() == 1 && self.value & combined_mask == other.value & combined_mask
+        (!self.mask & other.mask).is_power_of_two() && self.value & combined_mask == other.value & combined_mask
     }
 
     /// Computes `self - other`.
@@ -323,7 +323,7 @@ impl<'de> Deserialize<'de> for InstructionFilter {
     {
         struct InstructionFilterVisitor;
 
-        impl<'de> Visitor<'de> for InstructionFilterVisitor {
+        impl Visitor<'_> for InstructionFilterVisitor {
             type Value = InstructionFilter;
 
             fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {

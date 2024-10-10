@@ -98,7 +98,7 @@ impl<C: SolverCache> SolverCache for SharedCache<C> {
     }
 }
 
-impl<'r, C: SolverCache> SolverCache for &'r SharedCache<C> {
+impl<C: SolverCache> SolverCache for &SharedCache<C> {
     fn get(&mut self, hash: &AssertionHash) -> Option<CacheResult> {
         self.inner.lock().unwrap().get(hash)
     }
@@ -212,7 +212,7 @@ impl<'ctx, S: SmtSolver<'ctx>> Debug for CacheModel<'ctx, S> {
 /// A reference to a [`CacheModel`].
 pub struct CacheModelRef<'r, 'ctx, S: SmtSolver<'ctx> + 'r>(Option<S::ModelRef<'r>>);
 
-impl<'r, 'ctx, S: SmtSolver<'ctx>> Debug for CacheModelRef<'r, 'ctx, S> {
+impl<'ctx, S: SmtSolver<'ctx>> Debug for CacheModelRef<'_, 'ctx, S> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if let Some(r) = self.0.as_ref() {
             Debug::fmt(r, f)

@@ -30,6 +30,7 @@ enum ComplexMapping {
 }
 
 /// A CPU state that is constructed just-in-time by replacing specific state bytes with the correct values.
+///
 /// Each state change can be applied and reverted, reducing memory usage when specific instances of the state change different state bytes each time.
 ///
 /// If the same state bytes are changed for every state, use a [`super::SimpleJitState`] instead.
@@ -79,7 +80,7 @@ struct ComplexState<'a, A: Arch> {
 /// A reference to [`ComplexJitState`].
 pub struct ComplexStateRef<'a, A: Arch>(Ref<'a, ComplexState<'a, A>>);
 
-impl<'a, A: Arch> AsRef<SystemState<A>> for ComplexStateRef<'a, A> {
+impl<A: Arch> AsRef<SystemState<A>> for ComplexStateRef<'_, A> {
     fn as_ref(&self) -> &SystemState<A> {
         self.0.state.as_ref()
     }
@@ -146,7 +147,7 @@ impl<'a, A: Arch> ComplexJitState<'a, A> {
     }
 }
 
-impl<'a, 's, A: Arch, M: MappableArea> ComplexJitStateBuilder<'a, 's, A, M> {
+impl<'a, A: Arch, M: MappableArea> ComplexJitStateBuilder<'a, '_, A, M> {
     /// Returns a [`ComplexStateRef`] that will give the original base state passed to [`ComplexJitState::build`].
     pub fn as_original_system_state(&self) -> ComplexStateRef<A> {
         {

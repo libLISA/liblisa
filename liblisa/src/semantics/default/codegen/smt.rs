@@ -56,7 +56,7 @@ impl<'a, 'ctx, S: SmtSolver<'ctx>> Z3CodeGen<'a, 'ctx, S> {
     }
 }
 
-impl<'a, 'ctx, S: SmtSolver<'ctx>> CodeGenerator for Z3CodeGen<'a, 'ctx, S> {
+impl<'ctx, S: SmtSolver<'ctx>> CodeGenerator for Z3CodeGen<'_, 'ctx, S> {
     type T = Z3Expr<'ctx, S>;
 
     fn leaf_const(&mut self, value: i128) -> Self::T {

@@ -96,7 +96,7 @@ pub struct StateGen<'a, A: Arch, M: MappableArea> {
     num_failures: AtomicU64,
 }
 
-impl<'a, A: Arch, M: MappableArea> Clone for StateGen<'a, A, M> {
+impl<A: Arch, M: MappableArea> Clone for StateGen<'_, A, M> {
     fn clone(&self) -> Self {
         Self {
             accesses: self.accesses,

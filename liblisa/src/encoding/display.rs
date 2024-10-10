@@ -198,7 +198,7 @@ struct DisplayPartMapping<'a, A: Arch> {
     size: usize,
 }
 
-impl<'a, A: Arch> Display for DisplayPartMapping<'a, A> {
+impl<A: Arch> Display for DisplayPartMapping<'_, A> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self.mapping {
             PartMapping::Register {

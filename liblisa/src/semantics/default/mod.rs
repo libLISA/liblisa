@@ -149,20 +149,20 @@ impl PartialEq for Expr<'_> {
     }
 }
 
-impl<'a> Default for Expr<'a> {
+impl Default for Expr<'_> {
     fn default() -> Self {
         Expr::new(&[Op::Hole(0)])
     }
 }
 
-impl<'a> Default for &'static Expr<'a> {
+impl Default for &'static Expr<'_> {
     fn default() -> Self {
         const E: Expr = Expr::new(&[Op::Hole(0)]);
         &E
     }
 }
 
-impl<'a> Expr<'a> {
+impl Expr<'_> {
     /// A default expression, which is the identity function.
     pub const fn const_default() -> Self {
         Expr::new(&[Op::Hole(0)])
@@ -414,7 +414,7 @@ struct DisplayExpr<'a, S: AsRef<str>, C: Index<usize, Output = S>> {
     hole_names: C,
 }
 
-impl<'a, S: AsRef<str>, C: Index<usize, Output = S>> Debug for DisplayExpr<'a, S, C> {
+impl<S: AsRef<str>, C: Index<usize, Output = S>> Debug for DisplayExpr<'_, S, C> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self)
     }

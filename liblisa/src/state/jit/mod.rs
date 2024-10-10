@@ -28,13 +28,13 @@ pub enum MaybeJitState<'j, A: Arch> {
     Normal(SystemState<A>),
 }
 
-impl<'j, A: Arch> std::fmt::Debug for MaybeJitState<'j, A> {
+impl<A: Arch> std::fmt::Debug for MaybeJitState<'_, A> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Debug::fmt(self.as_system_state().as_ref(), f)
     }
 }
 
-impl<'j, A: Arch> From<SystemState<A>> for MaybeJitState<'j, A> {
+impl<A: Arch> From<SystemState<A>> for MaybeJitState<'_, A> {
     fn from(value: SystemState<A>) -> Self {
         Self::Normal(value)
     }
@@ -52,7 +52,7 @@ impl<'j, A: Arch> From<ComplexJitState<'j, A>> for MaybeJitState<'j, A> {
     }
 }
 
-impl<'j, A: Arch> AsSystemState<A> for MaybeJitState<'j, A> {
+impl<A: Arch> AsSystemState<A> for MaybeJitState<'_, A> {
     type Output<'a>
         = MaybeRef<'a, A>
     where
@@ -75,7 +75,7 @@ impl<'j, A: Arch> AsSystemState<A> for MaybeJitState<'j, A> {
     }
 }
 
-impl<'j, A: Arch> AsSystemState<A> for &'_ MaybeJitState<'j, A> {
+impl<A: Arch> AsSystemState<A> for &'_ MaybeJitState<'_, A> {
     type Output<'a>
         = MaybeRef<'a, A>
     where

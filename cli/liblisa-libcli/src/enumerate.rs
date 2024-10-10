@@ -160,7 +160,7 @@ struct Format<'a> {
     current_pad: usize,
 }
 
-impl<'a> Format<'a> {
+impl Format<'_> {
     fn print_workers(&self, workers: &Vec<EnumWorkItem>, indent: usize, indent_pad: usize, match_stalled_by: Option<usize>) {
         for (index, worker) in workers.iter().enumerate() {
             if worker.done && self.hide_done {

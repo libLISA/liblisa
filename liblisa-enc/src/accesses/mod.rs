@@ -139,7 +139,7 @@ impl<A: Arch> OwnWhenNeeded<SystemState<A>> for SystemState<A> {
     }
 }
 
-impl<'a, A: Arch> OwnWhenNeeded<SystemState<A>> for &'a SystemState<A> {
+impl<A: Arch> OwnWhenNeeded<SystemState<A>> for &SystemState<A> {
     fn into_owned(self) -> SystemState<A> {
         self.clone()
     }

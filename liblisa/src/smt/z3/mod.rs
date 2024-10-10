@@ -166,10 +166,10 @@ impl<'ctx> SmtSolver<'ctx> for Z3Solver<'ctx> {
     }
 
     fn new_bv_array_const(&mut self, name: impl AsRef<str>, index_size: u32, element_size: u32) -> Self::BvArray {
-        let domain = z3::Sort::bitvector(&self.context, index_size);
-        let range = z3::Sort::bitvector(&self.context, element_size);
+        let domain = z3::Sort::bitvector(self.context, index_size);
+        let range = z3::Sort::bitvector(self.context, element_size);
         BvArray {
-            inner: z3::ast::Array::new_const(&self.context, name.as_ref(), &domain, &range),
+            inner: z3::ast::Array::new_const(self.context, name.as_ref(), &domain, &range),
             element_size,
             index_size,
         }
@@ -210,7 +210,7 @@ impl Debug for ModelRef<'_, '_> {
 #[derive(Clone, Debug)]
 pub struct BV<'ctx>(z3::ast::BV<'ctx>);
 
-impl<'ctx> Display for BV<'ctx> {
+impl Display for BV<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         Display::fmt(&self.0, f)
     }
@@ -354,7 +354,7 @@ impl<'ctx> Mul for BV<'ctx> {
     }
 }
 
-impl<'ctx> BitOr for BV<'ctx> {
+impl BitOr for BV<'_> {
     type Output = Self;
 
     fn bitor(self, rhs: Self) -> Self::Output {
@@ -362,7 +362,7 @@ impl<'ctx> BitOr for BV<'ctx> {
     }
 }
 
-impl<'ctx> BitAnd for BV<'ctx> {
+impl BitAnd for BV<'_> {
     type Output = Self;
 
     fn bitand(self, rhs: Self) -> Self::Output {
@@ -370,7 +370,7 @@ impl<'ctx> BitAnd for BV<'ctx> {
     }
 }
 
-impl<'ctx> BitXor for BV<'ctx> {
+impl BitXor for BV<'_> {
     type Output = Self;
 
     fn bitxor(self, rhs: Self) -> Self::Output {
@@ -378,7 +378,7 @@ impl<'ctx> BitXor for BV<'ctx> {
     }
 }
 
-impl<'ctx> Not for BV<'ctx> {
+impl Not for BV<'_> {
     type Output = Self;
 
     fn not(self) -> Self::Output {
@@ -386,7 +386,7 @@ impl<'ctx> Not for BV<'ctx> {
     }
 }
 
-impl<'ctx> Neg for BV<'ctx> {
+impl Neg for BV<'_> {
     type Output = Self;
 
     fn neg(self) -> Self::Output {
@@ -398,7 +398,7 @@ impl<'ctx> Neg for BV<'ctx> {
 #[derive(Clone, Debug)]
 pub struct Int<'ctx>(z3::ast::Int<'ctx>);
 
-impl<'ctx> Display for Int<'ctx> {
+impl Display for Int<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         Display::fmt(&self.0, f)
     }
@@ -462,7 +462,7 @@ impl<'ctx> Mul for Int<'ctx> {
 #[derive(Clone, Debug)]
 pub struct Bool<'ctx>(z3::ast::Bool<'ctx>);
 
-impl<'ctx> Display for Bool<'ctx> {
+impl Display for Bool<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         Display::fmt(&self.0, f)
     }
@@ -526,7 +526,7 @@ impl<'ctx> SmtBool<'ctx, Z3Solver<'ctx>> for Bool<'ctx> {
     }
 }
 
-impl<'ctx> BitOr for Bool<'ctx> {
+impl BitOr for Bool<'_> {
     type Output = Self;
 
     fn bitor(self, rhs: Self) -> Self::Output {
@@ -534,7 +534,7 @@ impl<'ctx> BitOr for Bool<'ctx> {
     }
 }
 
-impl<'ctx> BitAnd for Bool<'ctx> {
+impl BitAnd for Bool<'_> {
     type Output = Self;
 
     fn bitand(self, rhs: Self) -> Self::Output {
@@ -542,7 +542,7 @@ impl<'ctx> BitAnd for Bool<'ctx> {
     }
 }
 
-impl<'ctx> BitXor for Bool<'ctx> {
+impl BitXor for Bool<'_> {
     type Output = Self;
 
     fn bitxor(self, rhs: Self) -> Self::Output {
@@ -550,7 +550,7 @@ impl<'ctx> BitXor for Bool<'ctx> {
     }
 }
 
-impl<'ctx> Not for Bool<'ctx> {
+impl Not for Bool<'_> {
     type Output = Self;
 
     fn not(self) -> Self::Output {
@@ -566,7 +566,7 @@ pub struct BvArray<'ctx> {
     index_size: u32,
 }
 
-impl<'ctx> Display for BvArray<'ctx> {
+impl Display for BvArray<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         Display::fmt(&self.inner, f)
     }

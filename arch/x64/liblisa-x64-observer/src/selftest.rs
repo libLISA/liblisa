@@ -21,7 +21,7 @@ pub struct TestCase<'instr> {
     xmm: Option<([u128; 16], [u128; 16])>,
 }
 
-impl<'instr> Default for TestCase<'instr> {
+impl Default for TestCase<'_> {
     fn default() -> Self {
         Self {
             name: "<MISSING NAME>",
@@ -89,7 +89,7 @@ macro_rules! diff_fields {
     };
 }
 
-impl<'r> Debug for DiffGpRegs<'r> {
+impl Debug for DiffGpRegs<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut w = f.debug_struct("GpRegs");
 
@@ -108,7 +108,7 @@ impl<'r> Debug for DiffGpRegs<'r> {
     }
 }
 
-impl<'r> Debug for DiffDebugRegs<'r> {
+impl Debug for DiffDebugRegs<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut w = f.debug_struct("DebugRegs");
 
@@ -121,7 +121,7 @@ impl<'r> Debug for DiffDebugRegs<'r> {
     }
 }
 
-impl<'instr> ObservationRequest for TestCase<'instr> {
+impl ObservationRequest for TestCase<'_> {
     type Result = ();
 
     fn setup(

@@ -28,9 +28,8 @@ struct PathScanner<'a>(&'a [(usize, Option<Op>)]);
 
 impl<'a> PathScanner<'a> {
     fn next(&mut self) -> Option<&'a (usize, Option<Op>)> {
-        self.0.first().map(|result| {
+        self.0.first().inspect(|_| {
             self.0 = &self.0[1..];
-            result
         })
     }
 

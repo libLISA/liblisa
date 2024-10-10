@@ -134,7 +134,7 @@ impl<A: Arch> TestCaseGen<A> {
     }
 }
 
-impl<'a, A: Arch, M: MappableArea> TestCaseGenWithBase<'a, A, M> {
+impl<A: Arch, M: MappableArea> TestCaseGenWithBase<'_, A, M> {
     pub fn instance(&self) -> &Dataflows<A, ()> {
         self.inner.instance()
     }

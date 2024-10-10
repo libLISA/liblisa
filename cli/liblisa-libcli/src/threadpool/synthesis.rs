@@ -42,7 +42,7 @@ pub struct AnalysisRequest<'a, A: Arch> {
     encoding: &'a Encoding<A, ()>,
 }
 
-impl<'a, A: Arch> std::fmt::Debug for AnalysisRequest<'a, A> {
+impl<A: Arch> std::fmt::Debug for AnalysisRequest<'_, A> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("AnalysisRequest")
             .field("at", &self.at)
@@ -51,7 +51,7 @@ impl<'a, A: Arch> std::fmt::Debug for AnalysisRequest<'a, A> {
     }
 }
 
-impl<'a, A: Arch> AnalysisRequest<'a, A> {
+impl<A: Arch> AnalysisRequest<'_, A> {
     pub fn synthesize<S: Synthesizer<OwnedValue>, O: Oracle<A>, R: Rng>(
         &self, oracle: &mut O, rng: &mut R,
     ) -> (Vec<SynthesisResult<S::Computation>>, Vec<WriteOrdering>)

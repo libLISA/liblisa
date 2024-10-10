@@ -356,7 +356,7 @@ pub struct ChangeAnalysis<'a, A: Arch, O: Oracle<A>, C: EncodingAnalysisCache<A>
     pub found_dependent_bytes: &'a mut bool,
 }
 
-impl<'a, A: Arch, O: Oracle<A>, C: EncodingAnalysisCache<A>> ChangeAnalysis<'a, A, O, C> {
+impl<A: Arch, O: Oracle<A>, C: EncodingAnalysisCache<A>> ChangeAnalysis<'_, A, O, C> {
     pub fn detect_change<R: Rng>(&mut self, rng: &mut R, new_instr: &Instruction) -> Result<Change<A>, EncodingError<A>> {
         Ok(match Validity::infer(self.o, new_instr) {
             v
