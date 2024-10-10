@@ -211,7 +211,7 @@ impl InputGroup {
 
     fn iter_all_variations<'a>(
         &'a self, base_inputs: &'a [OwnedValue],
-    ) -> impl Iterator<Item = ArrayVec<Value<'_>, MAX_INPUTS>> + 'a {
+    ) -> impl Iterator<Item = ArrayVec<Value<'a>, MAX_INPUTS>> + 'a {
         self.values.iter().map(|val| {
             let mut m = base_inputs.iter().map(AsValue::as_value).collect::<ArrayVec<_, MAX_INPUTS>>();
 

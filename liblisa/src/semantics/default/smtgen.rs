@@ -140,7 +140,20 @@ impl<'ctx, A: Arch, S: SmtSolver<'ctx>> StorageLocations<'ctx, A, S> {
     /// If the register is a zero register, a bitvector with value 0 is returned.
     ///
     /// Masks the result by the mask of the location.
+    ///
+    /// # Problems
+    /// This function returns the raw bitvector value of the location.
+    /// For byte values ([`ValueType::Bytes`]), this causes an inconsistency:
+    /// The values are not stored in the same order as the output of computations.
+    /// So a simple assertion of `input_bv == output_bv` would fail.
+    ///
+    /// You should use the function [`StorageLocations::get_sized`] instead, which automatically performs this byte swapping when needed.
+    #[deprecated = "use StorageLocatinos::get_sized instead"]
     pub fn get(&mut self, context: &mut S, key: FilledLocation<A>, sizes: &Sizes) -> S::BV {
+        self.get_internal(context, key, sizes)
+    }
+
+    fn get_internal(&mut self, context: &mut S, key: FilledLocation<A>, sizes: &Sizes) -> S::BV {
         match key {
             FilledLocation::Concrete(Location::Reg(reg)) if reg.is_zero() => {
                 return context.bv_from_u64(0, reg.byte_size() as u32 * 8)
@@ -172,7 +185,7 @@ impl<'ctx, A: Arch, S: SmtSolver<'ctx>> StorageLocations<'ctx, A, S> {
     pub fn get_sized(
         &mut self, context: &mut S, key: FilledLocation<A>, sizes: &Sizes, input_size: Size, is_bytes: bool,
     ) -> S::BV {
-        let mut bv = self.get(context, key, sizes);
+        let mut bv = self.get_internal(context, key, sizes);
         bv = bv.extract(input_size.end_byte as u32 * 8 + 7, input_size.start_byte as u32 * 8);
 
         if is_bytes {

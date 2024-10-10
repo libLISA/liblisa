@@ -432,7 +432,13 @@ pub enum Sort {
     Bool,
 
     /// An array
-    Array { index: Box<Sort>, element: Box<Sort> },
+    Array {
+        /// The type of the index
+        index: Box<Sort>,
+
+        /// The type of the elements in the array
+        element: Box<Sort>,
+    },
 }
 
 impl<'a, S: SmtSolver<'a>> Dynamic<'a, S> {
