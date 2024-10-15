@@ -144,7 +144,7 @@ impl ObservationMapper for ObsMapper {
         let phys_addr = self.bar_base + page_offset;
         let frame = PhysFrame::from_start_address(phys_addr).unwrap();
         if self.qemu_cache_invalidate && permissions == Permissions::Executable {
-            let mut addr = if addr >= page.start_address().as_u64() && addr <= page.start_address().as_u64() + 4095 {
+            let addr = if addr >= page.start_address().as_u64() && addr <= page.start_address().as_u64() + 4095 {
                 addr
             } else {
                 page.start_address().as_u64()
@@ -590,7 +590,7 @@ impl ObservationMapper for OffsetObsMapper {
         });
     }
 
-    fn map_executable(&mut self, frame_index: usize, page: x86_64::structures::paging::Page, addr: u64, permissions: Permissions) {
+    fn map_executable(&mut self, frame_index: usize, page: x86_64::structures::paging::Page, _addr: u64, permissions: Permissions) {
         self.map(frame_index, page, permissions);
     }
 

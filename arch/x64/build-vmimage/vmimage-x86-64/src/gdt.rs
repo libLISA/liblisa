@@ -13,7 +13,7 @@ pub const STACKED_INTERRUPT_HANDLER_IST_INDEX: u16 = 1;
 static mut TSS: (TaskStateSegment, [u8; 16]) = (TaskStateSegment::new(), [0xff; 16]);
 
 fn init_tss() {
-    let mut tss = unsafe { &mut TSS.0 };
+    let tss = unsafe { &mut TSS.0 };
     const STACK_SIZE: usize = 4096 * 5;
     tss.interrupt_stack_table[MAIN_INTERRUPT_HANDLER_IST_INDEX as usize] = {
         #[used]

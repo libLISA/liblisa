@@ -1,4 +1,4 @@
-use core::{arch::asm, ptr};
+use core::{arch::{asm, naked_asm}, ptr};
 use liblisa_x64_observer_shmqueue::regs::GpRegs;
 
 use crate::gdt;
@@ -154,14 +154,13 @@ macro_rules! generate_interrupt_entry {
     ($id:literal: $name:ident) => {
         #[naked]
         unsafe extern "C" fn $name() {
-            asm!(
+            naked_asm!(
                 "cld",
                 "push 0",
                 "push {id}",
                 "jmp {c}",
                 id = const $id,
                 c = sym crate::userspace::handle_interrupt,
-                options(noreturn)
             )
         }
     };
@@ -172,7 +171,7 @@ macro_rules! generate_interrupt_entry {
                 let _: extern "x86-interrupt" fn(stack_frame: InterruptStackFrame) = $kernel_handler;
             }
 
-            asm!(
+            naked_asm!(
                 // If we're currently not in userspace, bail out to the kernel handler
                 "cmp qword ptr [rip + {RESTORE_STATE}], 0",
                 "jnz 3f",
@@ -187,7 +186,6 @@ macro_rules! generate_interrupt_entry {
                 c = sym crate::userspace::handle_interrupt,
                 RESTORE_STATE = sym crate::userspace::RESTORE_STATE,
                 handler = sym $kernel_handler,
-                options(noreturn)
             )
         }
     };
@@ -198,7 +196,7 @@ macro_rules! generate_interrupt_entry {
                 let _: extern "x86-interrupt" fn(stack_frame: InterruptStackFrame, error_code: $error_ty) = $kernel_handler;
             }
 
-            asm!(
+            naked_asm!(
                 // If we're currently not in userspace, bail out to the kernel handler
                 "cmp qword ptr [rip + {RESTORE_STATE}], 0",
                 "jnz 3f",
@@ -211,7 +209,6 @@ macro_rules! generate_interrupt_entry {
                 c = sym crate::userspace::handle_interrupt,
                 RESTORE_STATE = sym crate::userspace::RESTORE_STATE,
                 handler = sym $kernel_handler,
-                options(noreturn)
             )
         }
     }
@@ -229,7 +226,7 @@ pub unsafe extern "C" fn handle_interrupt() {
     // - [+0x20] rflags
     // - [+0x28] rsp
     // - [+0x30] ss
-    asm!(
+    naked_asm!(
         // push rbx so we have a scratch register for the GpRegs pointer.
         // rbx will point to the memory region where we store the GPREGS.
         "push rbx",
@@ -313,6 +310,5 @@ pub unsafe extern "C" fn handle_interrupt() {
         exception_id_offset = const memoffset::offset_of!(GpRegs, exception_id),
         error_code_offset = const memoffset::offset_of!(GpRegs, error_code),
         access_address_offset = const memoffset::offset_of!(GpRegs, access_address),
-        options(noreturn)
     )
 }

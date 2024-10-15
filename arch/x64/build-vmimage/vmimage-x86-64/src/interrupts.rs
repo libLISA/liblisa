@@ -1,4 +1,4 @@
-use core::{arch::asm, sync::atomic::{AtomicU32, Ordering}};
+use core::{arch::naked_asm, sync::atomic::{AtomicU32, Ordering}};
 use crate::{gdt, hlt_loop, serial_println, serial_print};
 use lazy_static::lazy_static;
 use pic8259::ChainedPics;
@@ -241,7 +241,7 @@ extern "C" fn check_timer_interrupt() -> bool {
 
 #[naked]
 unsafe extern "C" fn timer_interrupt_handler() {
-    asm!(
+    naked_asm!(
         // If we're currently not in userspace, bail out to the kernel handler
         "cmp qword ptr [rip + {RESTORE_STATE}], 0",
         "jnz 3f",
@@ -288,7 +288,6 @@ unsafe extern "C" fn timer_interrupt_handler() {
         c = sym crate::userspace::handle_interrupt,
         check_timer_interrupt = sym check_timer_interrupt,
         RESTORE_STATE = sym crate::userspace::RESTORE_STATE,
-        options(noreturn)
     )
 }
 

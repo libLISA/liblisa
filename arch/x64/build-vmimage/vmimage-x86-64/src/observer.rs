@@ -2,7 +2,7 @@ use core::arch::asm;
 
 use liblisa_x64_observer_shmqueue::frame::command::{Permissions, CommandFrame};
 use x86_64::{VirtAddr, structures::paging::Page};
-use crate::{userspace::jmp_to_usermode, serial_println};
+use crate::userspace::jmp_to_usermode;
 
 pub struct Observer {}
 
