@@ -187,3 +187,32 @@ pub fn identity_function_should_be_identical() {
         }
     });
 }
+
+#[test]
+pub fn test_pdep() {
+    Z3Solver::with_thread_local(Duration::from_secs(900), |mut context| {
+        fn test<'ctx, S: SmtSolver<'ctx>>(context: &mut S, source: u64, mask: u64, expected: u64) {
+            let source_bv = context.new_bv_const("source", 64);
+            let mask_bv = context.new_bv_const("mask", 64);
+            let result_bv = context.new_bv_const("result", 64);
+            let result_val = context.deposit_bits::<64>(source_bv.clone(), mask_bv.clone());
+
+            let source_val = context.bv_from_u64(source, 64);
+            let mask_val = context.bv_from_u64(mask, 64);
+            let expected_val = context.bv_from_u64(expected, 64);
+            match context.check_assertions(&[
+                source_bv.clone()._eq(source_val),
+                mask_bv.clone()._eq(mask_val),
+                result_bv.clone()._eq(result_val),
+                !result_bv.clone()._eq(expected_val),
+            ]) {
+                SatResult::Unknown => todo!(),
+                SatResult::Sat(model) => panic!("implementation incorrect: {model:?}, expected {expected:X?}"),
+                SatResult::Unsat => (),
+            }
+        }
+
+        test(&mut context, 0xffff_ffff_ffff_ffff, 0x123456789abcdef, 0x123456789abcdef);
+        test(&mut context, 0xaaaa_aaaa_aaaa_aaaa, 0x0000_fffe_ffff_0078, 0x0000_5554_aaaa_0050);
+    });
+}
