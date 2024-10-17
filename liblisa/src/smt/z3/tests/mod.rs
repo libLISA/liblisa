@@ -213,6 +213,11 @@ pub fn test_pdep() {
         }
 
         test(&mut context, 0xffff_ffff_ffff_ffff, 0x123456789abcdef, 0x123456789abcdef);
-        test(&mut context, 0xaaaa_aaaa_aaaa_aaaa, 0x0000_fffe_ffff_0078, 0x0000_5554_aaaa_0050);
+        test(
+            &mut context,
+            0xaaaa_aaaa_aaaa_aaaa,
+            0x0000_fffe_ffff_0078,
+            0x0000_5554_aaaa_0050,
+        );
     });
 }
