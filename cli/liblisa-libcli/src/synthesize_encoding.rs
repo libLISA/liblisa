@@ -8,6 +8,9 @@ use liblisa::arch::Arch;
 use liblisa::encoding::Encoding;
 use liblisa::instr::Instruction;
 use liblisa::oracle::Oracle;
+use liblisa::semantics::default::smtgen::{StorageLocations, Z3Model};
+use liblisa::smt::z3::Z3Solver;
+use liblisa::smt::{SmtBV, SmtSolver};
 use liblisa_enc::infer_encoding;
 use liblisa_synth::{
     determine_overlapping_write_order, merge_semantics_into_encoding, prepare_templates, DefaultTreeTemplateSynthesizer, Output,
@@ -55,6 +58,16 @@ pub struct SynthesizeEncodingCommand<A> {
 
     #[clap(skip)]
     _phantom: PhantomData<A>,
+}
+
+fn shortest_smt<'ctx, S: SmtSolver<'ctx>>(smt: S::BV) -> String {
+    let simplified_str = smt.clone().simplify().to_string();
+    let normal_str = smt.to_string();
+    if simplified_str.len() < normal_str.len() {
+        simplified_str
+    } else {
+        normal_str
+    }
 }
 
 impl<A: Arch> SimpleCommand<A> for SynthesizeEncodingCommand<A> {
@@ -129,13 +142,42 @@ impl<A: Arch> SimpleCommand<A> for SynthesizeEncodingCommand<A> {
         }
 
         if self.print_smt {
-            for df in semantics.dataflows.output_dataflows() {
-                if let Some(_computation) = &df.computation {
-                    todo!("Use Z3 codegen instead");
-                    // let smt = codegen_computation(&mut SmtCodeGen::new(), computation);
-                    // println!("%{:?}: {smt}", df.target());
+            Z3Solver::with_thread_local(Duration::from_secs(30), |mut context| {
+                let mut storage = StorageLocations::new(&mut context);
+                let model = Z3Model::of(&semantics, &mut storage, &mut context);
+                let concrete = model.compute_concrete_outputs(&semantics, &mut storage, &mut context);
+
+                println!();
+
+                for item in model.constraints() {
+                    println!("constraint: {item}");
                 }
-            }
+
+                for &index in concrete.intermediate_values_needed() {
+                    let intermediate = &model.intermediate_outputs()[index];
+                    if let Some(smt) = intermediate.smt() {
+                        println!("intermediate: {:?} = {}", intermediate.name(), shortest_smt::<Z3Solver>(smt.clone()))
+                    } else {
+                        println!("intermediate: {:?} = <missing>", intermediate.name())
+                    }
+                }
+
+                println!();
+
+                for part_name in concrete.part_names().iter() {
+                    println!("part: {:?} = {:?}", part_name.name(), part_name.smt())
+                }
+
+                println!();
+
+                for output in concrete.concrete_outputs().iter() {
+                    if let Some(smt) = output.smt() {
+                        println!("output: {:?} = {}", output.target(), shortest_smt::<Z3Solver>(smt.clone()))
+                    } else {
+                        println!("output: {:?} = <missing>", output.target())
+                    }
+                }
+            });
         }
 
         if self.print_json {
