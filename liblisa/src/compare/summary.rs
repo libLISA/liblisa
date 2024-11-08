@@ -8,14 +8,14 @@ use crate::instr::InstructionFilter;
 use crate::semantics::Computation;
 
 /// Information about an architecture.
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct ArchInfo {
     /// A human-readable name of the architecture.
     pub name: String,
 }
 
 /// An identifier that references an architecture.
-#[derive(Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct ArchId(pub usize);
 
 /// Set of encodings shared between architectures.
