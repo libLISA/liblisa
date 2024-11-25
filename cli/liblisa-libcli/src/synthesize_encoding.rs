@@ -156,7 +156,11 @@ impl<A: Arch> SimpleCommand<A> for SynthesizeEncodingCommand<A> {
                 for &index in concrete.intermediate_values_needed() {
                     let intermediate = &model.intermediate_outputs()[index];
                     if let Some(smt) = intermediate.smt() {
-                        println!("intermediate: {:?} = {}", intermediate.name(), shortest_smt::<Z3Solver>(smt.clone()))
+                        println!(
+                            "intermediate: {:?} = {}",
+                            intermediate.name(),
+                            shortest_smt::<Z3Solver>(smt.clone())
+                        )
                     } else {
                         println!("intermediate: {:?} = <missing>", intermediate.name())
                     }
