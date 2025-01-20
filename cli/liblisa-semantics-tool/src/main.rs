@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::fs::File;
 use std::io::BufReader;
 use std::path::PathBuf;
@@ -5,7 +6,8 @@ use std::path::PathBuf;
 use arch_compare::ArchCompareContainer;
 use clap::Parser;
 use itertools::Itertools;
-use liblisa::arch::x64::X64Arch;
+use liblisa::semantics::{Computation, ARG_NAMES};
+use liblisa::{arch::x64::X64Arch, encoding::bitpattern::PartMapping};
 use liblisa::arch::Arch;
 use liblisa::encoding::Encoding;
 use liblisa::semantics::default::computation::SynthesizedComputation;
@@ -61,6 +63,9 @@ enum Property {
 
     /// Prints the bitpatterns of all encodings.
     Bitpatterns,
+
+    /// Prints all unique memory address computations.
+    AddressComputations,
 
     /// Prints all encodings. (NOTE: This will print millions of lines of text)
     FullEncodings {
@@ -221,6 +226,31 @@ where
                     }
 
                     println!("Printed {num_bits} bits across {} encodings", encodings.len());
+                },
+                Property::AddressComputations => {
+                    let computations = encodings.iter()
+                        .flat_map(|e| {
+                            let fixed_parts = e.parts.iter()
+                                .map(|p| if matches!(p.mapping, PartMapping::MemoryComputation { .. }) {
+                                    None
+                                } else {
+                                    Some(p.value)
+                                }).collect::<Vec<_>>();
+                            e.iter_instrs(&fixed_parts, false)
+                                .map(|instr| e.instantiate(&e.extract_parts(&instr)).unwrap())
+                                .collect::<Vec<_>>()
+                        })
+                        .flat_map(|d| d.addresses.memory.into_iter())
+                        .map(|a| {
+                            let mut c = a.calculation.with_offset(0);
+                            c.terms.sort();
+                            c
+                        })
+                        .collect::<HashSet<_>>();
+
+                    for c in computations {
+                        println!("{:?}", c.display(ARG_NAMES));
+                    }
                 },
             }
         },
