@@ -6,11 +6,12 @@ use std::path::PathBuf;
 use arch_compare::ArchCompareContainer;
 use clap::Parser;
 use itertools::Itertools;
-use liblisa::semantics::{Computation, ARG_NAMES};
-use liblisa::{arch::x64::X64Arch, encoding::bitpattern::PartMapping};
+use liblisa::arch::x64::X64Arch;
 use liblisa::arch::Arch;
+use liblisa::encoding::bitpattern::PartMapping;
 use liblisa::encoding::Encoding;
 use liblisa::semantics::default::computation::SynthesizedComputation;
+use liblisa::semantics::{Computation, ARG_NAMES};
 use liblisa::Instruction;
 use log::trace;
 use merge::Merge;
@@ -228,14 +229,20 @@ where
                     println!("Printed {num_bits} bits across {} encodings", encodings.len());
                 },
                 Property::AddressComputations => {
-                    let computations = encodings.iter()
+                    let computations = encodings
+                        .iter()
                         .flat_map(|e| {
-                            let fixed_parts = e.parts.iter()
-                                .map(|p| if matches!(p.mapping, PartMapping::MemoryComputation { .. }) {
-                                    None
-                                } else {
-                                    Some(p.value)
-                                }).collect::<Vec<_>>();
+                            let fixed_parts = e
+                                .parts
+                                .iter()
+                                .map(|p| {
+                                    if matches!(p.mapping, PartMapping::MemoryComputation { .. }) {
+                                        None
+                                    } else {
+                                        Some(p.value)
+                                    }
+                                })
+                                .collect::<Vec<_>>();
                             e.iter_instrs(&fixed_parts, false)
                                 .map(|instr| e.instantiate(&e.extract_parts(&instr)).unwrap())
                                 .collect::<Vec<_>>()
