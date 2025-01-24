@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install rust nightly
-        run: rustup update nightly-2024-09-25 && rustup default nightly-2024-09-25 && rustup component add rustfmt && rustup component add clippy && rustup component add rust-src && rustup component add llvm-tools
+        run: rustup update nightly-2025-01-05 && rustup default nightly-2025-01-05 && rustup component add rustfmt && rustup component add clippy && rustup component add rust-src && rustup component add llvm-tools
       - name: Install cross
         run: cargo install cross --git https://github.com/cross-rs/cross
       - name: Build vmimage
