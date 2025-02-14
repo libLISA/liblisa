@@ -5,6 +5,7 @@ It requires the raw semantics that can be downloaded from [here](https://osf.io/
 ## Installation
 Through [`cargo`](https://rustup.rs):
 ```
+rustup toolchain install nightly # if you don't have it
 cargo +nightly install liblisa-semantics-tool
 ```
 
