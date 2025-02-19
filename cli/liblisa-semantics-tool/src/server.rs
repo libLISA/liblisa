@@ -1,6 +1,6 @@
 use std::fmt::{Debug, Display};
 use std::fs::File;
-use std::io::{BufReader, BufWriter};
+use std::io::{BufReader, BufWriter, ErrorKind};
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
 use std::time::Instant;
@@ -247,11 +247,13 @@ impl Server {
                     bincode::deserialize_from(BufReader::new(file)).unwrap()
                 },
                 Err(e) => {
-                    eprintln!("Error reading {cache:?}: {e}");
+                    match e.kind() {
+                        ErrorKind::NotFound => eprintln!("Creating cache {cache:?}"),
+                        _ => eprintln!("Error reading {cache:?}: {e}"),
+                    } 
 
                     let map = build_filter_map(&self.encodings);
 
-                    eprintln!("Writing cache to {cache:?}");
                     bincode::serialize_into(BufWriter::new(File::create(cache).unwrap()), &map).unwrap();
                     map
                 },
