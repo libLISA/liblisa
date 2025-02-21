@@ -250,7 +250,7 @@ impl Server {
                     match e.kind() {
                         ErrorKind::NotFound => eprintln!("Creating cache {cache:?}"),
                         _ => eprintln!("Error reading {cache:?}: {e}"),
-                    } 
+                    }
 
                     let map = build_filter_map(&self.encodings);
 
