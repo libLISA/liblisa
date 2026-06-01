@@ -3,9 +3,9 @@ use std::time::Instant;
 
 use arrayvec::ArrayVec;
 use itertools::Itertools;
-use liblisa::semantics::default::computation::{ExpressionComputation, OutputEncoding};
 use liblisa::semantics::default::MAX_TEMPLATE_ARGS;
-use liblisa::semantics::{Computation, IoType, ARG_NAMES};
+use liblisa::semantics::default::computation::{ExpressionComputation, OutputEncoding};
+use liblisa::semantics::{ARG_NAMES, Computation, IoType};
 use liblisa::utils::bitmap::{Bitmap, BitmapSlice, FixedBitmapU64, GrowingBitmap};
 use liblisa::utils::{MinimumCoveringSet, Timeout};
 use liblisa::value::{AsValue, OwnedValue};

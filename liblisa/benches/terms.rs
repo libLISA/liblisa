@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use liblisa::encoding::dataflows::AddrTerm;
 use rand::{Rng, SeedableRng};
 use rand_xoshiro::Xoshiro256PlusPlus;
@@ -11,7 +11,7 @@ fn is_valid_delta(c: &mut Criterion) {
     let t = ts[ts.len() - 1];
     c.bench_function("is_valid_delta", |b| {
         b.iter(|| {
-            black_box(t.is_valid_delta(rng.gen(), rng.gen(), rng.gen(), rng.gen()));
+            black_box(t.is_valid_delta(rng.random(), rng.random(), rng.random(), rng.random()));
         })
     });
 }

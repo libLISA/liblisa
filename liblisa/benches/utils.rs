@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use liblisa::utils::{create_from_le_bytes, sign_extend};
 
 fn bench_sign_extend(c: &mut Criterion) {

@@ -2,11 +2,11 @@ use std::fmt::{Debug, Display};
 use std::marker::PhantomData;
 
 use arrayvec::ArrayVec;
+use liblisa::semantics::default::MAX_TEMPLATE_ARGS;
 use liblisa::semantics::default::computation::{
     Arg, ArgEncoding, CompareResult, ComputationRef, ExprComputation, ExpressionComputation, OutputEncoding, PreparedComparison,
 };
-use liblisa::semantics::default::MAX_TEMPLATE_ARGS;
-use liblisa::semantics::{Computation, IoType, OutputType, ARG_NAMES};
+use liblisa::semantics::{ARG_NAMES, Computation, IoType, OutputType};
 use liblisa::utils::bitmask_u64;
 use liblisa::value::{AsValue, OwnedValue};
 
@@ -582,8 +582,8 @@ impl<'a> ComputationEnumerator<'a> {
 #[cfg(test)]
 mod tests {
     use itertools::Itertools;
-    use liblisa::semantics::default::computation::OutputEncoding;
     use liblisa::semantics::IoType;
+    use liblisa::semantics::default::computation::OutputEncoding;
 
     use super::{CompressedIterComputation, ComputationEnumerator};
     use crate::templates::SIMPLE_BOOLEAN_TEMPLATES;

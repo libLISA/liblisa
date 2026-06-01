@@ -8,23 +8,23 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::{Duration, Instant};
 
 use itertools::Itertools;
-use liblisa::arch::undef::{UndefProvider, UndefinedOutputs};
-use liblisa::arch::x64::undef::IntelUndefWithXed;
-use liblisa::arch::x64::X64Arch;
 use liblisa::arch::Arch;
+use liblisa::arch::undef::{UndefProvider, UndefinedOutputs};
+use liblisa::arch::x64::X64Arch;
+use liblisa::arch::x64::undef::IntelUndefWithXed;
 use liblisa::compare::{ComparisonMatrix, ComparisonResult, EncodingGroup, Rows};
 use liblisa::encoding::indexed::IndexedEncodings;
 use liblisa::encoding::{Encoding, EncodingWithFilters};
 use liblisa::instr::{InstructionFilter, WithFilters};
-use liblisa::semantics::default::computation::SynthesizedComputation;
 use liblisa::semantics::Computation;
+use liblisa::semantics::default::computation::SynthesizedComputation;
 use liblisa::smt::z3::ThreadLocalZ3;
 use liblisa::smt::{CacheHitCounter, CachedSolverProvider, FileCache, MemoryCache, SharedCache, SolverProvider};
 use rand::seq::SliceRandom;
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 
-use crate::progress::{progress_data, Progress, ProgressUsize};
+use crate::progress::{Progress, ProgressUsize, progress_data};
 
 #[derive(Clone, Debug)]
 pub(crate) struct ArchIndexGroup {

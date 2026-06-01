@@ -7,8 +7,8 @@ use std::time::Instant;
 
 use itertools::Itertools;
 use liblisa::arch::Arch;
-use liblisa::encoding::dataflows::{AddrTermCalculation, AddrTermSize, Dataflows, Dest, Size, Source};
 use liblisa::encoding::Encoding;
+use liblisa::encoding::dataflows::{AddrTermCalculation, AddrTermSize, Dataflows, Dest, Size, Source};
 use liblisa::instr::{FilterMap, Instruction};
 use liblisa::semantics::default::codegen::codegen_computation;
 use liblisa::semantics::default::codegen::sexpr::{SExpr, SExprCodeGen};

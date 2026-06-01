@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use liblisa::arch::x64::X64Arch;
 use liblisa::instr::Instruction;
 use liblisa::oracle::Oracle;
@@ -27,7 +27,7 @@ fn infer(c: &mut Criterion) {
 
 fn randomize_new(c: &mut Criterion) {
     with_oracle(|mut o| {
-        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().gen());
+        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().random());
         let mappable = Oracle::<X64Arch>::mappable_area(&o);
 
         let instr = Instruction::new(&[0x48, 0x31, 0xD0]);

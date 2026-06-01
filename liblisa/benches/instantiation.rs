@@ -1,14 +1,14 @@
 use std::time::Duration;
 
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use liblisa::arch::fake::{FakeArch, FakeReg};
+use liblisa::encoding::Encoding;
 use liblisa::encoding::bitpattern::{
     Bit, FlowInputLocation, FlowValueLocation, ImmBitOrder, MappingOrBitOrder, Part, PartMapping,
 };
 use liblisa::encoding::dataflows::{
     AccessKind, AddressComputation, Dataflow, Dataflows, Dest, Inputs, MemoryAccess, MemoryAccesses, Size, Source,
 };
-use liblisa::encoding::Encoding;
 use liblisa::instr::Instruction;
 
 fn instantiate1(c: &mut Criterion) {

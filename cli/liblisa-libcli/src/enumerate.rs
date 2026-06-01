@@ -4,30 +4,30 @@ use std::fs::{self, File};
 use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::marker::PhantomData;
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{Duration, Instant};
 
 use colored::Colorize;
 use itertools::Itertools;
 use liblisa::arch::{Arch, Scope};
+use liblisa::encoding::Encoding;
 use liblisa::encoding::dataflows::AddressComputation;
 use liblisa::encoding::mcs::{filter_overlapping_encodings, verify_and_fix};
-use liblisa::encoding::Encoding;
 use liblisa::instr::{FilterMap, Instruction, InstructionFilter};
 use liblisa::oracle::{Oracle, OracleSource};
 use liblisa_enc::cache::EncodingAnalysisCache;
 use log::info;
 use nix::sched::CpuSet;
 use rayon::prelude::*;
-use serde::de::DeserializeOwned;
 use serde::Serialize;
+use serde::de::DeserializeOwned;
 
+use crate::threadpool::ThreadPool;
 use crate::threadpool::cache::FileBackedCacheLoader;
 use crate::threadpool::enumeration::{
     EnumWorkItem, Enumeration, EnumerationArtifact, EnumerationArtifactData, EnumerationRuntimeData,
 };
-use crate::threadpool::ThreadPool;
 
 #[derive(Copy, Clone, Debug, clap::ValueEnum)]
 enum Sorting {

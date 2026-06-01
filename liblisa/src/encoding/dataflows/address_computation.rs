@@ -290,11 +290,7 @@ impl AddrTerm {
             if self.primary.size == AddrTermSize::U64 && second_use.size == AddrTermSize::U64 && self.primary.shift.right == 0 {
                 if second_use.shift.right == 0 {
                     let factor = self.primary.shift.mult as u64 + second_use.shift.mult as u64;
-                    if target % factor == 0 {
-                        Some(target / factor)
-                    } else {
-                        None
-                    }
+                    if target % factor == 0 { Some(target / factor) } else { None }
                 } else {
                     self.compute_step_offset(0, target)
                 }
@@ -1233,9 +1229,9 @@ mod tests {
         let mut rng = rand::thread_rng();
         for term in terms {
             for _ in 0..500_000 {
-                let x = rng.gen();
+                let x = rng.random();
                 let addr = term.apply(x);
-                let target = rng.gen();
+                let target = rng.random();
 
                 if let Some(new_x) = term.compute_relocation(x, addr, target) {
                     assert_eq!(

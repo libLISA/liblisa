@@ -1,7 +1,7 @@
 use std::iter::repeat;
 use std::time::{Duration, Instant};
 
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use itertools::Itertools;
 use liblisa_x64_observer::vm::*;
 use liblisa_x64_observer_shmqueue::frame::command::{ExtendedRegs, Permissions};

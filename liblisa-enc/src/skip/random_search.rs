@@ -16,7 +16,7 @@ pub fn random_instr_bytes<R: Rng>(rng: &mut R, start: Instruction, end: Option<I
     let num_at_end = end
         .map(|instr| {
             if instr.byte_len() > 1 {
-                rng.gen_range(0..instr.byte_len() - 1)
+                rng.random_range(0..instr.byte_len() - 1)
             } else {
                 0
             }
@@ -53,9 +53,9 @@ pub fn random_instr_bytes<R: Rng>(rng: &mut R, start: Instruction, end: Option<I
         *b = match (is_min, is_max) {
             (true, true) => {
                 let r = if max_inclusive {
-                    rng.gen_range(min..=max)
+                    rng.random_range(min..=max)
                 } else {
-                    rng.gen_range(min..max)
+                    rng.random_range(min..max)
                 };
                 is_min &= min == r;
                 is_max &= max == r;
@@ -63,16 +63,16 @@ pub fn random_instr_bytes<R: Rng>(rng: &mut R, start: Instruction, end: Option<I
                 r
             },
             (true, false) => {
-                let r = rng.gen_range(min..=0xFF);
+                let r = rng.random_range(min..=0xFF);
                 is_min &= min == r;
 
                 r
             },
             (false, true) => {
                 let r = if max_inclusive {
-                    rng.gen_range(0..=max)
+                    rng.random_range(0..=max)
                 } else {
-                    rng.gen_range(0..max)
+                    rng.random_range(0..max)
                 };
                 is_max &= max == r;
 

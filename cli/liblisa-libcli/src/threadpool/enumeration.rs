@@ -8,8 +8,8 @@ use liblisa::encoding::Encoding;
 use liblisa::instr::{FilterList, Instruction, InstructionCounter};
 use liblisa::oracle::Oracle;
 use liblisa::semantics::Computation;
-use liblisa_enc::cache::EncodingAnalysisCache;
 use liblisa_enc::AnalysisResult;
+use liblisa_enc::cache::EncodingAnalysisCache;
 use log::{debug, info, trace};
 use serde::{Deserialize, Serialize};
 

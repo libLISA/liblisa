@@ -6,8 +6,8 @@ use log::{debug, info, trace};
 use rayon::iter::{IndexedParallelIterator, IntoParallelIterator, IntoParallelRefIterator, ParallelIterator};
 
 use crate::instr::{ByteFilter, FilterBit, InstructionFilter};
-use crate::utils::minisat::{SatSolver, Term};
 use crate::utils::EitherIter;
+use crate::utils::minisat::{SatSolver, Term};
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
 struct EfficientFilter {

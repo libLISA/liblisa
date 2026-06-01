@@ -5,8 +5,8 @@ use liblisa_x64_observer::vm::{
     CpuFeatures, DebugRegs, DebugRegsWriter, ExtendedRegs, ExtendedRegsWriter, GpRegs, MemoryMapper, ObservationRequest,
     PageAllocator, Permissions, ResultMemoryAccess, Vm, XsaveLegacyArea,
 };
-use rand::seq::SliceRandom;
 use rand::Rng;
+use rand::seq::SliceRandom;
 
 const INSTR_ADD_RAX_EAX_33: &[u8] = &[0x01, 0x04, 0x05, 0x00, 0x00, 0x00, 0x33, 0xcc];
 const INSTR_ADD_RAX_EAX_32: &[u8] = &[0x01, 0x04, 0x05, 0x00, 0x00, 0x00, 0x32, 0xcc];
@@ -100,21 +100,21 @@ fn main() {
         let reserved = observer.reserved_range();
         let v = repeat_with(|| {
             let gpregs = GpRegs {
-                rax: rng.gen(),
-                rbx: rng.gen(),
-                rcx: rng.gen(),
-                rdx: rng.gen(),
-                rbp: rng.gen(),
-                rsi: rng.gen(),
-                rdi: rng.gen(),
-                r8: rng.gen(),
-                r9: rng.gen(),
-                r10: rng.gen(),
-                r11: rng.gen(),
-                r12: rng.gen(),
-                r13: rng.gen(),
-                r14: rng.gen(),
-                r15: rng.gen(),
+                rax: rng.random(),
+                rbx: rng.random(),
+                rcx: rng.random(),
+                rdx: rng.random(),
+                rbp: rng.random(),
+                rsi: rng.random(),
+                rdi: rng.random(),
+                r8: rng.random(),
+                r9: rng.random(),
+                r10: rng.random(),
+                r11: rng.random(),
+                r12: rng.random(),
+                r13: rng.random(),
+                r14: rng.random(),
+                r15: rng.random(),
                 exception_id: 0,
                 error_code: 0,
                 rip: *[
@@ -135,7 +135,7 @@ fn main() {
                 ]
                 .choose(&mut rng)
                 .unwrap(),
-                rsp: rng.gen(),
+                rsp: rng.random(),
                 access_address: 0,
                 rflags: 0,
                 fs_base: 0,

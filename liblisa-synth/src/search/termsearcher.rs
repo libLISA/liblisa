@@ -1,12 +1,12 @@
-use liblisa::semantics::default::computation::OutputEncoding;
 use liblisa::semantics::IoType;
+use liblisa::semantics::default::computation::OutputEncoding;
 use liblisa::value::AsValue;
 use log::{debug, info};
 
 use super::searcher::{CheckFlippableBoolResult, Searcher};
 use crate::predicate::Term;
-use crate::templates::preprocess::PreprocessedTemplate;
 use crate::templates::SIMPLE_BOOLEAN_TEMPLATES;
+use crate::templates::preprocess::PreprocessedTemplate;
 use crate::{Synthesizer, SynthesizerBase};
 
 #[derive(Clone)]
@@ -102,7 +102,7 @@ mod tests {
     use test_log::test;
 
     use crate::search::termsearcher::BoolTermSearcher;
-    use crate::{synthesize_from_fn, SynthesizerBase};
+    use crate::{SynthesizerBase, synthesize_from_fn};
 
     #[test]
     pub fn find_lt() {

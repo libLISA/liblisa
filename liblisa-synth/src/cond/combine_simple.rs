@@ -397,7 +397,7 @@ mod tests {
     use test_log::test;
 
     use super::SimplePredicateCombiner;
-    use crate::{synthesize_from_fn, Synthesizer, SynthesizerBase};
+    use crate::{Synthesizer, SynthesizerBase, synthesize_from_fn};
 
     fn test_with_cases<const N: usize>(s: &mut SimplePredicateCombiner, cases: &[(bool, [Value; N])]) {
         for (output, inputs) in cases {

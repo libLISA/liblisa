@@ -5,7 +5,7 @@ use liblisa::arch::{Arch, CpuState, Scope};
 use liblisa::instr::Instruction;
 use liblisa::oracle::{MappableArea, Oracle, OracleError};
 use liblisa::state::{Addr, MemoryState, Permissions, SystemState};
-use liblisa::utils::{bitmask_u64, EitherIter};
+use liblisa::utils::{EitherIter, bitmask_u64};
 use log::{trace, warn};
 use rand::{Rng, SeedableRng};
 use rand_xoshiro::Xoshiro256PlusPlus;
@@ -42,7 +42,7 @@ fn create_state_with_cropped_instr_unchecked<A: Arch, M: MappableArea>(
 ) -> SystemState<A> {
     loop {
         let page = loop {
-            let addr = Addr::new(rng.gen::<u64>() & !bitmask_u64(A::PAGE_BITS as u32));
+            let addr = Addr::new(rng.random::<u64>() & !bitmask_u64(A::PAGE_BITS as u32));
             if mappable.can_map(addr) {
                 break addr.page::<A>()
             }
@@ -67,7 +67,7 @@ fn create_state_with_instr<A: Arch, M: MappableArea>(
 ) -> SystemState<A> {
     loop {
         let page = loop {
-            let addr = Addr::new(rng.gen::<u64>() & !bitmask_u64(A::PAGE_BITS as u32));
+            let addr = Addr::new(rng.random::<u64>() & !bitmask_u64(A::PAGE_BITS as u32));
             if mappable.can_map(addr) {
                 break addr.page::<A>()
             }
@@ -164,7 +164,7 @@ impl Validity {
 
         let mappable = o.mappable_area();
 
-        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().gen());
+        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().random());
 
         // Determine if the instruction is too long
         if O::UNRELIABLE_INSTRUCTION_FETCH_ERRORS {
@@ -219,7 +219,7 @@ impl Validity {
         o: &'a mut O, instrs: &'a [Instruction], scope: &'a impl Scope,
     ) -> impl Iterator<Item = Validity> + 'a {
         let mappable = o.mappable_area();
-        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().gen());
+        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().random());
 
         let observations = instrs
             .iter()

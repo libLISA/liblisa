@@ -14,14 +14,14 @@ use std::fmt::{Debug, Display};
 use std::hash::Hash;
 use std::mem::size_of;
 use std::ops::{Deref, DerefMut, Index, IndexMut, Range};
-use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::Mutex;
+use std::sync::atomic::{AtomicU32, Ordering};
 
 use disasm::{OpcodeMap, ParsedInstructionPrefixes, Prefix, SimplePrefix};
 use itertools::Itertools;
 use log::trace;
-use rustc_apfloat::ieee::X87DoubleExtended;
 use rustc_apfloat::Float;
+use rustc_apfloat::ieee::X87DoubleExtended;
 use serde::{Deserialize, Serialize};
 
 use crate::arch::{Arch, CpuState, Flag, NumberedRegister, Register, Scope};
@@ -1535,7 +1535,7 @@ mod tests {
     use rand::Rng;
 
     use super::{
-        crop, translate_raw_offset_to_state_byte, translate_state_byte_to_raw_offset, CpuState, Flag, X64Arch, X64Flag, X64State,
+        CpuState, Flag, X64Arch, X64Flag, X64State, crop, translate_raw_offset_to_state_byte, translate_state_byte_to_raw_offset,
     };
     use crate::arch::{Arch, Register};
     use crate::encoding::dataflows::MemoryAccesses;
@@ -1640,7 +1640,7 @@ mod tests {
                 let new = loop {
                     let mask = reg.mask().map(|mask| (mask >> (index * 8)) as u8).unwrap_or(u8::MAX);
                     assert!(mask != 0);
-                    let v: u8 = rng.gen::<u8>() & mask;
+                    let v: u8 = rng.random::<u8>() & mask;
                     if v != old {
                         break v;
                     }

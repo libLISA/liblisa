@@ -546,7 +546,7 @@ pub fn memory_accessible() {
         repeat(()).take(10_000_000).map(move |_| {
             let mut addr;
             loop {
-                addr = rng.gen_range(page_range.clone()) as u64;
+                addr = rng.random_range(page_range.clone()) as u64;
                 if !reserved_range.contains(&addr) && !reserved_range.contains(&(addr + 1)) {
                     break;
                 }

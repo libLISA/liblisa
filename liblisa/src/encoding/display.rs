@@ -3,12 +3,12 @@ use std::fmt::Display;
 use itertools::Itertools;
 
 use crate::arch::Arch;
+use crate::encoding::Encoding;
 use crate::encoding::bitpattern::{
-    FlowOutputLocation, FlowValueLocation, MappingOrBitOrder, Part, PartMapping, PartValue, PART_NAMES,
+    FlowOutputLocation, FlowValueLocation, MappingOrBitOrder, PART_NAMES, Part, PartMapping, PartValue,
 };
 use crate::encoding::dataflows::{AccessKind, Dest, Inputs, Source};
-use crate::encoding::Encoding;
-use crate::semantics::{Computation, ARG_NAMES};
+use crate::semantics::{ARG_NAMES, Computation};
 
 struct SourceWithParts<'a, A: Arch, C> {
     loc: FlowValueLocation,

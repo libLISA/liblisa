@@ -1,4 +1,3 @@
-#![feature(let_chains)]
 #![doc(html_no_source)]
 
 //! This library contains libLISA's encoding analysis and some parts of enumeration.
@@ -187,7 +186,7 @@ impl<A: Arch> AnalysisResult<A> {
                 let mut counter = counter.clone();
                 counter.set_end(end);
 
-                let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().gen());
+                let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().random());
                 let (_, next_instr) = crate::skip::random_search_skip_invalid_instrs(&mut rng, counter.current(), o, scope);
                 if let Some(next_instr) = next_instr {
                     if counter.current() == next_instr {

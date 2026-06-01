@@ -10,22 +10,22 @@ mod equivalence;
 
 use std::time::Duration;
 
+use crate::Instruction;
 use crate::arch::fake::{FakeArch, FakeReg, FakeState};
 use crate::arch::x64::{GpReg, X64Arch, X64Reg};
+use crate::encoding::Encoding;
 use crate::encoding::bitpattern::Bit;
 use crate::encoding::dataflows::{
     AccessKind, AddressComputation, Dataflow, Dataflows, Dest, Inputs, MemoryAccess, MemoryAccesses, Size,
 };
-use crate::encoding::Encoding;
+use crate::semantics::IoType;
+use crate::semantics::default::Expression;
 use crate::semantics::default::computation::{Arg, ArgEncoding, OutputEncoding, SynthesizedComputation};
 use crate::semantics::default::ops::Op;
 use crate::semantics::default::smtgen::{FilledLocation, Sizes, StorageLocations, Z3Model};
-use crate::semantics::default::Expression;
-use crate::semantics::IoType;
 use crate::smt::z3::Z3Solver;
 use crate::smt::{SatResult, SmtBV, SmtBVArray, SmtSolver};
 use crate::state::{Addr, Location, MemoryState, Permissions, SystemState};
-use crate::Instruction;
 
 #[test]
 pub fn array_store_select_equals() {

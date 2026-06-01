@@ -4,11 +4,11 @@
 
 use std::time::Duration;
 
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
+use liblisa::semantics::IoType;
 use liblisa::semantics::default::builder::*;
 use liblisa::semantics::default::computation::{Arg, ArgEncoding, ExprComputation, OutputEncoding};
 use liblisa::semantics::default::expr;
-use liblisa::semantics::IoType;
 use liblisa::value::{AsValue, OwnedValue, Value};
 use liblisa_synth::search::InterpretedArgs;
 use rand::seq::SliceRandom;
@@ -368,7 +368,7 @@ fn evaluate_compare_eq(crit: &mut Criterion) {
         })
     });
 
-    let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().gen());
+    let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().random());
     let inputs = &[OwnedValue::Num(0x1234321), OwnedValue::Num(0x1234321), OwnedValue::Num(5)];
     let args = vec![
         Arg::Input {

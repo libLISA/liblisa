@@ -7,7 +7,7 @@ use liblisa::semantics::default::computation::{
 };
 use liblisa::semantics::default::ops::Op;
 use liblisa::semantics::default::{Expression, FALSE};
-use liblisa::semantics::{Computation, IoType, ARG_NAMES};
+use liblisa::semantics::{ARG_NAMES, Computation, IoType};
 use liblisa::utils::bitmap::GrowingBitmap;
 use liblisa::value::{AsValue, OwnedValue};
 
@@ -135,11 +135,7 @@ impl Term {
                             num_bits: 1,
                         },
                     );
-                    if *negate {
-                        t.not()
-                    } else {
-                        t
-                    }
+                    if *negate { t.not() } else { t }
                 }
             },
         }
@@ -488,7 +484,7 @@ impl From<Disjunction> for SynthesizedComputation {
 
 #[cfg(test)]
 mod tests {
-    use liblisa::semantics::{Computation, IoType, ARG_NAMES};
+    use liblisa::semantics::{ARG_NAMES, Computation, IoType};
     use liblisa::value::OwnedValue;
 
     use super::{Conjunction, Disjunction, Term};

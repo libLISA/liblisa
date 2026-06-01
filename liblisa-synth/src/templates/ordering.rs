@@ -1,7 +1,7 @@
 use std::iter::repeat;
 
-use liblisa::semantics::default::ops::Op;
 use liblisa::semantics::default::Expr;
+use liblisa::semantics::default::ops::Op;
 use liblisa::utils::bitmap::{Bitmap, BitmapSlice, FixedBitmapU64};
 
 /// An ordering describes which holes in an Expr can be freely exchanged.
@@ -188,8 +188,8 @@ impl Ordering {
 
 #[cfg(test)]
 mod tests {
-    use liblisa::semantics::default::ops::Op;
     use liblisa::semantics::default::Expr;
+    use liblisa::semantics::default::ops::Op;
     use liblisa::utils::bitmap::FixedBitmapU64;
 
     use super::Ordering;
@@ -198,8 +198,10 @@ mod tests {
     #[test]
     pub fn test_paths_match() {
         assert!(Path(vec![(0, Some(Op::Hole(0)))]).matches(&Path(vec![(0, Some(Op::Hole(0)))])));
-        assert!(Path(vec![(0, Some(Op::Hole(0))), (0, Some(Op::Add))])
-            .matches(&Path(vec![(0, Some(Op::Hole(1))), (1, Some(Op::Add))])));
+        assert!(
+            Path(vec![(0, Some(Op::Hole(0))), (0, Some(Op::Add))])
+                .matches(&Path(vec![(0, Some(Op::Hole(1))), (1, Some(Op::Add))]))
+        );
     }
 
     #[test]

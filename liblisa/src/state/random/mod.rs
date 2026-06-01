@@ -5,8 +5,8 @@ use std::fmt::Debug;
 use std::sync::atomic::{self, AtomicU64};
 
 use log::*;
-use rand::prelude::SliceRandom;
 use rand::Rng;
+use rand::prelude::SliceRandom;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
@@ -585,7 +585,7 @@ impl<'a, A: Arch, M: MappableArea> StateGen<'a, A, M> {
                                             let fixed_offset = if min_offset == max_offset {
                                                 *min_offset
                                             } else {
-                                                rng.gen_range(*min_offset..*max_offset)
+                                                rng.random_range(*min_offset..*max_offset)
                                             };
                                             let fixed_addr = new_addr.align_to_page_start(A::PAGE_BITS) + fixed_offset;
 
@@ -663,7 +663,7 @@ impl<'a, A: Arch, M: MappableArea> StateGen<'a, A, M> {
     /// If the register is an address register (such as the FS/GS base registers), a random valid mappable address is returned.
     pub fn randomize_register<R: Rng>(&self, rng: &mut R, reg: A::Reg) -> u64 {
         if let Some(mask) = reg.mask() {
-            rng.gen::<u64>() & mask
+            rng.random::<u64>() & mask
         } else if reg.is_pc() {
             loop {
                 let page = {
@@ -680,7 +680,7 @@ impl<'a, A: Arch, M: MappableArea> StateGen<'a, A, M> {
                 // If there are some instructions that use the PC as part of a computation, we will never observe the full input space.
                 // This is a problem, for example because we won't be able to infer alignment for memory accesses of the form (pc + 0x....)
                 // Therefore we add a small offset of up to 128. We ensure that lower offsets occur more often.
-                let v = rng.gen::<u16>();
+                let v = rng.random::<u16>();
                 let val = v as u64 & 0x7f | 0x80;
                 let shift = ((v >> 7) & 0b1111) % 9;
                 let at_start = v > u16::MAX / 2;
@@ -949,7 +949,7 @@ impl<'a, A: Arch, M: MappableArea> StateGen<'a, A, M> {
     pub fn fill_from_address_register<R: Rng>(&self, rng: &mut R, state: &mut SystemState<A>, reg: A::GpReg) {
         let fill_value = state.cpu().gpreg(reg);
         // TODO: Randomize between LE and BE bytes
-        let fill_bytes = if rng.gen() {
+        let fill_bytes = if rng.random() {
             fill_value.to_le_bytes()
         } else {
             fill_value.to_be_bytes()
@@ -1110,8 +1110,8 @@ mod tests {
     use test_log::test;
 
     use super::Constraint;
-    use crate::arch::fake::{AnyArea, FakeArch, FakeReg};
     use crate::arch::CpuState;
+    use crate::arch::fake::{AnyArea, FakeArch, FakeReg};
     use crate::encoding::dataflows::{AccessKind, AddressComputation, Dest, Inputs, MemoryAccess, MemoryAccesses, Size, Source};
     use crate::instr::Instruction;
     use crate::state::random::StateGen;

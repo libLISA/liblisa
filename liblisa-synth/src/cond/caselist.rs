@@ -12,10 +12,10 @@ use liblisa::utils::{Symmetric2DMatrix, Timeout};
 use liblisa::value::{AsValue, OwnedValue, Value};
 use log::{debug, info, trace, warn};
 
+use super::MAX_INPUTS;
 use super::casemap::CaseMap;
 use super::input_hash::{InputHash, InputHasher};
 use super::transitions::{Transition, TransitionMap, Transitions};
-use super::MAX_INPUTS;
 use crate::Requester;
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
@@ -96,7 +96,7 @@ impl<'a> GroupRef<'a> {
         self.group.result
     }
 
-    pub fn case_indices(&self) -> impl Iterator<Item = CaseIndex> + 'a {
+    pub fn case_indices(&self) -> impl Iterator<Item = CaseIndex> + use<'a> {
         let group_index = self.group_index;
         self.caselist
             .cases
@@ -156,7 +156,7 @@ impl<'a, 'i: 'a> RelationRef<'a, 'i> {
         self.caselist
             .cases_by_hash
             .iter()
-            .filter(move |(&other_hash, _)| query.check(hash, other_hash))
+            .filter(move |(other_hash, _)| query.check(hash, **other_hash))
             .flat_map(|(_, case_indices)| case_indices.iter().copied())
             .filter(move |&case_index| {
                 caselist[case_index]
@@ -1338,42 +1338,46 @@ mod tests {
 
         println!("{l:?}");
 
-        assert!(l
-            .find_case(&[
+        assert!(
+            l.find_case(&[
                 Value::Num(0xFFB),
                 Value::Num(1),
                 Value::Num(0),
                 Value::Num(0),
                 Value::Num(0x103)
             ])
-            .is_some());
-        assert!(l
-            .find_case(&[
+            .is_some()
+        );
+        assert!(
+            l.find_case(&[
                 Value::Num(0xFFB),
                 Value::Num(0),
                 Value::Num(1),
                 Value::Num(0),
                 Value::Num(0x103)
             ])
-            .is_some());
-        assert!(l
-            .find_case(&[
+            .is_some()
+        );
+        assert!(
+            l.find_case(&[
                 Value::Num(0xFFB),
                 Value::Num(0),
                 Value::Num(0),
                 Value::Num(1),
                 Value::Num(0x103)
             ])
-            .is_some());
-        assert!(l
-            .find_case(&[
+            .is_some()
+        );
+        assert!(
+            l.find_case(&[
                 Value::Num(0xFFB),
                 Value::Num(0),
                 Value::Num(0),
                 Value::Num(0),
                 Value::Num(0x61)
             ])
-            .is_some());
+            .is_some()
+        );
         // assert_eq!(l.group(1).case_indices().count(), 2);
         // assert_eq!(l.group(2).case_indices().count(), 1);
     }

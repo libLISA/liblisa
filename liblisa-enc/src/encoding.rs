@@ -5,11 +5,11 @@ use std::time::Instant;
 
 use itertools::Itertools;
 use liblisa::arch::Arch;
+use liblisa::encoding::Encoding;
 use liblisa::encoding::bitpattern::{
     Bit, FlowInputLocation, FlowOutputLocation, FlowValueLocation, ImmBitOrder, MappingOrBitOrder, Part, PartMapping, PartValue,
 };
 use liblisa::encoding::dataflows::{AddressComputation, Dataflows, Source};
-use liblisa::encoding::Encoding;
 use liblisa::oracle::{Oracle, OracleError};
 use liblisa::state::random::{RandomizationError, RemapError, StateGen};
 use log::{debug, error, info, trace, warn};
@@ -20,7 +20,7 @@ use thiserror::Error;
 use crate::cache::EncodingAnalysisCache;
 use crate::changes::{ThresholdValues, *};
 use crate::cleanup::{
-    remove_incorrect_generalizations, remove_incorrect_memory_computations, remove_useless_bits, DontCareValidator,
+    DontCareValidator, remove_incorrect_generalizations, remove_incorrect_memory_computations, remove_useless_bits,
 };
 
 /// Infers [`Encoding`]s.
@@ -927,7 +927,7 @@ impl<'borrow, A: Arch, O: Oracle<A> + 'borrow, C: EncodingAnalysisCache<A>> Enco
         o: &'a mut O, cache: &'a C, original_dataflows: &'a Dataflows<A, ()>,
     ) -> Result<Encoding<A, ()>, EncodingError<A>> {
         info!("Inferring encoding for {}", original_dataflows);
-        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().gen());
+        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().random());
         let mappable_area = o.mappable_area();
         let state_gen = StateGen::new(&original_dataflows.addresses, &mappable_area)?;
         let threshold_values = cache.infer_threshold_values(o, original_dataflows, &state_gen);

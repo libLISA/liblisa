@@ -4,7 +4,7 @@ use std::rc::Rc;
 use crate::arch::Arch;
 use crate::encoding::dataflows::MemoryAccesses;
 use crate::oracle::MappableArea;
-use crate::state::random::{update_memory_addresses_unchecked, StateGen};
+use crate::state::random::{StateGen, update_memory_addresses_unchecked};
 use crate::state::{AsSystemState, StateByte, SystemState, SystemStateByteView};
 
 #[derive(Clone)]
@@ -107,9 +107,11 @@ impl<'a, A: Arch> SimpleJitState<'a, A> {
                 };
 
                 // Make sure only the bytes specified in bytes_affected were modified
-                debug_assert!((0..view.size())
-                    .map(StateByte::new)
-                    .all(|b| bytes_affected.contains(&b) || view.get(base_state, b) == view.get(&s.state, b)));
+                debug_assert!(
+                    (0..view.size())
+                        .map(StateByte::new)
+                        .all(|b| bytes_affected.contains(&b) || view.get(base_state, b) == view.get(&s.state, b))
+                );
 
                 if !need_address_update || state_gen.adapt(&mut s.state, false) {
                     Some(SimpleJitState {

@@ -16,8 +16,8 @@ use crate::encoding::bitpattern::Bit;
 use crate::encoding::{Encoding, EncodingWithFilters};
 use crate::instr::{MinimumCoveringFilterSet, WithFilters};
 use crate::semantics::Computation;
-use crate::utils::bitmap::GrowingBitmap;
 use crate::utils::Symmetric2DMatrix;
+use crate::utils::bitmap::GrowingBitmap;
 
 fn filter_mask_from_bits(bits: &[Bit]) -> u32 {
     bits.iter()

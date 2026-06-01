@@ -114,7 +114,7 @@ pub trait Oracle<A: Arch> {
     fn random_mappable_page(&self, rng: &mut impl Rng) -> Page<A> {
         let mappable = self.mappable_area();
         loop {
-            let addr = Addr::new(rng.gen::<u64>() & !bitmask_u64(A::PAGE_BITS as u32));
+            let addr = Addr::new(rng.random::<u64>() & !bitmask_u64(A::PAGE_BITS as u32));
             if mappable.can_map(addr) {
                 return addr.page::<A>()
             }

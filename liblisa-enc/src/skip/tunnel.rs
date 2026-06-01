@@ -5,8 +5,8 @@ use liblisa::instr::{FilterList, InstructionCounter};
 use liblisa::oracle::Oracle;
 use log::{info, trace};
 
-use crate::cache::EncodingAnalysisCache;
 use crate::Validity;
+use crate::cache::EncodingAnalysisCache;
 
 /// Skip byte strings that are invalid instructions using tunneling.
 pub fn tunnel_invalid_instrs<A: Arch, O: Oracle<A>>(counter: &mut InstructionCounter, o: &mut O, scope: &impl Scope) {

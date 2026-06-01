@@ -2,7 +2,7 @@ use std::ops::Range;
 
 use arrayvec::ArrayVec;
 use liblisa::semantics::default::builder::*;
-use liblisa::semantics::default::{expr, Expr, MAX_TEMPLATE_ARGS};
+use liblisa::semantics::default::{Expr, MAX_TEMPLATE_ARGS, expr};
 use liblisa::utils::bitmap::BitmapSlice;
 
 use self::ordering::Ordering;

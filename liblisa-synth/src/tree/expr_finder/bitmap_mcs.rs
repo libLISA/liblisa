@@ -4,17 +4,17 @@ use std::time::Instant;
 use liblisa::semantics::default::builder::hole;
 use liblisa::semantics::default::computation::{ExpressionComputation, OutputEncoding};
 use liblisa::semantics::default::expr;
-use liblisa::semantics::{Computation, IoType, ARG_NAMES};
+use liblisa::semantics::{ARG_NAMES, Computation, IoType};
 use liblisa::utils::bitmap::{BitmapSlice, GrowingBitmap};
-use liblisa::utils::{bitmask_u128, bitmask_u64, MinimumCoveringSet, Timeout};
+use liblisa::utils::{MinimumCoveringSet, Timeout, bitmask_u64, bitmask_u128};
 use liblisa::value::{AsValue, OwnedValue, Value, ValueArrayEquality};
 use log::{debug, info, warn};
 
 use super::ExpressionFinder;
+use crate::InputSlice;
 use crate::search::{CompressedIterComputation, ComputationEnumerator};
 use crate::templates::EXPR_TEMPLATES;
 use crate::tree::PreparedCase;
-use crate::InputSlice;
 
 #[derive(Clone)]
 struct Grouping {
@@ -782,13 +782,13 @@ impl BitmapMcsExpressionFinder {
 #[cfg(test)]
 mod tests {
     use itertools::Itertools;
-    use liblisa::semantics::{Computation, IoType, ARG_NAMES};
+    use liblisa::semantics::{ARG_NAMES, Computation, IoType};
     use liblisa::value::{AsValue, OwnedValue, Value};
     use test_log::test;
 
     use crate::tree::expr_finder::bitmap_mcs::BitmapMcsExpressionFinder;
     use crate::tree::expr_finder::{ExpressionFinder, TestSynthesizer};
-    use crate::{synthesize_from_fn, SynthesizerBase};
+    use crate::{SynthesizerBase, synthesize_from_fn};
 
     #[test]
     pub fn find_mux() {

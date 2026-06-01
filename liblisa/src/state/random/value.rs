@@ -45,11 +45,11 @@ impl TinyBuffer {
 /// Returns a randomized `u64` value.
 pub fn randomized_value<R: Rng>(rng: &mut R) -> u64 {
     const TOPMOST_BIT: u64 = 0x8000_0000_0000_0000;
-    let v = rng.gen::<u64>();
+    let v = rng.random::<u64>();
     // Accept a bit of bias to avoid the overhead of gen_range(..)
-    let k = rng.gen::<u16>() as u32 % (65 * 64);
+    let k = rng.random::<u16>() as u32 % (65 * 64);
 
-    // The topmost bit in v is never used, so we can re-use it later on to avoid a call to rng.gen().
+    // The topmost bit in v is never used, so we can re-use it later on to avoid a call to rng.random().
     let leftover_rng_bit = (v & TOPMOST_BIT) != 0;
     // The next bit is likely shifted out as well,
     let mostly_leftover_rng_bit = (v & (TOPMOST_BIT >> 1)) != 0;
@@ -82,12 +82,12 @@ pub fn randomized_value<R: Rng>(rng: &mut R) -> u64 {
 }
 
 fn randomized_u32<R: Rng>(rng: &mut R) -> u32 {
-    let mut r = TinyBuffer(rng.gen());
+    let mut r = TinyBuffer(rng.random());
 
     const TOPMOST_BIT: u32 = 0x80000000;
     let v = r.get_u32();
 
-    // The topmost bit in v is never used, so we can re-use it later on to avoid a call to rng.gen().
+    // The topmost bit in v is never used, so we can re-use it later on to avoid a call to rng.random().
     let leftover_rng_bit = (v & TOPMOST_BIT) != 0;
     let zeros = r.get::<5>();
     let shift = (r.get::<5>() + r.get::<1>()) as u32;
@@ -110,13 +110,13 @@ fn randomized_u32<R: Rng>(rng: &mut R) -> u32 {
 }
 
 fn randomized_u22<R: Rng>(rng: &mut R) -> u32 {
-    let mut r = TinyBuffer(rng.gen());
+    let mut r = TinyBuffer(rng.random());
 
     const TOPMOST_BIT: u32 = 0x80000000;
     let v = r.get_u32();
     // Accept a bit of bias to avoid the overhead of gen_range(..)
 
-    // The topmost bit in v is never used, so we can re-use it later on to avoid a call to rng.gen().
+    // The topmost bit in v is never used, so we can re-use it later on to avoid a call to rng.random().
     let leftover_rng_bit = (v & TOPMOST_BIT) != 0;
     let zeros = r.get::<5>();
     let shift = ((r.get_u8()) % 23) as u32 + 10;
@@ -140,11 +140,11 @@ fn randomized_u22<R: Rng>(rng: &mut R) -> u32 {
 
 fn randomized_u64<R: Rng>(rng: &mut R) -> u64 {
     const TOPMOST_BIT: u64 = 0x8000_0000_0000_0000;
-    let v = rng.gen::<u64>();
+    let v = rng.random::<u64>();
     // Accept a bit of bias to avoid the overhead of gen_range(..)
-    let k = rng.gen::<u16>() as u32 % (65 * 64);
+    let k = rng.random::<u16>() as u32 % (65 * 64);
 
-    // The topmost bit in v is never used, so we can re-use it later on to avoid a call to rng.gen().
+    // The topmost bit in v is never used, so we can re-use it later on to avoid a call to rng.random().
     let leftover_rng_bit = (v & TOPMOST_BIT) != 0;
     let zeros = k % 64;
     let shift = k / 64;
@@ -168,11 +168,11 @@ fn randomized_u64<R: Rng>(rng: &mut R) -> u64 {
 
 fn randomized_u50<R: Rng>(rng: &mut R) -> u64 {
     const TOPMOST_BIT: u64 = 0x8000_0000_0000_0000;
-    let v = rng.gen::<u64>();
+    let v = rng.random::<u64>();
     // Accept a bit of bias to avoid the overhead of gen_range(..)
-    let k = rng.gen::<u16>() as u32 % (51 * 64);
+    let k = rng.random::<u16>() as u32 % (51 * 64);
 
-    // The topmost bit in v is never used, so we can re-use it later on to avoid a call to rng.gen().
+    // The topmost bit in v is never used, so we can re-use it later on to avoid a call to rng.random().
     let leftover_rng_bit = (v & TOPMOST_BIT) != 0;
     let zeros = k % 64;
     let shift = k / 64 + 14;
@@ -195,7 +195,7 @@ fn randomized_u50<R: Rng>(rng: &mut R) -> u64 {
 }
 
 fn randomized_f32<R: Rng>(rng: &mut R) -> f32 {
-    let mut r = TinyBuffer(rng.gen());
+    let mut r = TinyBuffer(rng.random());
 
     match r.get::<5>() {
         // Special values
@@ -218,7 +218,7 @@ fn randomized_f32<R: Rng>(rng: &mut R) -> f32 {
 }
 
 fn randomized_f64<R: Rng>(rng: &mut R) -> u64 {
-    let mut r = TinyBuffer(rng.gen());
+    let mut r = TinyBuffer(rng.random());
     match r.get::<5>() {
         // Special values
         0 => f64::NAN.to_bits(),
@@ -252,7 +252,7 @@ fn randomized_f64<R: Rng>(rng: &mut R) -> u64 {
         15..=17 => 0x42c0000000000000 | (r.get::<52>() | (r.rest() << 63)) & !0xff,
         // There's a 1 in 2048 chance that we generate a NaN here.
         // It's not worth the performance cost trying to filter them out.
-        _ => rng.gen(),
+        _ => rng.random(),
     }
 }
 
@@ -282,7 +282,7 @@ impl ExtendedFloatingPoint {
 }
 
 fn randomized_f80<R: Rng>(rng: &mut R) -> ExtendedFloatingPoint {
-    let mut r = TinyBuffer(rng.gen());
+    let mut r = TinyBuffer(rng.random());
     match r.get::<4>() {
         // Special values
         0 | 1 => ExtendedFloatingPoint::NAN,
@@ -305,7 +305,7 @@ fn randomized_f80<R: Rng>(rng: &mut R) -> ExtendedFloatingPoint {
         // denormal / subnormal number
         // There's a 1 in "many" chance that we generate a NaN here.
         // It's not worth the performance cost trying to filter them out.
-        _ => ExtendedFloatingPoint(rng.gen(), rng.gen()),
+        _ => ExtendedFloatingPoint(rng.random(), rng.random()),
     }
 }
 
@@ -331,11 +331,7 @@ pub fn randomized_bytes_select_nth<R: Rng>(rng: &mut R, index: usize) -> u8 {
 pub fn randomized_bytes_into_buffer<R: Rng>(rng: &mut R, buf: &mut [u8]) {
     fn gen10<R: Rng>(buf: &mut [u8], swap_bytes: bool, rng: &mut R, mut f: impl FnMut(&mut R) -> ExtendedFloatingPoint) {
         fn swap(swap_bytes: bool, v: ExtendedFloatingPoint) -> [u8; 10] {
-            if swap_bytes {
-                v.to_le_bytes()
-            } else {
-                v.to_be_bytes()
-            }
+            if swap_bytes { v.to_le_bytes() } else { v.to_be_bytes() }
         }
 
         let size = (buf.len() + 9) / 10;
@@ -369,11 +365,7 @@ pub fn randomized_bytes_into_buffer<R: Rng>(rng: &mut R, buf: &mut [u8]) {
 
     fn gen8<R: Rng>(buf: &mut [u8], swap_bytes: bool, rng: &mut R, mut f: impl FnMut(&mut R) -> u64) {
         fn swap(swap_bytes: bool, v: u64) -> u64 {
-            if swap_bytes {
-                v.swap_bytes()
-            } else {
-                v
-            }
+            if swap_bytes { v.swap_bytes() } else { v }
         }
 
         if let (&mut [], buf, &mut []) = unsafe { buf.align_to_mut::<u64>() } {
@@ -413,11 +405,7 @@ pub fn randomized_bytes_into_buffer<R: Rng>(rng: &mut R, buf: &mut [u8]) {
 
     fn gen4<R: Rng>(buf: &mut [u8], swap_bytes: bool, rng: &mut R, mut f: impl FnMut(&mut R) -> u32) {
         fn swap(swap_bytes: bool, v: u32) -> u32 {
-            if swap_bytes {
-                v.swap_bytes()
-            } else {
-                v
-            }
+            if swap_bytes { v.swap_bytes() } else { v }
         }
 
         if let (&mut [], buf, &mut []) = unsafe { buf.align_to_mut::<u32>() } {
@@ -455,7 +443,7 @@ pub fn randomized_bytes_into_buffer<R: Rng>(rng: &mut R, buf: &mut [u8]) {
         }
     }
 
-    let r = rng.gen::<u8>() % 14;
+    let r = rng.random::<u8>() % 14;
     let swap_bytes = r & 1 != 0;
     match r >> 1 {
         0 => gen4(buf, swap_bytes, rng, |rng| randomized_f32(rng).to_bits()),
@@ -471,7 +459,7 @@ pub fn randomized_bytes_into_buffer<R: Rng>(rng: &mut R, buf: &mut [u8]) {
 
 /// Generates randomized bytes and puts them in an [`ArrayVec`].
 pub fn randomized_bytes_into_arrayvec<const N: usize, R: Rng>(rng: &mut R, buf: &mut arrayvec::ArrayVec<u8, N>, len: usize) {
-    fn gen<const N: usize, I: IntoIterator<Item = u8>, R: Rng>(
+    fn g<const N: usize, I: IntoIterator<Item = u8>, R: Rng>(
         buf: &mut arrayvec::ArrayVec<u8, N>, len: usize, rng: &mut R, mut f: impl FnMut(&mut R) -> I,
     ) {
         for src in repeat_with(|| f(rng)).flat_map(|v| IntoIterator::into_iter(v)).take(len) {
@@ -479,21 +467,21 @@ pub fn randomized_bytes_into_arrayvec<const N: usize, R: Rng>(rng: &mut R, buf: 
         }
     }
 
-    match rng.gen::<u8>() % 14 {
-        0 => gen(buf, len, rng, |rng| randomized_f32(rng).to_be_bytes()),
-        1 => gen(buf, len, rng, |rng| randomized_f64(rng).to_be_bytes()),
-        2 => gen(buf, len, rng, |rng| randomized_f32(rng).to_le_bytes()),
-        3 => gen(buf, len, rng, |rng| randomized_f64(rng).to_le_bytes()),
-        4 => gen(buf, len, rng, |rng| randomized_u32(rng).to_be_bytes()),
-        5 => gen(buf, len, rng, |rng| randomized_u64(rng).to_be_bytes()),
-        6 => gen(buf, len, rng, |rng| randomized_u32(rng).to_le_bytes()),
-        7 => gen(buf, len, rng, |rng| randomized_u64(rng).to_le_bytes()),
-        8 => gen(buf, len, rng, |rng| randomized_u22(rng).to_be_bytes()),
-        9 => gen(buf, len, rng, |rng| randomized_u22(rng).to_le_bytes()),
-        10 => gen(buf, len, rng, |rng| randomized_u50(rng).to_be_bytes()),
-        11 => gen(buf, len, rng, |rng| randomized_u50(rng).to_le_bytes()),
-        12 => gen(buf, len, rng, |rng| randomized_f80(rng).to_be_bytes()),
-        13 => gen(buf, len, rng, |rng| randomized_f80(rng).to_le_bytes()),
+    match rng.random::<u8>() % 14 {
+        0 => g(buf, len, rng, |rng| randomized_f32(rng).to_be_bytes()),
+        1 => g(buf, len, rng, |rng| randomized_f64(rng).to_be_bytes()),
+        2 => g(buf, len, rng, |rng| randomized_f32(rng).to_le_bytes()),
+        3 => g(buf, len, rng, |rng| randomized_f64(rng).to_le_bytes()),
+        4 => g(buf, len, rng, |rng| randomized_u32(rng).to_be_bytes()),
+        5 => g(buf, len, rng, |rng| randomized_u64(rng).to_be_bytes()),
+        6 => g(buf, len, rng, |rng| randomized_u32(rng).to_le_bytes()),
+        7 => g(buf, len, rng, |rng| randomized_u64(rng).to_le_bytes()),
+        8 => g(buf, len, rng, |rng| randomized_u22(rng).to_be_bytes()),
+        9 => g(buf, len, rng, |rng| randomized_u22(rng).to_le_bytes()),
+        10 => g(buf, len, rng, |rng| randomized_u50(rng).to_be_bytes()),
+        11 => g(buf, len, rng, |rng| randomized_u50(rng).to_le_bytes()),
+        12 => g(buf, len, rng, |rng| randomized_f80(rng).to_be_bytes()),
+        13 => g(buf, len, rng, |rng| randomized_f80(rng).to_le_bytes()),
         _ => unreachable!(),
     }
 }
@@ -513,7 +501,7 @@ pub fn random_state<A: Arch, M: MappableArea, R: Rng>(rng: &mut R, instr: &Instr
         use_trap_flag: true,
     };
 
-    let gen = StateGen::new(&accesses, mappable).unwrap();
+    let g = StateGen::new(&accesses, mappable).unwrap();
 
     SystemState::new(
         A::CpuState::create(|reg, value| {
@@ -524,7 +512,7 @@ pub fn random_state<A: Arch, M: MappableArea, R: Rng>(rng: &mut R, instr: &Instr
                 }
             } else {
                 match value {
-                    MutValue::Num(value) => *value = gen.randomize_register(rng, reg),
+                    MutValue::Num(value) => *value = g.randomize_register(rng, reg),
                     MutValue::Bytes(buf) => randomized_bytes_into_buffer(rng, buf),
                 }
             }

@@ -1,4 +1,3 @@
-#![feature(let_chains)]
 #![doc(html_no_source)]
 
 use std::collections::HashMap;
@@ -12,8 +11,8 @@ use liblisa::oracle::{Oracle, OracleSource};
 use liblisa::state::{Addr, MemoryState, Permissions, SystemState};
 use liblisa::value::MutValue;
 use nix::sched::CpuSet;
-use serde::de::DeserializeOwned;
 use serde::Serialize;
+use serde::de::DeserializeOwned;
 
 use crate::threadpool::cpu::CpuCaches;
 

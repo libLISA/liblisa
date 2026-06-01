@@ -4,7 +4,7 @@ use std::time::Instant;
 
 use itertools::Itertools;
 use liblisa::semantics::default::computation::{ExpressionComputation, OutputEncoding, PreparedComparison};
-use liblisa::semantics::{Computation, IoType, ARG_NAMES};
+use liblisa::semantics::{ARG_NAMES, Computation, IoType};
 use liblisa::utils::bitmap::GrowingBitmap;
 use liblisa::utils::{MinimumCoveringSet, Timeout};
 use liblisa::value::{AsValue, Value};
@@ -14,8 +14,8 @@ use super::ExpressionFinder;
 use crate::search::searcher::{CheckValueResult, Searcher};
 use crate::search::{CompressedIterComputation, ComputationEnumerator, IterItemComputation};
 use crate::templates::EXPR_TEMPLATES;
-use crate::tree::mapping::{PerfectMapping, Ptr};
 use crate::tree::Case;
+use crate::tree::mapping::{PerfectMapping, Ptr};
 
 #[derive(Clone)]
 struct PrimaryCase {

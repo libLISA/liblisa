@@ -10,7 +10,7 @@ use std::fmt::{Debug, Display};
 use std::ops::{Add, BitAnd, BitOr, BitXor, Mul, Neg, Not, Sub};
 use std::time::Duration;
 
-use z3::ast::{forall_const, Ast};
+use z3::ast::{Ast, forall_const};
 use z3::{Config, Context, Params, Solver};
 
 use super::SmtBVArray;

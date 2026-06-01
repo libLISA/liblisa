@@ -2,7 +2,7 @@ use std::arch::asm;
 use std::collections::VecDeque;
 use std::fs;
 use std::io::{self, Read};
-use std::iter::{once, Fuse};
+use std::iter::{Fuse, once};
 use std::mem::ManuallyDrop;
 use std::ops::{Index, Range};
 use std::os::unix::prelude::CommandExt;
@@ -12,16 +12,16 @@ use std::sync::atomic::Ordering;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
+use liblisa_x64_observer_shmqueue::frame::FRAME_SIZE;
 use liblisa_x64_observer_shmqueue::frame::command::{CommandFrame, MemoryMapping, MemoryMappings};
 pub use liblisa_x64_observer_shmqueue::frame::command::{ExtendedRegs, Permissions};
-use liblisa_x64_observer_shmqueue::frame::control::{make_atomic_u32, ControlFrame, ControlFrameData, Host, Layout};
-use liblisa_x64_observer_shmqueue::frame::FRAME_SIZE;
+use liblisa_x64_observer_shmqueue::frame::control::{ControlFrame, ControlFrameData, Host, Layout, make_atomic_u32};
 use liblisa_x64_observer_shmqueue::queue::Queue;
 pub use liblisa_x64_observer_shmqueue::regs::{DebugRegs, GpRegs, St, XsaveLegacyArea, YmmRegs};
 use nix::sched::CpuSet;
 use nix::unistd::Pid;
-use rand::distributions::Alphanumeric;
 use rand::Rng;
+use rand::distr::Alphanumeric;
 use shared_memory::{Shmem, ShmemConf, ShmemError};
 use tempfile::NamedTempFile;
 

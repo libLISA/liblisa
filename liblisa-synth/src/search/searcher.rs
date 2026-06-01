@@ -2,8 +2,8 @@ use std::fmt::Debug;
 use std::marker::PhantomData;
 use std::mem::swap;
 
-use liblisa::semantics::default::computation::{OutputEncoding, PreparedComparison};
 use liblisa::semantics::IoType;
+use liblisa::semantics::default::computation::{OutputEncoding, PreparedComparison};
 use liblisa::value::AsValue;
 use log::{debug, info};
 

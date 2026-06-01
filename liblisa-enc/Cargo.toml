@@ -1,7 +1,7 @@
 [package]
 name = "liblisa-enc"
-version = "0.1.0"
-edition = "2021"
+version = "0.2.0"
+edition = "2024"
 description = "A tool for automated discovery and analysis of the ISA of a CPU."
 license = "AGPL-3.0-only"
 documentation = "https://docs.liblisa.nl/"
@@ -29,11 +29,11 @@ name = "skip"
 harness = false
 
 [dependencies]
-liblisa = { version = "0.1.0", path = "../liblisa" }
+liblisa = { version = "0.2.0", path = "../liblisa" }
 thiserror = "1"
 serde = { version = "1.0", features = [ "derive" ] }
-rand = "0.8"
-rand_xoshiro = "0.6"
+rand = "0.9"
+rand_xoshiro = "0.7"
 itertools = "0.12.0"
 log = "0.4"
 arrayvec = "0.7"
@@ -43,6 +43,6 @@ fxhash = "0.2.1"
 criterion = "0.5"
 env_logger = "0.10"
 test-log = "0.2.10"
-liblisa-x64-observer = { version = "0.1.0", path = "../arch/x64/liblisa-x64-observer" }
+liblisa-x64-observer = { version = "0.2.0", path = "../arch/x64/liblisa-x64-observer" }
 serde_json = "1.0"
 rmp-serde = "1.1.1"

@@ -8,17 +8,17 @@ use log::{debug, trace};
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 
-use super::split::compute_split_filters;
 use super::EncodingComparisonOptions;
+use super::split::compute_split_filters;
 use crate::arch::Arch;
-use crate::encoding::indexed::{EncodingId, IndexedEncodings};
 use crate::encoding::EncodingWithFilters;
+use crate::encoding::indexed::{EncodingId, IndexedEncodings};
 use crate::instr::{ByteFilter, InstructionFilter, WithFilters};
-use crate::semantics::default::computation::SynthesizedComputation;
 use crate::semantics::Computation;
+use crate::semantics::default::computation::SynthesizedComputation;
 use crate::smt::SolverProvider;
-use crate::utils::bitmap::GrowingBitmap;
 use crate::utils::Symmetric2DMatrix;
+use crate::utils::bitmap::GrowingBitmap;
 
 /// The result of a pairwise comparison between two encodings.
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Hash)]

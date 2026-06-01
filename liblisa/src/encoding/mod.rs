@@ -13,16 +13,16 @@ use bitpattern::*;
 use dataflows::*;
 use itertools::Itertools;
 use log::*;
-use rand::seq::IteratorRandom;
 use rand::Rng;
+use rand::seq::IteratorRandom;
 use serde::{Deserialize, Serialize};
 
 use crate::arch::{Arch, Register};
 use crate::instr::{ByteFilter, FilterBit, Instruction, InstructionFilter};
-use crate::semantics::{Computation, ARG_NAMES};
+use crate::semantics::{ARG_NAMES, Computation};
 use crate::utils::bitmap::{BitmapSlice, GrowingBitmap};
 use crate::utils::min_cover_with_exclusions::MinCoverWithExclusions;
-use crate::utils::{bitmask_u64, EitherIter};
+use crate::utils::{EitherIter, bitmask_u64};
 
 pub mod bitpattern;
 pub mod dataflows;
@@ -1101,11 +1101,7 @@ impl<T> FlowValueLocationMap<T> {
             },
         };
 
-        if data.len() <= index {
-            None
-        } else {
-            data[index].as_ref()
-        }
+        if data.len() <= index { None } else { data[index].as_ref() }
     }
 }
 
@@ -1388,7 +1384,7 @@ impl<A: Arch, C: Clone + Debug> Encoding<A, C> {
                         if let Some(iter) = p.mapping.valid_values() {
                             iter.choose(rng).unwrap() as u64
                         } else {
-                            rng.gen::<u64>() & !(u64::MAX.checked_shl(p.size as u32).unwrap_or(0))
+                            rng.random::<u64>() & !(u64::MAX.checked_shl(p.size as u32).unwrap_or(0))
                         }
                     })
                 })
@@ -1397,7 +1393,7 @@ impl<A: Arch, C: Clone + Debug> Encoding<A, C> {
 
             for (index, bit) in self.bits.iter().enumerate() {
                 if let Bit::DontCare = bit {
-                    instr.set_nth_bit_from_right(index, rng.gen_range(0..=1));
+                    instr.set_nth_bit_from_right(index, rng.random_range(0..=1));
                 }
             }
 
@@ -1952,7 +1948,7 @@ impl<A: Arch, C: Computation> Encoding<A, C> {
             self.bits
                 .iter()
                 .enumerate()
-                .filter(|(_, &bit)| bit == Bit::DontCare)
+                .filter(|(_, bit)| **bit == Bit::DontCare)
                 .map(|(n, _)| n)
                 .collect::<Vec<_>>()
         } else {
@@ -1968,30 +1964,32 @@ impl<A: Arch, C: Computation> Encoding<A, C> {
                 .collect::<Vec<_>>();
             let mut done = false;
 
-            repeat_with(move || loop {
-                if done {
-                    return None
-                }
+            repeat_with(move || {
+                loop {
+                    if done {
+                        return None
+                    }
 
-                let instantiation = self.instantiate(&current);
+                    let instantiation = self.instantiate(&current);
 
-                let mut carry = 1;
-                for ((current, val), part) in current.iter_mut().zip(fixed_value).zip(self.parts.iter()) {
-                    if val.is_none() {
-                        *current += carry;
-                        if *current >= (1 << part.size) as u64 {
-                            *current = 0;
-                            carry = 1;
-                        } else {
-                            carry = 0;
+                    let mut carry = 1;
+                    for ((current, val), part) in current.iter_mut().zip(fixed_value).zip(self.parts.iter()) {
+                        if val.is_none() {
+                            *current += carry;
+                            if *current >= (1 << part.size) as u64 {
+                                *current = 0;
+                                carry = 1;
+                            } else {
+                                carry = 0;
+                            }
                         }
                     }
-                }
 
-                done = carry != 0;
+                    done = carry != 0;
 
-                if let Ok(result) = instantiation {
-                    return Some(*result.instr())
+                    if let Ok(result) = instantiation {
+                        return Some(*result.instr())
+                    }
                 }
             })
             .take_while(|x| x.is_some())
@@ -2597,8 +2595,8 @@ pub enum RestrictError {
 #[cfg(test)]
 mod tests {
     use super::{ImmBitOrder, MappingOrBitOrder};
-    use crate::arch::fake::*;
     use crate::arch::Arch;
+    use crate::arch::fake::*;
     use crate::encoding::dataflows::{MemoryAccess, MemoryAccesses};
     use crate::encoding::{
         AccessKind, AddressComputation, Bit, Dataflow, Dataflows, Dest, Encoding, FlowInputLocation, FlowValueLocation, Inputs,

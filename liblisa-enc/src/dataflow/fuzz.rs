@@ -10,13 +10,13 @@ use liblisa::state::jit::{ComplexJitState, MaybeJitState};
 use liblisa::state::random::StateGen;
 use liblisa::state::{AsSystemState, StateByte, SystemState, SystemStateByteView};
 use log::info;
-use rand::seq::SliceRandom;
+use rand::seq::IndexedRandom;
 use rand::{Rng, SeedableRng};
 use rand_xoshiro::{Xoroshiro128PlusPlus, Xoshiro256PlusPlus};
 
+use super::DataflowAnalysisError;
 use super::analyzer::{Base, Goal, InterestingPair};
 use super::results::{AnalysisResult, IgnorableDifferences};
-use super::DataflowAnalysisError;
 use crate::dataflow::analyzer::modify_state_with_spec_possibly_eq;
 use crate::dataflow::results::compute_changed;
 use crate::dataflow::spec::EquivalenceSpec;
@@ -109,9 +109,9 @@ impl<'a, 'borrow, A: Arch, M: MappableArea> Fuzz<'a, 'borrow, A, M> {
 
     fn generate_base_state<R: Rng>(state_gen: &StateGen<'a, A, M>, rng: &mut R) -> SystemState<A> {
         let mut state = state_gen.randomize_new(rng).unwrap();
-        match rng.gen_range(0..10usize) {
+        match rng.random_range(0..10usize) {
             0 => {
-                let filled_byte = rng.gen();
+                let filled_byte = rng.random();
                 state_gen.fill_with_byte(rng, &mut state, filled_byte);
             },
             1 => {
@@ -262,7 +262,7 @@ impl<'a, 'borrow, A: Arch, M: MappableArea> Fuzz<'a, 'borrow, A, M> {
                                 .unwrap_or(u64::MAX)
                                 .checked_shr(index as u32 * 8)
                                 .unwrap_or(u64::MAX) as u8;
-                            let new = rng.gen::<u8>() & mask;
+                            let new = rng.random::<u8>() & mask;
                             self.view.set(state, b, new);
                             if new != old {
                                 changed.push(b);
@@ -307,7 +307,7 @@ impl<'a, 'borrow, A: Arch, M: MappableArea> Fuzz<'a, 'borrow, A, M> {
 
             // Strategy 3: For each dataflow: change only the bytes that we are filling in (see above)
             // for sources in filled_dataflows.iter()
-            let mut rng = Xoshiro256PlusPlus::seed_from_u64(rng.gen());
+            let mut rng = Xoshiro256PlusPlus::seed_from_u64(rng.random());
             let view = self.view;
             let fill_in_test = filled_dataflows.iter().filter_map(move |sources| {
                 let mut changed = Vec::new();
@@ -321,7 +321,7 @@ impl<'a, 'borrow, A: Arch, M: MappableArea> Fuzz<'a, 'borrow, A, M> {
                                 .unwrap_or(u64::MAX)
                                 .checked_shr(index as u32 * 8)
                                 .unwrap_or(u64::MAX) as u8;
-                            let new = rng.gen::<u8>() & mask;
+                            let new = rng.random::<u8>() & mask;
                             view.set(state, b, new);
 
                             if new != old {
@@ -380,7 +380,7 @@ impl<'a, 'borrow, A: Arch, M: MappableArea> Fuzz<'a, 'borrow, A, M> {
 
         // TODO: What instr benefits from this fuzzing?
         let view = self.view;
-        let rng = RefCell::new(Xoroshiro128PlusPlus::seed_from_u64(rng.gen()));
+        let rng = RefCell::new(Xoroshiro128PlusPlus::seed_from_u64(rng.random()));
         let rng = &rng;
         let unique_sources = &unique_sources;
         let state_gen = &self.state_gen;

@@ -564,9 +564,9 @@ mod tests {
         // let mut rng = rand::thread_rng();
         // for _ in 0..100_000 {
         //     let mut data = Vec::<u8>::new();
-        //     data.extend(&bytes[..rng.gen_range(0..bytes.len())]);
+        //     data.extend(&bytes[..rng.random_range(0..bytes.len())]);
 
-        //     let mut extra = vec![0; rng.gen_range(0..128)];
+        //     let mut extra = vec![0; rng.random_range(0..128)];
         //     rng.fill_bytes(&mut extra);
         //     data.extend(extra);
 

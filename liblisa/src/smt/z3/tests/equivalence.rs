@@ -4,12 +4,12 @@ use test_log::test;
 
 use crate::arch::fake::FakeArch;
 use crate::arch::fake::FakeReg::{R0, R1, R2, R3, RZ};
-use crate::compare::{encodings_semantically_equal, encodings_structurally_equal, Equivalence};
+use crate::compare::{Equivalence, encodings_semantically_equal, encodings_structurally_equal};
+use crate::encoding::Encoding;
 use crate::encoding::bitpattern::{Bit, FlowValueLocation, Part, PartMapping};
 use crate::encoding::dataflows::{
     AccessKind, AddrTerm, AddrTermSize, AddressComputation, Dataflows, Dest, Inputs, MemoryAccess, MemoryAccesses, Size,
 };
-use crate::encoding::Encoding;
 use crate::instr::Instruction;
 use crate::semantics::default::computation::SynthesizedComputation;
 use crate::smt::z3::Z3Solver;

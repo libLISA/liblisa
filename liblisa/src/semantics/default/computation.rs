@@ -12,7 +12,7 @@ use super::{Expr, Expression, FALSE, TRUE};
 use crate::semantics::default::ops::Op;
 use crate::semantics::{Computation, IoType, OutputType};
 use crate::utils::cmov::CmovAnd;
-use crate::utils::{create_from_le_bytes, sign_extend, sign_extend_u64, switch_endianness_u128, switch_endianness_u64};
+use crate::utils::{create_from_le_bytes, sign_extend, sign_extend_u64, switch_endianness_u64, switch_endianness_u128};
 use crate::value::{AsValue, OwnedValue, Value};
 
 /// A computation using an [`Expr`].
@@ -916,7 +916,8 @@ impl Computation for SynthesizedComputation {
     }
 
     fn display<'a, S: AsRef<str>>(&'a self, input_names: &'a [S]) -> impl Display + Debug + 'a {
-        self.expr.as_expr().display(
+        let expr = self.expr.as_expr();
+        expr.display(
             self.arg_interpretation
                 .iter()
                 .map(|item| match item {

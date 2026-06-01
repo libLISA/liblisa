@@ -5,9 +5,9 @@ use log::trace;
 
 use crate::arch::{Arch, Register};
 use crate::compare::PartIndexMapping;
+use crate::encoding::Encoding;
 use crate::encoding::bitpattern::Bit;
 use crate::encoding::dataflows::{AddrTermSize, AddressComputation, Dest, Inputs, MemoryAccesses, Source};
-use crate::encoding::Encoding;
 
 /// Options for comparing [`MemoryAccesses`].
 #[derive(Clone, Debug, Default)]
@@ -116,8 +116,9 @@ pub fn encoding_addresses_equal<A: Arch, C: Clone + Debug>(
         .iter()
         .zip(b.bits.iter())
         .enumerate()
-        .filter(|(_, (&bit_a, &bit_b))| {
-            a.is_bit_involved_with_address_reg_or_computation(bit_a) || b.is_bit_involved_with_address_reg_or_computation(bit_b)
+        .filter(|(_, (bit_a, bit_b))| {
+            a.is_bit_involved_with_address_reg_or_computation(**bit_a)
+                || b.is_bit_involved_with_address_reg_or_computation(**bit_b)
         })
         .map(|(index, _)| index)
         .collect::<Vec<_>>();
@@ -162,8 +163,7 @@ pub fn encoding_addresses_equal<A: Arch, C: Clone + Debug>(
                 if !addresses_equal(mapping, options, &dataflows_a.addresses, &dataflows_b.addresses) {
                     trace!(
                         "Addresses not equal in {instr:?}: {:#?} vs {:#?}",
-                        dataflows_a.addresses,
-                        dataflows_b.addresses
+                        dataflows_a.addresses, dataflows_b.addresses
                     );
                     return false
                 }
@@ -176,22 +176,22 @@ pub fn encoding_addresses_equal<A: Arch, C: Clone + Debug>(
 
 #[cfg(test)]
 mod tests {
-    use test_log::test;
     use FakeReg::*;
+    use test_log::test;
 
     use crate::arch::fake::{FakeArch, FakeReg};
+    use crate::compare::PartIndexMapping;
     use crate::compare::addresses::{addresses_equal, encoding_addresses_equal};
     use crate::compare::mapping::Mapping;
-    use crate::compare::PartIndexMapping;
+    use crate::encoding::Encoding;
     use crate::encoding::bitpattern::{Bit, FlowValueLocation, Part, PartMapping};
     use crate::encoding::dataflows::{
         AccessKind, AddrTerm, AddrTermSize, AddressComputation, Dataflows, Dest, Inputs, MemoryAccess, MemoryAccesses, Size,
         Source,
     };
-    use crate::encoding::Encoding;
     use crate::instr::Instruction;
     use crate::semantics::default::computation::SynthesizedComputation;
-    use crate::semantics::{Computation, ARG_NAMES};
+    use crate::semantics::{ARG_NAMES, Computation};
 
     fn assert_accesses_equal<const EQUAL: bool>(
         custom_mapping: Option<&PartIndexMapping>, lhs_inputs: Inputs<FakeArch>, lhs: AddressComputation,

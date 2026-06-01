@@ -4,12 +4,12 @@ use liblisa::semantics::default::computation::{
     Arg, ArgEncoding, AsComputationRef, ComputationRef, ExprComputation, OutputEncoding,
 };
 use liblisa::semantics::default::ops::Op;
-use liblisa::semantics::{Computation, IoType, ARG_NAMES};
+use liblisa::semantics::{ARG_NAMES, Computation, IoType};
 use log::{debug, info, trace};
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
-use super::preprocess::PreprocessedTemplate;
 use super::CONST_VALUES;
+use super::preprocess::PreprocessedTemplate;
 use crate::normalizer::ComputationNormalizer;
 
 pub struct PreprocessedTemplateNormalizationFilter<'a> {

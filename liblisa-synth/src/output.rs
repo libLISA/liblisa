@@ -4,13 +4,13 @@ use std::iter::once;
 
 use arrayvec::ArrayVec;
 use liblisa::arch::{Arch, Register};
+use liblisa::encoding::Encoding;
 use liblisa::encoding::bitpattern::{FlowInputLocation, MappingOrBitOrder, PartMapping, PartValue};
 use liblisa::encoding::dataflows::{Dataflows, Dest, Source};
-use liblisa::encoding::Encoding;
 use liblisa::oracle::{Oracle, OracleError};
 use liblisa::semantics::IoType;
-use liblisa::state::random::{RandomizationError, StateGen};
 use liblisa::state::SystemState;
+use liblisa::state::random::{RandomizationError, StateGen};
 use liblisa::value::{AsValue, OwnedValue, Value, ValueType};
 use log::{debug, trace};
 

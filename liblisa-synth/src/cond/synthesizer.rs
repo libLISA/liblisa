@@ -2,9 +2,9 @@ use std::collections::{HashMap, HashSet};
 use std::time::Instant;
 
 use itertools::Itertools;
-use liblisa::semantics::{InputValues, IoType, ARG_NAMES};
-use liblisa::utils::bitmap::GrowingBitmap;
+use liblisa::semantics::{ARG_NAMES, InputValues, IoType};
 use liblisa::utils::Symmetric2DMatrix;
+use liblisa::utils::bitmap::GrowingBitmap;
 use liblisa::value::{AsValue, OwnedValue, Value};
 use log::{debug, error, info, warn};
 

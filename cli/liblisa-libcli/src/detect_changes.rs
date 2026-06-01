@@ -29,7 +29,7 @@ impl<A: Arch> SimpleCommand<A> for DetectChangesCommand<A> {
     type Setup = (MemoryAccesses<A>, Dataflows<A, ()>);
 
     fn setup(&self, oracle: &mut impl Oracle<A>) -> Self::Setup {
-        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().gen());
+        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().random());
         let instr = self.lhs;
         let accesses = MemoryAccessAnalysis::infer::<A, _>(oracle, &instr).unwrap();
         println!("Accesses ({}): {:#?}", accesses.len(), accesses);
@@ -41,7 +41,7 @@ impl<A: Arch> SimpleCommand<A> for DetectChangesCommand<A> {
     }
 
     fn run(&self, oracle: &mut impl Oracle<A>, (accesses, dataflows): &mut Self::Setup) {
-        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().gen());
+        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().random());
         let cache = CombinedCache::default();
         let mappable = Oracle::<A>::mappable_area(oracle);
         let state_gen = StateGen::new(accesses, &mappable).unwrap();

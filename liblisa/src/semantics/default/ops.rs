@@ -466,11 +466,7 @@ impl<V: FastOpImpl, W: FastOpImpl> FastOpImpl for DivOp<V, W> {
     fn compute(&self, args: &impl Fn(usize) -> i128) -> i128 {
         let a = self.0.compute(args);
         let b = self.1.compute(args);
-        if b == 0 {
-            0
-        } else {
-            a.wrapping_div(b)
-        }
+        if b == 0 { 0 } else { a.wrapping_div(b) }
     }
 
     fn reconstruct() -> Self {
@@ -487,11 +483,7 @@ impl<V: FastOpImpl, W: FastOpImpl> FastOpImpl for UnsignedDivOp<V, W> {
     fn compute(&self, args: &impl Fn(usize) -> i128) -> i128 {
         let a = self.0.compute(args) as u128;
         let b = self.1.compute(args) as u128;
-        if b == 0 {
-            0
-        } else {
-            (a.wrapping_div(b)) as i128
-        }
+        if b == 0 { 0 } else { (a.wrapping_div(b)) as i128 }
     }
 
     fn reconstruct() -> Self {
@@ -508,11 +500,7 @@ impl<V: FastOpImpl, W: FastOpImpl> FastOpImpl for RemOp<V, W> {
     fn compute(&self, args: &impl Fn(usize) -> i128) -> i128 {
         let a = self.0.compute(args);
         let b = self.1.compute(args);
-        if b == 0 {
-            0
-        } else {
-            a.wrapping_rem(b)
-        }
+        if b == 0 { 0 } else { a.wrapping_rem(b) }
     }
 
     fn reconstruct() -> Self {
@@ -529,11 +517,7 @@ impl<V: FastOpImpl, W: FastOpImpl> FastOpImpl for UnsignedRemOp<V, W> {
     fn compute(&self, args: &impl Fn(usize) -> i128) -> i128 {
         let a = self.0.compute(args) as u128;
         let b = self.1.compute(args) as u128;
-        if b == 0 {
-            0
-        } else {
-            (a.wrapping_rem(b)) as i128
-        }
+        if b == 0 { 0 } else { (a.wrapping_rem(b)) as i128 }
     }
 
     fn reconstruct() -> Self {
@@ -672,11 +656,7 @@ impl<COND: FastOpImpl, ZERO: FastOpImpl, NZERO: FastOpImpl> FastOpImpl for IfZer
         let zero = self.1.compute(args);
         let nonzero = self.2.compute(args);
 
-        if condition == 0 {
-            zero
-        } else {
-            nonzero
-        }
+        if condition == 0 { zero } else { nonzero }
     }
 
     fn reconstruct() -> Self {
@@ -1063,8 +1043,8 @@ mod tests {
     pub fn fuzz_deposit_extract_bits() {
         let mut rng = rand::thread_rng();
         for _ in 0..1_000_000 {
-            let source = rng.gen();
-            let selector = rng.gen();
+            let source = rng.random();
+            let selector = rng.random();
 
             let deposited = DepositBitsOp(Val(source), Val(selector)).compute(&|_| panic!());
             let extracted = ExtractBitsOp(Val(deposited), Val(selector)).compute(&|_| panic!());

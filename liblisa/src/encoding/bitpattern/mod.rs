@@ -267,7 +267,7 @@ impl<A: Arch> PartMapping<A> {
                 mapping
                     .iter()
                     .enumerate()
-                    .filter(|(_, &item)| item == PartValue::Valid)
+                    .filter(|(_, item)| **item == PartValue::Valid)
                     .map(|(index, _)| index),
             ))),
             PartMapping::MemoryComputation {
@@ -276,7 +276,7 @@ impl<A: Arch> PartMapping<A> {
                 mapping
                     .iter()
                     .enumerate()
-                    .filter(|(_, &item)| item.is_some())
+                    .filter(|(_, item)| item.is_some())
                     .map(|(index, _)| index),
             ))),
             PartMapping::Register {
@@ -285,7 +285,7 @@ impl<A: Arch> PartMapping<A> {
                 mapping
                     .iter()
                     .enumerate()
-                    .filter(|(_, &item)| item.is_some())
+                    .filter(|(_, item)| item.is_some())
                     .map(|(index, _)| index),
             )),
             _ => None,

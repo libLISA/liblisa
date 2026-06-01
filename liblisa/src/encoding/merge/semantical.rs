@@ -4,15 +4,15 @@ use log::trace;
 
 use crate::arch::Arch;
 use crate::compare::{
-    encoding_addresses_equal, encodings_semantically_equal, AddressComparisonOptions, ComputationEquivalence,
-    EncodingComparisonOptions, Mapping, PartIndexMapping,
+    AddressComparisonOptions, ComputationEquivalence, EncodingComparisonOptions, Mapping, PartIndexMapping,
+    encoding_addresses_equal, encodings_semantically_equal,
 };
 use crate::encoding::bitpattern::{Bit, Part, PartMapping};
 use crate::encoding::dataflows::{Dataflows, MemoryAccess, MemoryAccesses};
 use crate::encoding::{Encoding, EncodingWithFilters};
 use crate::instr::WithFilters;
-use crate::semantics::default::computation::{AsComputationRef, SynthesizedComputation};
 use crate::semantics::Computation;
+use crate::semantics::default::computation::{AsComputationRef, SynthesizedComputation};
 use crate::smt::SolverProvider;
 use crate::utils::Symmetric2DMatrix;
 
@@ -176,8 +176,8 @@ fn is_merge_candidate<A: Arch, C: Computation + AsComputationRef + PartialEq>(
         .iter()
         .zip(b.bits.iter())
         .enumerate()
-        .filter(|(_, (&bit_a, &bit_b))| {
-            matches!(bit_a, Bit::Part(n) if matches!(a.parts[n].mapping, PartMapping::Register { .. }))
+        .filter(|(_, (bit_a, bit_b))| {
+            matches!(bit_a, Bit::Part(n) if matches!(a.parts[*n].mapping, PartMapping::Register { .. }))
                 && matches!(bit_b, Bit::Part(_))
         })
         .map(|(index, _)| index)

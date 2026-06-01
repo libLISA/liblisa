@@ -9,11 +9,11 @@ use liblisa::state::{AsSystemState, StateByte, SystemState, SystemStateByteView,
 use liblisa::utils::bitmap::DenseSet;
 use log::{debug, info};
 
+use super::IsDataflow;
 use super::analyzer::{Base, Goal};
 use super::flow::Dataflow;
 use super::spec::IsDataflowSet;
-use super::IsDataflow;
-use crate::dataflow::flow::{merge_flowitems, FlowItem};
+use crate::dataflow::flow::{FlowItem, merge_flowitems};
 
 #[derive(Clone, Debug)]
 pub struct DataflowCheckResult {

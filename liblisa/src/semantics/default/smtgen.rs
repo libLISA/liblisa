@@ -9,17 +9,17 @@ use std::fmt::Debug;
 use log::{debug, trace};
 
 use crate::arch::{Arch, Register};
-use crate::encoding::bitpattern::{Bit, FlowInputLocation, FlowValueLocation, ImmBit, ImmBits, Part, PartMapping, PART_NAMES};
-use crate::encoding::dataflows::{Dataflow, Dest, Size, Source};
 use crate::encoding::Encoding;
+use crate::encoding::bitpattern::{Bit, FlowInputLocation, FlowValueLocation, ImmBit, ImmBits, PART_NAMES, Part, PartMapping};
+use crate::encoding::dataflows::{Dataflow, Dest, Size, Source};
+use crate::semantics::Computation;
 use crate::semantics::default::codegen::codegen_computation;
 use crate::semantics::default::codegen::smt::Z3CodeGen;
 use crate::semantics::default::computation::AsComputationRef;
-use crate::semantics::Computation;
 use crate::smt::{SmtBV, SmtBool, SmtSolver};
 use crate::state::{Location, SplitDests};
-use crate::utils::bitmap::{BitmapSlice, GrowingBitmap};
 use crate::utils::EitherIter;
+use crate::utils::bitmap::{BitmapSlice, GrowingBitmap};
 use crate::value::ValueType;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
@@ -291,7 +291,7 @@ impl<'a, 'ctx, C, S: SmtSolver<'ctx>> PreparedComputation<'a, 'ctx, C, S> {
                             .bits
                             .iter()
                             .enumerate()
-                            .filter(|(_, &bit)| bit == Bit::Part(part_index))
+                            .filter(|(_, bit)| **bit == Bit::Part(part_index))
                             .map(|(index, _)| index),
                     );
 
@@ -585,8 +585,8 @@ impl<'ctx, A: Arch, S: SmtSolver<'ctx>> Z3Model<'ctx, A, S> {
                     // TODO: Generate less constraints by using the parts themselves similar to how we map the outputs
                     constraints.extend(prepared.part_assertions);
 
-                    let mut gen = Z3CodeGen::new(context, prepared.z3_inputs.clone());
-                    let smt = codegen_computation(&mut gen, prepared.computation);
+                    let mut cg = Z3CodeGen::new(context, prepared.z3_inputs.clone());
+                    let smt = codegen_computation(&mut cg, prepared.computation);
                     let result = smt.as_bv();
                     result.clone().extract(size - 1, 0)
                 });

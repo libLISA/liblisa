@@ -4,8 +4,8 @@ use std::iter::repeat;
 use log::trace;
 
 use crate::arch::Arch;
-use crate::encoding::bitpattern::{Bit, Part};
 use crate::encoding::Encoding;
+use crate::encoding::bitpattern::{Bit, Part};
 use crate::utils::bitmap::{Bitmap, BitmapSlice, FixedBitmapU64};
 
 #[derive(Debug, Clone, Default, PartialEq)]

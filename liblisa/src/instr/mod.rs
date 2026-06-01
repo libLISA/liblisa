@@ -24,7 +24,7 @@ mod set;
 mod tree;
 
 pub use counter::InstructionCounter;
-pub use filter::{merge_filters, ByteFilter, FilterBit, InstructionFilter, WithFilters};
+pub use filter::{ByteFilter, FilterBit, InstructionFilter, WithFilters, merge_filters};
 pub(crate) use filter_mcs::MinimumCoveringFilterSet;
 pub use map::FilterMap;
 pub use set::FilterList;
@@ -60,8 +60,8 @@ impl schemars::JsonSchema for Instruction {
         std::borrow::Cow::Borrowed(concat!(module_path!(), "::Instruction"))
     }
 
-    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
-        let schema: schemars::schema::SchemaObject = <String>::json_schema(gen).into();
+    fn json_schema(g: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
+        let schema: schemars::schema::SchemaObject = <String>::json_schema(g).into();
         schema.into()
     }
 }

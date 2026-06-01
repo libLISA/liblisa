@@ -1,10 +1,10 @@
 use std::mem::swap;
 
 use arrayvec::ArrayVec;
+use liblisa::semantics::default::Expression;
 use liblisa::semantics::default::computation::{Arg, ArgEncoding, AsComputationRef, OutputEncoding, SynthesizedComputation};
 use liblisa::semantics::default::ops::Op;
-use liblisa::semantics::default::Expression;
-use liblisa::semantics::{Computation, IoType, ARG_NAMES};
+use liblisa::semantics::{ARG_NAMES, Computation, IoType};
 use liblisa::utils::{bitmask_u128, deposit_bits_u128, sign_extend, switch_endianness_u128};
 use liblisa::value::OwnedValue;
 use log::{debug, info, trace};
@@ -1511,7 +1511,7 @@ mod tests {
     use liblisa::semantics::default::computation::{Arg, ArgEncoding, AsComputationRef, OutputEncoding, SynthesizedComputation};
     use liblisa::semantics::default::expr;
     use liblisa::semantics::default::ops::Op;
-    use liblisa::semantics::{Computation, IoType, ARG_NAMES};
+    use liblisa::semantics::{ARG_NAMES, Computation, IoType};
     use liblisa::value::{OwnedValue, Value};
     use test_log::test;
 
@@ -3010,12 +3010,14 @@ mod tests {
 
     #[test]
     pub fn real_world_1() {
-        let expr = expr!((and(
-            not(is_zero((shr(mul(hole::<0>(), hole::<1>()), c::<0x3F>())).crop::<64>())),
-            not(c::<0>())
-        ))
-        .crop::<1>()
-        .if_zero(c::<0>().crop::<1>(), c::<1>().crop::<1>()))
+        let expr = expr!(
+            (and(
+                not(is_zero((shr(mul(hole::<0>(), hole::<1>()), c::<0x3F>())).crop::<64>())),
+                not(c::<0>())
+            ))
+            .crop::<1>()
+            .if_zero(c::<0>().crop::<1>(), c::<1>().crop::<1>())
+        )
         .to_owned();
         let template = SynthesizedComputation::new(
             expr,

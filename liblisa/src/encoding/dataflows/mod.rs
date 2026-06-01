@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use crate::arch::{Arch, Register};
 use crate::encoding::bitpattern::{FlowInputLocation, FlowOutputLocation, FlowValueLocation};
 use crate::instr::Instruction;
-use crate::semantics::{Computation, ARG_NAMES};
+use crate::semantics::{ARG_NAMES, Computation};
 use crate::state::{Area, SystemState};
 use crate::value::{OwnedValue, Value};
 
@@ -389,7 +389,7 @@ impl<'a, A: Arch> FlowGroup<'a, A> {
         self.location
     }
 
-    pub fn iter_with_locations(&self) -> impl Iterator<Item = (FlowInputLocation, &'a Source<A>)> {
+    pub fn iter_with_locations(&self) -> impl Iterator<Item = (FlowInputLocation, &'a Source<A>)> + use<'a, A> {
         let location = self.location;
         self.inputs
             .iter()

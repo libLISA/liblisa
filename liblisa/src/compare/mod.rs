@@ -10,8 +10,8 @@ use log::trace;
 use crate::arch::Arch;
 use crate::encoding::bitpattern::{Bit, FlowInputLocation, FlowValueLocation, MappingOrBitOrder, PartMapping};
 use crate::encoding::{Encoding, RestrictError};
-use crate::semantics::default::computation::SynthesizedComputation;
 use crate::semantics::Computation;
+use crate::semantics::default::computation::SynthesizedComputation;
 use crate::smt::SmtSolver;
 
 mod addresses;
@@ -368,11 +368,11 @@ mod tests {
     use crate::arch::fake::FakeArch;
     use crate::arch::fake::FakeReg::{R0, R1, R2, R3};
     use crate::compare::encodings_structurally_equal;
+    use crate::encoding::Encoding;
     use crate::encoding::bitpattern::{Bit, FlowValueLocation, Part, PartMapping};
     use crate::encoding::dataflows::{
         AccessKind, AddrTerm, AddressComputation, Dataflow, Dataflows, Dest, Inputs, MemoryAccess, MemoryAccesses, Size,
     };
-    use crate::encoding::Encoding;
     use crate::instr::Instruction;
 
     #[test]

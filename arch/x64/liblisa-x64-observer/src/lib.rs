@@ -10,8 +10,8 @@ use liblisa::arch::x64::{GpReg, X64Arch, X64Flag, X64State, X87};
 use liblisa::arch::{Arch, CpuState};
 use liblisa::oracle::{MappableArea, Observation, Oracle, OracleError, OracleSource};
 use liblisa::state::{Addr, AsSystemState, MemoryState, Page, SystemState};
-use liblisa::utils::bitmap::{Bitmap, BitmapSlice, FixedBitmapU64};
 use liblisa::utils::MapRotated;
+use liblisa::utils::bitmap::{Bitmap, BitmapSlice, FixedBitmapU64};
 use log::warn;
 use nix::sched::CpuSet;
 

@@ -5,17 +5,17 @@ use test_log::test;
 use crate::arch::fake::FakeReg::{B0, R0, R1, R2, R3, RZ};
 use crate::arch::fake::{FakeArch, FakeState};
 use crate::compare::{ComputationEquivalence, EncodingComparisonOptions, PartIndexMapping};
+use crate::encoding::Encoding;
 use crate::encoding::bitpattern::{Bit, FlowInputLocation, FlowValueLocation, Part, PartMapping};
 use crate::encoding::dataflows::{
     AccessKind, AddrTerm, AddrTermSize, AddressComputation, Dataflow, Dataflows, Dest, Inputs, MemoryAccess, MemoryAccesses,
     Size, Source,
 };
-use crate::encoding::Encoding;
 use crate::instr::{Instruction, InstructionFilter};
+use crate::semantics::IoType;
+use crate::semantics::default::Expression;
 use crate::semantics::default::computation::{Arg, ArgEncoding, OutputEncoding, SynthesizedComputation};
 use crate::semantics::default::ops::Op;
-use crate::semantics::default::Expression;
-use crate::semantics::IoType;
 use crate::smt::z3::Z3Solver;
 use crate::state::{Addr, MemoryState, Permissions, SystemState};
 use crate::value::Value;

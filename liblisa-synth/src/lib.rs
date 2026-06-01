@@ -1,7 +1,6 @@
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 #![feature(generic_arg_infer)]
-#![feature(let_chains)]
 #![doc(html_no_source)]
 
 //! This library contains the default synthesis implementation for libLISA.
@@ -37,7 +36,7 @@ use rand::Rng;
 use serde::{Deserialize, Serialize};
 
 mod cond;
-mod gen;
+mod generate;
 mod normalizer;
 mod output;
 mod predicate;
@@ -315,7 +314,7 @@ where
     while !synthesizer.has_given_up() && num_ok < 5_000_000 {
         num_tried += 1;
 
-        let inputs = if rng.gen() {
+        let inputs = if rng.random() {
             let base = randomized_value(rng);
             input_types.iter().map(|ty| randomize_ty_from(ty, base)).collect::<Vec<_>>()
         } else {

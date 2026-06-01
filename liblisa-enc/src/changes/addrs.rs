@@ -1,7 +1,7 @@
 use liblisa::arch::{Arch, Register};
 use liblisa::encoding::bitpattern::FlowOutputLocation;
 use liblisa::encoding::dataflows::MemoryAccesses;
-use liblisa::semantics::{Computation, ARG_NAMES};
+use liblisa::semantics::{ARG_NAMES, Computation};
 use liblisa::state::Location;
 use log::{debug, info};
 
@@ -186,11 +186,7 @@ pub fn find_memory_access_imm<A: Arch>(
                 .into_iter()
                 .flat_map(|change| {
                     let change = check_change(base_accesses, new_accesses, change);
-                    if change != Change::Invalid {
-                        Some(change)
-                    } else {
-                        None
-                    }
+                    if change != Change::Invalid { Some(change) } else { None }
                 })
                 .collect(),
         )

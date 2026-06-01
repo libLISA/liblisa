@@ -1,9 +1,9 @@
-use liblisa::semantics::default::computation::PreparedComparison;
 use liblisa::semantics::InputValues;
+use liblisa::semantics::default::computation::PreparedComparison;
 use liblisa::value::{AsValue, OwnedValue, Value};
 
-use crate::search::{ComputationEnumerator, InterpretedArgs};
 use crate::InputSlice;
+use crate::search::{ComputationEnumerator, InterpretedArgs};
 
 pub mod expr_finder;
 pub mod mapping;

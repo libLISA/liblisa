@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use liblisa::semantics::IoType;
 use liblisa::value::OwnedValue;
 use liblisa_synth::search::termsearcher::BoolTermSearcher;

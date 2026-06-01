@@ -6,17 +6,17 @@ use log::trace;
 
 use crate::arch::{Arch, Register};
 use crate::compare::{EncodingComparisonOptions, PartIndexMapping};
+use crate::encoding::Encoding;
 use crate::encoding::bitpattern::{Bit, FlowInputLocation, FlowValueLocation, ImmBit, Part, PartMapping};
 use crate::encoding::dataflows::{Dataflow, Dest, Size, Source};
-use crate::encoding::Encoding;
 use crate::semantics::default::codegen::codegen_computation;
 use crate::semantics::default::codegen::smt::Z3CodeGen;
 use crate::semantics::default::computation::AsComputationRef;
-use crate::semantics::{Computation, IoType, ARG_NAMES};
+use crate::semantics::{ARG_NAMES, Computation, IoType};
 use crate::smt::{SatResult, SmtBV, SmtBool, SmtModel, SmtModelRef, SmtSolver};
 use crate::state::Location;
-use crate::utils::bitmap::{Bitmap, BitmapSlice, FixedBitmapU64};
 use crate::utils::EitherIter;
+use crate::utils::bitmap::{Bitmap, BitmapSlice, FixedBitmapU64};
 use crate::value::{AsValue, OwnedValue, ValueType};
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
@@ -213,7 +213,7 @@ impl ComputationEquivalence {
                             .bits
                             .iter()
                             .enumerate()
-                            .filter(|(_, &bit)| bit == Bit::Part(part_index))
+                            .filter(|(_, bit)| **bit == Bit::Part(part_index))
                             .map(|(index, _)| index),
                     );
 
@@ -527,7 +527,7 @@ impl ComputationEquivalence {
                             .bits
                             .iter()
                             .enumerate()
-                            .filter(|(_, &bit)| bit == Bit::Part(*part_index))
+                            .filter(|(_, bit)| **bit == Bit::Part(*part_index))
                             .enumerate()
                             .map(|(shift, (index, _))| {
                                 instr

@@ -1,8 +1,8 @@
 use std::iter::repeat_with;
 
 use liblisa::arch::Arch;
-use liblisa::encoding::dataflows::{Dataflow, Source};
 use liblisa::encoding::Encoding;
+use liblisa::encoding::dataflows::{Dataflow, Source};
 use liblisa::oracle::{Oracle, OracleError};
 use liblisa::state::random::StateGen;
 use liblisa::state::{AsSystemState, SystemState};
@@ -31,8 +31,8 @@ impl<A: Arch> AsSystemState<A> for Test<'_, A> {
 
 pub fn remove_incorrect_generalizations<A: Arch, O: Oracle<A>>(o: &mut O, encoding: &mut Encoding<A, ()>) -> bool {
     info!("Removing incorrect generalizations...");
-    let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().gen());
-    let mut rng2 = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().gen());
+    let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().random());
+    let mut rng2 = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().random());
     let mappable = o.mappable_area();
     let mut changed = false;
 
@@ -47,7 +47,7 @@ pub fn remove_incorrect_generalizations<A: Arch, O: Oracle<A>>(o: &mut O, encodi
             let part_values = encoding
                 .parts
                 .iter()
-                .map(|part| rng.gen::<u64>() & ((1 << part.size) - 1))
+                .map(|part| rng.random::<u64>() & ((1 << part.size) - 1))
                 .collect::<Vec<_>>();
             if let Ok(instance) = encoding.instantiate(&part_values) {
                 let validity = Validity::infer(o, instance.instr());
@@ -70,7 +70,7 @@ pub fn remove_incorrect_generalizations<A: Arch, O: Oracle<A>>(o: &mut O, encodi
                                         .map(|output_dataflow| vec![output_dataflow])
                                         .chain(
                                             repeat_with(|| {
-                                                let amount = rng2.gen_range(1..instance.output_dataflows().count());
+                                                let amount = rng2.random_range(1..instance.output_dataflows().count());
                                                 instance.output_dataflows().choose_multiple(&mut rng2, amount)
                                             })
                                             .take(if instance.output_dataflows().count() > 1 { 10 } else { 0 }),

@@ -8,16 +8,16 @@ use liblisa::semantics::default::builder::hole;
 use liblisa::semantics::default::computation::{
     Arg, AsComputationRef, ExpressionComputation, OutputEncoding, SynthesizedComputation,
 };
-use liblisa::semantics::default::{expr, Expr};
-use liblisa::semantics::{Computation, IoType, ARG_NAMES};
-use liblisa::utils::bitmap::GrowingBitmap;
+use liblisa::semantics::default::{Expr, expr};
+use liblisa::semantics::{ARG_NAMES, Computation, IoType};
 use liblisa::utils::Timeout;
+use liblisa::utils::bitmap::GrowingBitmap;
 use liblisa::value::{AsValue, OwnedValue, Value, ValueArrayEquality};
 use log::{debug, info, trace};
 
-use super::expr_finder::bitmap_mcs::BitmapMcsExpressionFinder;
-use super::expr_finder::ExpressionFinder;
 use super::Case;
+use super::expr_finder::ExpressionFinder;
+use super::expr_finder::bitmap_mcs::BitmapMcsExpressionFinder;
 use crate::cond::casemap::CaseMap;
 use crate::cond::switch::Switch;
 use crate::cond::synthesizer::ConditionSynthesizer;
@@ -702,7 +702,7 @@ impl<F: ExpressionFinder> fmt::Display for TreeTemplateSynthesizer<F> {
 #[cfg(test)]
 mod tests {
     use liblisa::semantics::default::computation::SynthesizedComputation;
-    use liblisa::semantics::{Computation, IoType, ARG_NAMES};
+    use liblisa::semantics::{ARG_NAMES, Computation, IoType};
     use liblisa::value::{AsValue, OwnedValue, Value};
     use rand::{Rng, SeedableRng};
     use rand_xoshiro::Xoshiro256PlusPlus;
@@ -710,7 +710,7 @@ mod tests {
 
     use super::TreeTemplateSynthesizer;
     use crate::tree::expr_finder::mcs::McsExpressionFinder;
-    use crate::{synthesize_from_fn, SynthesizerBase};
+    use crate::{SynthesizerBase, synthesize_from_fn};
 
     type TestFinder = McsExpressionFinder;
 
@@ -882,64 +882,78 @@ mod tests {
 
     #[test]
     pub fn find_bsf_output() {
-        assert!(find_int_operation(&mut rand::thread_rng(), [64], 64, |[a]| if a == 0 {
-            0
-        } else {
-            a.trailing_zeros() as u64
-        })
-        .is_some());
+        assert!(
+            find_int_operation(&mut rand::thread_rng(), [64], 64, |[a]| if a == 0 {
+                0
+            } else {
+                a.trailing_zeros() as u64
+            })
+            .is_some()
+        );
     }
 
     #[test]
     pub fn find_bsf_id_output() {
-        assert!(find_int_operation(&mut rand::thread_rng(), [64], 64, |[a]| if a == 0 {
-            a
-        } else {
-            a.trailing_zeros() as u64
-        })
-        .is_some());
+        assert!(
+            find_int_operation(&mut rand::thread_rng(), [64], 64, |[a]| if a == 0 {
+                a
+            } else {
+                a.trailing_zeros() as u64
+            })
+            .is_some()
+        );
     }
 
     #[test]
     pub fn find_mul_output1() {
-        assert!(find_int_operation(&mut rand::thread_rng(), [64, 64], 64, |[a, b]| {
-            (a as i128).wrapping_mul(b as i128) as u64
-        })
-        .is_some());
+        assert!(
+            find_int_operation(&mut rand::thread_rng(), [64, 64], 64, |[a, b]| {
+                (a as i128).wrapping_mul(b as i128) as u64
+            })
+            .is_some()
+        );
     }
 
     #[test]
     pub fn find_mul_output2() {
-        assert!(find_int_operation(&mut rand::thread_rng(), [64, 64], 64, |[a, b]| {
-            ((a as i128).wrapping_mul(b as i128) >> 64) as u64
-        })
-        .is_some());
+        assert!(
+            find_int_operation(&mut rand::thread_rng(), [64, 64], 64, |[a, b]| {
+                ((a as i128).wrapping_mul(b as i128) >> 64) as u64
+            })
+            .is_some()
+        );
     }
 
     #[test]
     pub fn find_mul_ofcf() {
-        assert!(find_int_operation(&mut rand::thread_rng(), [64, 64], 64, |[a, b]| {
-            (((a as u128).wrapping_mul(b as u128) >> 64) as u64 != 0) as u64
-        })
-        .is_some());
+        assert!(
+            find_int_operation(&mut rand::thread_rng(), [64, 64], 64, |[a, b]| {
+                (((a as u128).wrapping_mul(b as u128) >> 64) as u64 != 0) as u64
+            })
+            .is_some()
+        );
     }
 
     #[test]
     pub fn find_idiv128_output1() {
-        assert!(find_int_operation(&mut rand::thread_rng(), [64, 64, 64], 64, |[a, b, c]| {
-            let n = a as i128 | ((b as i128) << 64);
-            (n.checked_div(c as i64 as i128).unwrap_or(0)) as u64
-        })
-        .is_some());
+        assert!(
+            find_int_operation(&mut rand::thread_rng(), [64, 64, 64], 64, |[a, b, c]| {
+                let n = a as i128 | ((b as i128) << 64);
+                (n.checked_div(c as i64 as i128).unwrap_or(0)) as u64
+            })
+            .is_some()
+        );
     }
 
     #[test]
     pub fn find_idiv128_output2() {
-        assert!(find_int_operation(&mut rand::thread_rng(), [64, 64, 64], 64, |[a, b, c]| {
-            let n = a as i128 | ((b as i128) << 64);
-            (n.checked_rem(c as i64 as i128).unwrap_or(0)) as u64
-        })
-        .is_some());
+        assert!(
+            find_int_operation(&mut rand::thread_rng(), [64, 64, 64], 64, |[a, b, c]| {
+                let n = a as i128 | ((b as i128) << 64);
+                (n.checked_rem(c as i64 as i128).unwrap_or(0)) as u64
+            })
+            .is_some()
+        );
     }
 
     #[test]
@@ -949,24 +963,28 @@ mod tests {
 
     #[test]
     pub fn find_add_of() {
-        assert!(find_binary_operation(64, 64, 1, |a, b| {
-            let carry_64 = a.checked_add(b).is_none();
-            let carry_63 = ((a & !0x8000_0000_0000_0000) + (b & !0x8000_0000_0000_0000)) & 0x8000_0000_0000_0000 != 0;
+        assert!(
+            find_binary_operation(64, 64, 1, |a, b| {
+                let carry_64 = a.checked_add(b).is_none();
+                let carry_63 = ((a & !0x8000_0000_0000_0000) + (b & !0x8000_0000_0000_0000)) & 0x8000_0000_0000_0000 != 0;
 
-            (carry_64 ^ carry_63) as u64
-        })
-        .is_some());
+                (carry_64 ^ carry_63) as u64
+            })
+            .is_some()
+        );
     }
 
     #[test]
     pub fn find_add_inv_of() {
-        assert!(find_binary_operation(64, 64, 1, |a, b| {
-            let carry_64 = a.checked_add(b).is_some();
-            let carry_63 = ((a & !0x8000_0000_0000_0000) + (b & !0x8000_0000_0000_0000)) & 0x8000_0000_0000_0000 != 0;
+        assert!(
+            find_binary_operation(64, 64, 1, |a, b| {
+                let carry_64 = a.checked_add(b).is_some();
+                let carry_63 = ((a & !0x8000_0000_0000_0000) + (b & !0x8000_0000_0000_0000)) & 0x8000_0000_0000_0000 != 0;
 
-            (carry_64 ^ carry_63) as u64
-        })
-        .is_some());
+                (carry_64 ^ carry_63) as u64
+            })
+            .is_some()
+        );
     }
 
     #[test]
@@ -996,10 +1014,12 @@ mod tests {
 
     #[test]
     pub fn find_adc_sf() {
-        assert!(find_int_operation(&mut rand::thread_rng(), [64, 64, 1], 1, |[a, b, c]| a
-            .wrapping_add(b.wrapping_add(c))
-            >> 63)
-        .is_some());
+        assert!(
+            find_int_operation(&mut rand::thread_rng(), [64, 64, 1], 1, |[a, b, c]| a
+                .wrapping_add(b.wrapping_add(c))
+                >> 63)
+            .is_some()
+        );
     }
 
     #[test]
@@ -1107,26 +1127,30 @@ mod tests {
     #[test]
     pub fn find_shr32_of() {
         let mut rng = Xoshiro256PlusPlus::seed_from_u64(0);
-        assert!(find_int_operation(&mut rng, [32, 8, 1], 1, |[a, b, c]| if (b & 0x1f) == 0 {
-            c
-        } else if (b & 0x1f) == 1 {
-            (a >> 31) & 1
-        } else {
-            0
-        })
-        .is_some());
+        assert!(
+            find_int_operation(&mut rng, [32, 8, 1], 1, |[a, b, c]| if (b & 0x1f) == 0 {
+                c
+            } else if (b & 0x1f) == 1 {
+                (a >> 31) & 1
+            } else {
+                0
+            })
+            .is_some()
+        );
     }
 
     #[test]
     pub fn find_sar_cf() {
-        assert!(find_int_operation(&mut rand::thread_rng(), [64, 8, 1], 1, |[a, b, c]| {
-            if let Some(b) = (b & 0x3f).checked_sub(1) {
-                a.wrapping_shr(b as u32) & 1
-            } else {
-                c
-            }
-        })
-        .is_some());
+        assert!(
+            find_int_operation(&mut rand::thread_rng(), [64, 8, 1], 1, |[a, b, c]| {
+                if let Some(b) = (b & 0x3f).checked_sub(1) {
+                    a.wrapping_shr(b as u32) & 1
+                } else {
+                    c
+                }
+            })
+            .is_some()
+        );
     }
 
     #[test]
@@ -1191,15 +1215,13 @@ mod tests {
 
     #[test]
     pub fn find_shl32_cf() {
-        assert!(find_int_operation(&mut rand::thread_rng(), [32, 8, 1], 1, |[a, b, c]| {
-            let b = b & 0x1f;
-            if b != 0 {
-                (a.wrapping_shl(b as u32) >> 32) & 1
-            } else {
-                c
-            }
-        })
-        .is_some());
+        assert!(
+            find_int_operation(&mut rand::thread_rng(), [32, 8, 1], 1, |[a, b, c]| {
+                let b = b & 0x1f;
+                if b != 0 { (a.wrapping_shl(b as u32) >> 32) & 1 } else { c }
+            })
+            .is_some()
+        );
     }
 
     #[test]
@@ -1231,11 +1253,7 @@ mod tests {
         assert!(
             find_int_operation(&mut rand::thread_rng(), [32, 8, 1], 1, |[a, b, c]| if b & 0x1f != 0 {
                 let result = a << (b & 0x1f);
-                if (result >> 32) & 1 == (result >> 31) & 1 {
-                    0
-                } else {
-                    1
-                }
+                if (result >> 32) & 1 == (result >> 31) & 1 { 0 } else { 1 }
             } else {
                 c
             })
@@ -1424,9 +1442,11 @@ mod tests {
 
     #[test]
     pub fn find_sbb_output() {
-        assert!(find_int_operation(&mut rand::thread_rng(), [64, 64, 1], 64, |[a, b, c]| a
-            .wrapping_sub(b.wrapping_add(c)))
-        .is_some());
+        assert!(
+            find_int_operation(&mut rand::thread_rng(), [64, 64, 1], 64, |[a, b, c]| a
+                .wrapping_sub(b.wrapping_add(c)))
+            .is_some()
+        );
     }
 
     #[test]
@@ -1443,90 +1463,106 @@ mod tests {
 
     #[test]
     pub fn find_sbb_zf() {
-        assert!(find_int_operation(
-            &mut rand::thread_rng(),
-            [64, 64, 1],
-            1,
-            |[a, b, c]| (a.wrapping_sub(b.wrapping_add(c)) == 0) as u64
-        )
-        .is_some());
+        assert!(
+            find_int_operation(
+                &mut rand::thread_rng(),
+                [64, 64, 1],
+                1,
+                |[a, b, c]| (a.wrapping_sub(b.wrapping_add(c)) == 0) as u64
+            )
+            .is_some()
+        );
     }
 
     #[test]
     pub fn find_sbb32_zf() {
-        assert!(find_int_operation(
-            &mut rand::thread_rng(),
-            [32, 32, 1],
-            1,
-            |[a, b, c]| (a.wrapping_sub(b.wrapping_add(c)) as u32 == 0) as u64
-        )
-        .is_some());
+        assert!(
+            find_int_operation(
+                &mut rand::thread_rng(),
+                [32, 32, 1],
+                1,
+                |[a, b, c]| (a.wrapping_sub(b.wrapping_add(c)) as u32 == 0) as u64
+            )
+            .is_some()
+        );
     }
 
     #[test]
     pub fn find_sbb_inv_zf() {
-        assert!(find_int_operation(
-            &mut rand::thread_rng(),
-            [64, 64, 1],
-            1,
-            |[a, b, c]| (a.wrapping_sub(b.wrapping_add(c)) != 0) as u64
-        )
-        .is_some());
+        assert!(
+            find_int_operation(
+                &mut rand::thread_rng(),
+                [64, 64, 1],
+                1,
+                |[a, b, c]| (a.wrapping_sub(b.wrapping_add(c)) != 0) as u64
+            )
+            .is_some()
+        );
     }
 
     #[test]
     pub fn find_sbb_cf() {
-        assert!(find_int_operation(
-            &mut rand::thread_rng(),
-            [64, 64, 1],
-            1,
-            |[a, b, c]| (a < b || (a == b && c == 1)) as u64
-        )
-        .is_some());
+        assert!(
+            find_int_operation(
+                &mut rand::thread_rng(),
+                [64, 64, 1],
+                1,
+                |[a, b, c]| (a < b || (a == b && c == 1)) as u64
+            )
+            .is_some()
+        );
     }
 
     #[test]
     pub fn find_sbb_sf() {
-        assert!(find_int_operation(&mut rand::thread_rng(), [64, 64, 1], 1, |[a, b, c]| a
-            .wrapping_sub(b.wrapping_add(c))
-            >> 63)
-        .is_some());
+        assert!(
+            find_int_operation(&mut rand::thread_rng(), [64, 64, 1], 1, |[a, b, c]| a
+                .wrapping_sub(b.wrapping_add(c))
+                >> 63)
+            .is_some()
+        );
     }
 
     #[test]
     pub fn find_sbb_pf() {
-        assert!(find_int_operation(
-            &mut rand::thread_rng(),
-            [64, 64, 1],
-            1,
-            |[a, b, c]| (((a.wrapping_sub(b.wrapping_add(c)) as u8).count_zeros() + 1) % 2) as u64
-        )
-        .is_some());
+        assert!(
+            find_int_operation(
+                &mut rand::thread_rng(),
+                [64, 64, 1],
+                1,
+                |[a, b, c]| (((a.wrapping_sub(b.wrapping_add(c)) as u8).count_zeros() + 1) % 2) as u64
+            )
+            .is_some()
+        );
     }
 
     #[test]
     pub fn find_sbb_af() {
-        assert!(find_int_operation(
-            &mut rand::thread_rng(),
-            [64, 64, 1],
-            1,
-            |[a, b, c]| ((a & 0xf) < ((b & 0xf).wrapping_add(c))) as u64
-        )
-        .is_some());
+        assert!(
+            find_int_operation(
+                &mut rand::thread_rng(),
+                [64, 64, 1],
+                1,
+                |[a, b, c]| ((a & 0xf) < ((b & 0xf).wrapping_add(c))) as u64
+            )
+            .is_some()
+        );
     }
 
     #[test]
     #[ignore = "slow"]
     pub fn find_sbb_of() {
-        assert!(find_int_operation(&mut rand::thread_rng(), [64, 64, 1], 1, |[a, b, c]| {
-            let b = (b.wrapping_add(c) ^ 0xffff_ffff_ffff_ffff).wrapping_add(1);
+        assert!(
+            find_int_operation(&mut rand::thread_rng(), [64, 64, 1], 1, |[a, b, c]| {
+                let b = (b.wrapping_add(c) ^ 0xffff_ffff_ffff_ffff).wrapping_add(1);
 
-            let carry_64 = a.checked_add(b).is_some();
-            let carry_63 = ((a & !0x8000_0000_0000_0000) + (b & !0x8000_0000_0000_0000)) & 0x8000_0000_0000_0000 != 0;
+                let carry_64 = a.checked_add(b).is_some();
+                let carry_63 = ((a & !0x8000_0000_0000_0000) + (b & !0x8000_0000_0000_0000)) & 0x8000_0000_0000_0000 != 0;
 
-            (carry_64 ^ carry_63) as u64
-        })
-        .is_some());
+                (carry_64 ^ carry_63) as u64
+            })
+            .is_some()
+        );
     }
 
     #[test]

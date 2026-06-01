@@ -1,7 +1,7 @@
 use std::iter::repeat;
 use std::time::{Duration, Instant};
 
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use liblisa::arch::x64::X64Arch;
 use liblisa::instr::Instruction;
 use liblisa::oracle::Oracle;
@@ -15,7 +15,7 @@ fn observe(c: &mut Criterion) {
         let instr = Instruction::new(&[0x48, 0x31, 0xD0]);
         let mappable = Oracle::<X64Arch>::mappable_area(&o);
 
-        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().gen());
+        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().random());
         let page = o.random_mappable_page(&mut rng);
         let pc = page.first_address_after_page() - instr.byte_len() as u64;
         let mut state = random_state::<X64Arch, _, _>(&mut rng, &instr, &mappable, pc.as_u64());

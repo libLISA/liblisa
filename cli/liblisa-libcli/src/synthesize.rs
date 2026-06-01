@@ -4,9 +4,9 @@ use std::fs::{self, File};
 use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::marker::PhantomData;
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::mpsc::{channel, RecvTimeoutError};
 use std::sync::Mutex;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::mpsc::{RecvTimeoutError, channel};
 use std::thread::{scope, spawn};
 use std::time::{Duration, Instant};
 
@@ -15,12 +15,12 @@ use liblisa::encoding::Encoding;
 use liblisa::oracle::{Oracle, OracleSource};
 use liblisa::semantics::default::computation::SynthesizedComputation;
 use liblisa::utils::bitmap::GrowingBitmap;
-use liblisa_synth::{merge_semantics_into_encoding, prepare_templates, DefaultTreeTemplateSynthesizer};
+use liblisa_synth::{DefaultTreeTemplateSynthesizer, merge_semantics_into_encoding, prepare_templates};
 use nix::sched::CpuSet;
 
 use crate::clear_screen;
-use crate::threadpool::synthesis::{Synthesis, SynthesisArtifact, SynthesisRuntimeData};
 use crate::threadpool::ThreadPool;
+use crate::threadpool::synthesis::{Synthesis, SynthesisArtifact, SynthesisRuntimeData};
 
 #[derive(Copy, Clone, Debug, clap::ValueEnum)]
 enum SortBy {
@@ -169,8 +169,9 @@ impl<A: Arch> SynthesizeCommand<A> {
             },
             Verb::Run {
                 threads,
-                mut ramp_up,
+                ramp_up,
             } => {
+                let mut ramp_up = *ramp_up;
                 println!("Loading base data...");
                 let file = File::open(self.state_path()).unwrap();
                 let synthesis: Synthesis<DefaultTreeTemplateSynthesizer> = serde_json::from_reader(file).unwrap();

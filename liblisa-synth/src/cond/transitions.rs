@@ -2,13 +2,13 @@ use std::fmt;
 use std::num::NonZeroU8;
 
 use arrayvec::ArrayVec;
-use liblisa::utils::bitmap::GrowingBitmap;
 use liblisa::utils::EitherIter;
+use liblisa::utils::bitmap::GrowingBitmap;
 use liblisa::value::{AsValue, OwnedValue};
 use log::debug;
 
-use super::casemap::CaseMap;
 use super::MAX_INPUTS;
+use super::casemap::CaseMap;
 use crate::Requester;
 
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]

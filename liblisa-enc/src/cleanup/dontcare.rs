@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
 use liblisa::arch::Arch;
+use liblisa::encoding::Encoding;
 use liblisa::encoding::bitpattern::Bit;
 use liblisa::encoding::dataflows::Dataflows;
-use liblisa::encoding::Encoding;
 use liblisa::instr::Instruction;
 use liblisa::oracle::{Oracle, OracleError};
 use liblisa::state::random::StateGen;
@@ -12,8 +12,8 @@ use log::{debug, info, trace, warn};
 use rand::{Rng, SeedableRng};
 use rand_xoshiro::Xoshiro256PlusPlus;
 
-use crate::encoding::EncodingError;
 use crate::Validity;
+use crate::encoding::EncodingError;
 
 pub struct DontCareValidator<'a, A: Arch> {
     dataflows: &'a Dataflows<A, ()>,
@@ -186,14 +186,14 @@ impl<'a, A: Arch> DontCareValidator<'a, A> {
         );
 
         let mut num_errs = 0;
-        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().gen());
+        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().random());
         let mut validity_cache = HashMap::new();
         for num_inst in 0..500 {
             debug!("DontCare validation step: {num_inst} / 500");
             let part_values = encoding
                 .parts
                 .iter()
-                .map(|part| rng.gen::<u64>() & ((1 << part.size) - 1))
+                .map(|part| rng.random::<u64>() & ((1 << part.size) - 1))
                 .collect::<Vec<_>>();
             if let Ok(instance) = encoding.instantiate(&part_values) {
                 debug!("Checking instance {instance}");
@@ -272,7 +272,7 @@ impl<'a, A: Arch> DontCareValidator<'a, A> {
     ) -> impl Iterator<Item = (usize, Instruction)> + 'x {
         (0..(1usize << dont_care_indices.len().min(14))).map(move |value| {
             let value = if randomize {
-                rng.gen::<usize>() & ((1usize << dont_care_indices.len()) - 1)
+                (rng.random::<u64>() & ((1u64 << dont_care_indices.len()) - 1)) as usize
             } else {
                 value
             };

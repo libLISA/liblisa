@@ -4,10 +4,10 @@ use std::fmt::{Debug, Display};
 
 use crate::arch::{Arch, Register};
 use crate::encoding::dataflows::{AddressComputation, Size};
+use crate::semantics::default::Expression;
 use crate::semantics::default::computation::{Arg, ArgEncoding, OutputEncoding, SynthesizedComputation};
 use crate::semantics::default::ops::Op;
-use crate::semantics::default::Expression;
-use crate::semantics::{Computation, IoType, ARG_NAMES};
+use crate::semantics::{ARG_NAMES, Computation, IoType};
 use crate::utils::bitmap::{Bitmap, BitmapSlice, FixedBitmapU64};
 
 /// An oracle that can provide information about which outputs are undefined for any given instruction.

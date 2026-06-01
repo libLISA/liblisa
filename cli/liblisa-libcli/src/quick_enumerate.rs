@@ -6,8 +6,8 @@ use liblisa::instr::{FilterList, Instruction};
 use liblisa::oracle::Oracle;
 use liblisa_enc::cache::CombinedCache;
 
-use crate::threadpool::enumeration::{AnalysisRequest, EnumWorkItem, EnumerationArtifactData};
 use crate::SimpleCommand;
+use crate::threadpool::enumeration::{AnalysisRequest, EnumWorkItem, EnumerationArtifactData};
 
 #[derive(Clone, Debug, clap::Parser)]
 /// Run enumeration between two specified instructions, without saving results

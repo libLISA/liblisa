@@ -2,18 +2,18 @@ use std::collections::HashSet;
 use std::time::{Duration, Instant};
 
 use liblisa::arch::Arch;
-use liblisa::encoding::dataflows::Dataflows;
 use liblisa::encoding::Encoding;
+use liblisa::encoding::dataflows::Dataflows;
 use liblisa::oracle::{MappableArea, Observation, Oracle};
-use liblisa::semantics::{Computation, InputValues, ARG_NAMES};
+use liblisa::semantics::{ARG_NAMES, Computation, InputValues};
 use liblisa::state::SystemState;
 use liblisa::utils::Timeout;
 use liblisa::value::{AsValue, OwnedValue, Value};
 use log::{debug, info, trace};
-use rand::seq::SliceRandom;
 use rand::Rng;
+use rand::seq::{IndexedRandom, SliceRandom};
 
-use crate::gen::{TestCase, TestCaseGen};
+use crate::generate::{TestCase, TestCaseGen};
 use crate::output::{OracleRequester, Output};
 use crate::{CachedRequester, SynthesisResult, Synthesizer};
 
@@ -313,12 +313,12 @@ where
 
             info!("k={k:?}");
 
-            let gen = self.gen_testcases(rng);
-            let gen = gen.as_ref().and_then(|gen| gen.with_mappable_area(&mappable_area, rng));
+            let g = self.gen_testcases(rng);
+            let g = g.as_ref().and_then(|g| g.with_mappable_area(&mappable_area, rng));
 
-            if let Some(gen) = gen {
+            if let Some(g) = g {
                 let mut num = 0;
-                for (state_in, state_out) in oracle.batch_observe_iter(gen.iter(rng, 1000)) {
+                for (state_in, state_out) in oracle.batch_observe_iter(g.iter(rng, 1000)) {
                     num += 1;
                     if self.timeout_at.is_timed_out() {
                         break
@@ -335,7 +335,7 @@ where
                                 continue;
                             }
 
-                            if !item.check_and_add_if_possible(gen.instance(), &state_in, &state_out) {
+                            if !item.check_and_add_if_possible(g.instance(), &state_in, &state_out) {
                                 trace!(
                                     "Queueing case for output #{} (total queued: {})",
                                     item.output.output_index,
@@ -366,7 +366,7 @@ where
                             break;
                         }
 
-                        synthesizer.check_and_add_with_requester(gen.instance(), &state_in, &state_out, oracle);
+                        synthesizer.check_and_add_with_requester(g.instance(), &state_in, &state_out, oracle);
                     }
                 }
 

@@ -6,8 +6,8 @@ use liblisa::value::AsValue;
 use log::info;
 
 use super::searcher::{CheckValueResult, Searcher};
-use crate::templates::preprocess::PreprocessedTemplate;
 use crate::templates::EXPR_TEMPLATES;
+use crate::templates::preprocess::PreprocessedTemplate;
 use crate::{Synthesizer, SynthesizerBase, SynthesizerOutput};
 
 #[derive(Clone)]
@@ -117,14 +117,14 @@ where
 mod tests {
     use liblisa::semantics::default::expr;
     use liblisa::semantics::default::ops::HoleOp;
-    use liblisa::semantics::{Computation, IoType, ARG_NAMES};
+    use liblisa::semantics::{ARG_NAMES, Computation, IoType};
     use liblisa::utils::sign_extend;
     use liblisa::value::{AsValue, OwnedValue, Value};
     use test_log::test;
 
     use crate::search::exprsearcher::TemplateSynthesizer;
-    use crate::templates::{Template, EXPR_TEMPLATES};
-    use crate::{synthesize_from_fn, Synthesizer, SynthesizerBase, SynthesizerOutput};
+    use crate::templates::{EXPR_TEMPLATES, Template};
+    use crate::{Synthesizer, SynthesizerBase, SynthesizerOutput, synthesize_from_fn};
 
     #[test]
     pub fn find_identity() {
@@ -733,11 +733,7 @@ mod tests {
 
                 let output = if shift & 0x1f != 0 {
                     let result = n << (shift & 0x1f);
-                    if (result >> 32) & 1 == (result >> 31) & 1 {
-                        0
-                    } else {
-                        1
-                    }
+                    if (result >> 32) & 1 == (result >> 31) & 1 { 0 } else { 1 }
                 } else {
                     of
                 };

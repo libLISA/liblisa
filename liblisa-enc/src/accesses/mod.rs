@@ -10,14 +10,14 @@ use liblisa::encoding::dataflows::{
 };
 use liblisa::instr::Instruction;
 use liblisa::oracle::{MappableArea, Oracle, OracleError};
-use liblisa::semantics::{Computation, ARG_NAMES};
+use liblisa::semantics::{ARG_NAMES, Computation};
 use liblisa::state::random::{RandomizationError, StateGen};
 use liblisa::state::{Addr, Location, MemoryState, Permissions, SystemState};
 use liblisa::value::Value;
 use log::{debug, error, info, trace};
 use rand::Rng;
-use rand_xoshiro::rand_core::SeedableRng;
 use rand_xoshiro::Xoshiro256PlusPlus;
+use rand_xoshiro::rand_core::SeedableRng;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
@@ -280,7 +280,7 @@ impl<'a, A: Arch, M: MappableArea> BaseGenerator<'a, A, M> {
         }
     }
 
-    pub fn gen<O: Oracle<A>, R: Rng>(&mut self, oracle: &mut O, rng: &mut R) -> Result<(), AccessAnalysisError<A>> {
+    pub fn generate<O: Oracle<A>, R: Rng>(&mut self, oracle: &mut O, rng: &mut R) -> Result<(), AccessAnalysisError<A>> {
         let ps = oracle.page_size();
         #[derive(Debug)]
         struct MemoryGroup {
@@ -426,12 +426,12 @@ impl<'a, A: Arch, M: MappableArea> BaseGenerator<'a, A, M> {
                 // Now we try to generate a state where accesses are placed at the start (1/3) or the end of a page (1/3).
                 trace!("");
                 for (group_index, group) in memory_groups.iter().enumerate() {
-                    match rng.gen_range(0u8..3) {
+                    match rng.random_range(0u8..3) {
                         // Leave the memory access alone
                         0 => (),
                         // Relocate a front to the start of a page
                         1 => {
-                            let index = rng.gen_range(0..group.fronts.len());
+                            let index = rng.random_range(0..group.fronts.len());
                             let index = group.fronts[index];
                             let relocator = &relocators[index];
 
@@ -449,7 +449,7 @@ impl<'a, A: Arch, M: MappableArea> BaseGenerator<'a, A, M> {
                         },
                         // Relocate a back to the end of the page
                         2 => {
-                            let index = rng.gen_range(0..group.backs.len());
+                            let index = rng.random_range(0..group.backs.len());
                             let index = group.backs[index];
                             let access = &self.state_gen.accesses[index];
                             let relocator = &relocators[index];
@@ -586,7 +586,7 @@ impl<'a, A: Arch, M: MappableArea> Relocatable<'a, A, M> {
             let (relocation_loc, relocation_shift) = inputs
                 .iter()
                 .zip(calculation.terms.iter())
-                .min_by_key(|(source, &shift)| {
+                .min_by_key(|(source, shift)| {
                     if shift.minimum_step_size() == 1 {
                         state_gen.accesses.iter().filter(|a| a.inputs.contains(source)).count()
                     } else {
@@ -886,7 +886,7 @@ impl MemoryAccessAnalysis {
     ) -> Result<MemoryAccesses<A>, AccessAnalysisError<A>> {
         info!("Inferring accesses for {instr:X}");
         let mappable = o.mappable_area();
-        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().gen());
+        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().random());
         let mut accesses: MemoryAccesses<A> = MemoryAccesses {
             instr: *instr,
             memory: vec![MemoryAccess {
@@ -917,7 +917,7 @@ impl MemoryAccessAnalysis {
 
             let state_gen = StateGen::new(&accesses, &mappable)?;
             let mut base_gen = BaseGenerator::new(&state_gen);
-            base_gen.gen(o, &mut rng)?;
+            base_gen.generate(o, &mut rng)?;
             let bases = base_gen.bases;
             let oks = base_gen.oks;
             let unaddressable = base_gen.unaddressable;

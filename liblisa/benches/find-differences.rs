@@ -1,8 +1,8 @@
 use std::time::Duration;
 
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use liblisa::arch::x64::{GpReg, X64Arch, X64Reg, XmmReg};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use liblisa::arch::CpuState;
+use liblisa::arch::x64::{GpReg, X64Arch, X64Reg, XmmReg};
 use liblisa::encoding::dataflows::MemoryAccesses;
 use liblisa::instr::Instruction;
 use liblisa::oracle::MappableArea;
@@ -34,9 +34,9 @@ pub fn find_differences1(c: &mut Criterion) {
     let view = SystemStateByteView::new(&accesses);
 
     let mut rng = Xoshiro256PlusPlus::seed_from_u64(0);
-    let gen = StateGen::new(&accesses, &Everything).unwrap();
-    let random1 = gen.randomize_new(&mut rng).unwrap();
-    let random2 = gen.randomize_new(&mut rng).unwrap();
+    let g = StateGen::new(&accesses, &Everything).unwrap();
+    let random1 = g.randomize_new(&mut rng).unwrap();
+    let random2 = g.randomize_new(&mut rng).unwrap();
 
     c.bench_function("find_differences_empty_empty", |b| {
         b.iter(|| {

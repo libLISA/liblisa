@@ -4,9 +4,9 @@ use std::fmt::Debug;
 
 use serde::{Deserialize, Serialize};
 
+use crate::instr::Instruction;
 use crate::instr::set::FilterList;
 use crate::instr::tree::FilterTree;
-use crate::instr::Instruction;
 
 /// A counter for iteration over instruction space.
 #[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]

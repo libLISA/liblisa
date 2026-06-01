@@ -2,7 +2,7 @@ use std::time::Instant;
 
 use itertools::Itertools;
 use liblisa::semantics::default::computation::ExpressionComputation;
-use liblisa::semantics::{Computation, IoType, ARG_NAMES};
+use liblisa::semantics::{ARG_NAMES, Computation, IoType};
 use liblisa::value::{AsValue, OwnedValue, Value};
 use log::info;
 

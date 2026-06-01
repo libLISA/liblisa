@@ -1,8 +1,8 @@
 use std::time::Duration;
 
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use liblisa::arch::x64::X64Arch;
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use liblisa::arch::FullScope;
+use liblisa::arch::x64::X64Arch;
 use liblisa::instr::Instruction;
 use liblisa_enc::Validity;
 use liblisa_x64_observer::with_oracle;

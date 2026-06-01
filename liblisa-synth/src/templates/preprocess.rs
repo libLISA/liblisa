@@ -1,9 +1,9 @@
 use std::collections::HashSet;
 
 use arrayvec::ArrayVec;
+use liblisa::semantics::ARG_NAMES;
 use liblisa::semantics::default::ops::Op;
 use liblisa::semantics::default::{Expr, MAX_TEMPLATE_ARGS};
-use liblisa::semantics::ARG_NAMES;
 use liblisa::utils::bitmask_u128;
 use log::{debug, trace};
 

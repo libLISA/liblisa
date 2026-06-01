@@ -6,16 +6,16 @@ use std::path::PathBuf;
 use arch_compare::ArchCompareContainer;
 use clap::Parser;
 use itertools::Itertools;
-use liblisa::arch::x64::X64Arch;
-use liblisa::arch::Arch;
-use liblisa::encoding::bitpattern::PartMapping;
-use liblisa::encoding::Encoding;
-use liblisa::semantics::default::computation::SynthesizedComputation;
-use liblisa::semantics::{Computation, ARG_NAMES};
 use liblisa::Instruction;
+use liblisa::arch::Arch;
+use liblisa::arch::x64::X64Arch;
+use liblisa::encoding::Encoding;
+use liblisa::encoding::bitpattern::PartMapping;
+use liblisa::semantics::default::computation::SynthesizedComputation;
+use liblisa::semantics::{ARG_NAMES, Computation};
 use log::trace;
 use merge::Merge;
-use schemars::{schema_for, JsonSchema};
+use schemars::{JsonSchema, schema_for};
 
 // TODO: Expand this into a tool that can search through encodings based on a query.
 // TODO: query: overlapping ouputs?

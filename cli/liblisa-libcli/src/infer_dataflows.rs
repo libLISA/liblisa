@@ -33,7 +33,7 @@ impl<A: Arch> SimpleCommand<A> for InferDataflowsCommand<A> {
     }
 
     fn run(&self, oracle: &mut impl Oracle<A>, (accesses, prev): &mut Self::Setup) {
-        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().gen());
+        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().random());
 
         let dataflows = DataflowAnalysis::infer(&mut rng, oracle, accesses);
         if dataflows.is_err() || prev.as_ref() != dataflows.as_ref().ok() {

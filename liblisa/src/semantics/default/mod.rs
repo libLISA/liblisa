@@ -342,7 +342,9 @@ impl<'a> Expr<'a> {
 
     /// Returns a type that can be displayed as an expression.
     /// Fills in holes with the strings in `hole_names`.
-    pub fn display<'r, S: AsRef<str> + 'r, C: Index<usize, Output = S> + 'r>(&self, hole_names: C) -> impl Display + Debug + 'r
+    pub fn display<'r, S: AsRef<str> + 'r, C: Index<usize, Output = S> + 'r>(
+        &self, hole_names: C,
+    ) -> impl Display + Debug + 'r + use<'r, S, C>
     where
         'a: 'r,
     {
@@ -602,8 +604,8 @@ macro_rules! __private_expr {
 
 #[cfg(test)]
 mod tests {
-    use crate::semantics::default::ops::Op;
     use crate::semantics::default::Expr;
+    use crate::semantics::default::ops::Op;
 
     #[test]
     pub fn bit_set() {

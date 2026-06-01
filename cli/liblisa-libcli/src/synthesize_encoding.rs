@@ -13,8 +13,8 @@ use liblisa::smt::z3::Z3Solver;
 use liblisa::smt::{SmtBV, SmtSolver};
 use liblisa_enc::infer_encoding;
 use liblisa_synth::{
-    determine_overlapping_write_order, merge_semantics_into_encoding, prepare_templates, DefaultTreeTemplateSynthesizer, Output,
-    SynthesisLoop,
+    DefaultTreeTemplateSynthesizer, Output, SynthesisLoop, determine_overlapping_write_order, merge_semantics_into_encoding,
+    prepare_templates,
 };
 use log::info;
 

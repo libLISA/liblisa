@@ -6,9 +6,9 @@ use log::{debug, info};
 use rayon::prelude::*;
 
 use crate::arch::Arch;
-use crate::compare::{encoding_addresses_equal, encoding_dataflows_structurally_equal, PartIndexMapping};
-use crate::encoding::bitpattern::{MappingOrBitOrder, Part, PartMapping};
+use crate::compare::{PartIndexMapping, encoding_addresses_equal, encoding_dataflows_structurally_equal};
 use crate::encoding::Encoding;
+use crate::encoding::bitpattern::{MappingOrBitOrder, Part, PartMapping};
 use crate::semantics::Computation;
 use crate::utils::bitmask_u64;
 

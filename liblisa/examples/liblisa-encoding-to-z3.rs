@@ -9,8 +9,8 @@ use liblisa::encoding::Encoding;
 use liblisa::instr::Instruction;
 use liblisa::semantics::default::computation::SynthesizedComputation;
 use liblisa::semantics::default::smtgen::{StorageLocations, Z3Model};
-use liblisa::smt::z3::{Z3Solver, BV};
 use liblisa::smt::SmtBV;
+use liblisa::smt::z3::{BV, Z3Solver};
 
 #[derive(Clone, Debug, clap::Parser)]
 pub struct Args {

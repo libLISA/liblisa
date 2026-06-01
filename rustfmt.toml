@@ -1,5 +1,5 @@
-style_edition = "2021"
-edition = "2021"
+style_edition = "2024"
+edition = "2024"
 max_width = 130
 newline_style = "Unix"
 group_imports = "StdExternalCrate"

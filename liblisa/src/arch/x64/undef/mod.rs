@@ -8,10 +8,10 @@ use rusty_xed::{AddressWidth, MachineMode, Xed, XedError};
 use crate::arch::undef::{RegOrMem, UndefProvider, UndefinedOutput, UndefinedOutputs};
 use crate::arch::x64::{X64Arch, X64Flag, X64Reg, X87Reg};
 use crate::encoding::dataflows::Size;
+use crate::semantics::IoType;
 use crate::semantics::default::computation::{Arg, ArgEncoding, AsComputationRef, OutputEncoding, SynthesizedComputation};
 use crate::semantics::default::ops::Op;
 use crate::semantics::default::{Expr, Expression};
-use crate::semantics::IoType;
 
 mod xed_convert;
 
@@ -191,8 +191,8 @@ impl UndefProvider<X64Arch> for IntelUndefWithXed {
         // !((val & mask) < threshold) == (val & mask) >= threshold
         const MASKED_GT_EQ: Expr = Expr::new(&[Op::Hole(0), Op::Hole(1), Op::And, Op::Hole(2), Op::CmpLt, Op::Not]);
 
-        use rusty_xed::XedIClass::*;
         use X64Flag::*;
+        use rusty_xed::XedIClass::*;
         Ok(match instr.iclass() {
             // Simple general purpose flags
             Aaa | Aas => r.with([ Of, Sf, Zf, Pf ]),
@@ -687,16 +687,16 @@ impl UndefProvider<X64Arch> for IntelUndefWithXed {
 mod tests {
     use std::str::FromStr;
 
-    use rand::rngs::StdRng;
     use rand::SeedableRng;
-    use rustc_apfloat::ieee::X87DoubleExtended;
+    use rand::rngs::StdRng;
     use rustc_apfloat::Float;
+    use rustc_apfloat::ieee::X87DoubleExtended;
     use rusty_xed::{Xed, XedIClass};
 
-    use super::{abs_exponent_geq, abs_fp80_greater_than, IntelUndefWithXed, RegOrMem, UndefinedOutputs};
+    use super::{IntelUndefWithXed, RegOrMem, UndefinedOutputs, abs_exponent_geq, abs_fp80_greater_than};
     use crate::arch::x64::{GpReg, X64Reg};
     use crate::encoding::dataflows::{AddrTerm, AddrTermSize, AddressComputation, Size};
-    use crate::semantics::{Computation, ARG_NAMES};
+    use crate::semantics::{ARG_NAMES, Computation};
     use crate::state::random::randomized_bytes;
     use crate::value::{AsValue, Value};
 

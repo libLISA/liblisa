@@ -140,8 +140,8 @@ mod tests {
             debug!("Size {size}");
 
             for _ in 0..20_000 {
-                let x = rng.gen_range(0..size);
-                let y = rng.gen_range(0..size);
+                let x = rng.random_range(0..size);
+                let y = rng.random_range(0..size);
 
                 debug!("    - setting ({x}, {y}) = true");
 

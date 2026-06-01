@@ -4,8 +4,8 @@ use liblisa_x64_observer::vm::{
     CpuFeatures, DebugRegs, DebugRegsWriter, ExtendedRegs, ExtendedRegsWriter, GpRegs, MemoryMapper, ObservationRequest,
     PageAllocator, Permissions, ResultMemoryAccess, Vm, XsaveLegacyArea,
 };
-use rand::seq::SliceRandom;
 use rand::Rng;
+use rand::seq::SliceRandom;
 
 const INSTR_ADD_DL_DL: &[u8] = &[0x00, 0xd2, 0xcc];
 const INSTR_ADD_BL_DL: &[u8] = &[0x00, 0xd3, 0xcc];
@@ -78,21 +78,21 @@ fn main() {
         let mut observer = vm.first_observer_only();
         let v = repeat_with(|| {
             let gpregs = GpRegs {
-                rax: rng.gen(),
-                rbx: rng.gen(),
-                rcx: rng.gen(),
-                rdx: rng.gen(),
-                rbp: rng.gen(),
-                rsi: rng.gen(),
-                rdi: rng.gen(),
-                r8: rng.gen(),
-                r9: rng.gen(),
-                r10: rng.gen(),
-                r11: rng.gen(),
-                r12: rng.gen(),
-                r13: rng.gen(),
-                r14: rng.gen(),
-                r15: rng.gen(),
+                rax: rng.random(),
+                rbx: rng.random(),
+                rcx: rng.random(),
+                rdx: rng.random(),
+                rbp: rng.random(),
+                rsi: rng.random(),
+                rdi: rng.random(),
+                r8: rng.random(),
+                r9: rng.random(),
+                r10: rng.random(),
+                r11: rng.random(),
+                r12: rng.random(),
+                r13: rng.random(),
+                r14: rng.random(),
+                r15: rng.random(),
                 exception_id: 0,
                 error_code: 0,
                 rip: *[
@@ -108,7 +108,7 @@ fn main() {
                 ]
                 .choose(&mut rng)
                 .unwrap(),
-                rsp: rng.gen(),
+                rsp: rng.random(),
                 access_address: 0,
                 rflags: TRAP_FLAG,
                 fs_base: 0,

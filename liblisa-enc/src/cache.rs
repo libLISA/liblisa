@@ -120,7 +120,7 @@ where
     pub fn force_infer_dataflow<O: Oracle<A>>(
         &self, o: &mut O, memory_accesses: &MemoryAccesses<A>,
     ) -> Result<Dataflows<A, ()>, DataflowAnalysisError<A>> {
-        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().gen());
+        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().random());
         DataflowAnalysis::infer(&mut rng, o, memory_accesses)
     }
 }
@@ -139,7 +139,7 @@ where
     fn infer_dataflow<O: Oracle<A>>(
         &self, o: &mut O, memory_accesses: &MemoryAccesses<A>,
     ) -> Result<Dataflows<A, ()>, DataflowAnalysisError<A>> {
-        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().gen());
+        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().random());
         self.dataflow.get_or_insert_with(&memory_accesses.instr, |_| {
             DataflowAnalysis::infer(&mut rng, o, memory_accesses)
         })
@@ -148,7 +148,7 @@ where
     fn infer_threshold_values<O: Oracle<A>>(
         &self, o: &mut O, dataflows: &Dataflows<A, ()>, state_gen: &StateGen<'_, A, O::MappableArea>,
     ) -> ThresholdValues<A> {
-        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().gen());
+        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().random());
         self.threshold_values.get_or_insert_with(dataflows.instr(), |_| {
             ThresholdValues::infer(o, &mut rng, state_gen, dataflows)
         })

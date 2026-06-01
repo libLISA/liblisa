@@ -4,8 +4,7 @@ use std::hash::Hash;
 use std::mem::swap;
 
 use log::{debug, info, trace};
-use rand::seq::SliceRandom;
-use rand::Rng;
+use rand::prelude::*;
 
 use crate::utils::bitmap::{Bitmap, BitmapSlice, FixedBitmapU64, GrowingBitmap};
 use crate::utils::mcs::Decision;

@@ -1,5 +1,5 @@
-use super::bitmap::{Bitmap, BitmapSlice, FixedBitmapU64};
 use super::MinimumCoveringSet;
+use super::bitmap::{Bitmap, BitmapSlice, FixedBitmapU64};
 
 pub struct MinCoverWithExclusions<'a> {
     num_bits: usize,

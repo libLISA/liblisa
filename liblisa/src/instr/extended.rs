@@ -3,7 +3,7 @@ use std::fmt::Debug;
 
 use log::trace;
 
-use crate::instr::{merge_filters, FilterBit, Instruction, InstructionFilter};
+use crate::instr::{FilterBit, Instruction, InstructionFilter, merge_filters};
 use crate::utils::minisat::{SatSolver, SolverResult, Term};
 
 #[derive(Clone, PartialEq, Eq, Hash)]

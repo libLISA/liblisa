@@ -4,7 +4,7 @@ use std::rc::Rc;
 use crate::arch::{Arch, CpuState};
 use crate::encoding::dataflows::MemoryAccesses;
 use crate::oracle::MappableArea;
-use crate::state::random::{update_memory_addresses_unchecked, StateGen};
+use crate::state::random::{StateGen, update_memory_addresses_unchecked};
 use crate::state::{AsSystemState, SystemState};
 
 #[derive(Clone)]

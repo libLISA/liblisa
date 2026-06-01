@@ -1,7 +1,7 @@
 use liblisa::arch::Arch;
+use liblisa::encoding::Encoding;
 use liblisa::encoding::bitpattern::{FlowValueLocation, PartMapping};
 use liblisa::encoding::dataflows::Dataflows;
-use liblisa::encoding::Encoding;
 use liblisa::oracle::Oracle;
 use log::info;
 

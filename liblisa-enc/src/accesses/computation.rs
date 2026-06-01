@@ -450,10 +450,7 @@ impl<A: Arch, M: MappableArea> InferComputation<'_, A, M> {
                     result => {
                         trace!(
                             "Result {:?} when changing {:?} in: {:X?} to {:X?}",
-                            result,
-                            gpreg,
-                            original_input,
-                            test_input
+                            result, gpreg, original_input, test_input
                         );
                     },
                 }

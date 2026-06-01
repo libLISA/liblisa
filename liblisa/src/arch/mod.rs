@@ -11,8 +11,8 @@
 use std::fmt::{Debug, Display};
 use std::hash::Hash;
 
-use serde::de::DeserializeOwned;
 use serde::Serialize;
+use serde::de::DeserializeOwned;
 
 use crate::state::{StateByte, SystemStateIoPair};
 use crate::value::{MutValue, Value, ValueType};

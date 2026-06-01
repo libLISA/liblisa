@@ -1,14 +1,14 @@
 use std::str::FromStr;
 use std::time::Duration;
 
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use liblisa::instr::Instruction;
 use liblisa_enc::random_instr_bytes;
 use rand::{Rng, SeedableRng};
 use rand_xoshiro::Xoshiro256PlusPlus;
 
 fn randomize_bytes(c: &mut Criterion) {
-    let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().gen());
+    let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().random());
     let start = Instruction::from_str("420F00B000000000").unwrap();
 
     c.bench_function("randomize_bytes", |b| {

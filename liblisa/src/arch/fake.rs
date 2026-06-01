@@ -2,9 +2,9 @@
 
 use std::fmt::{self, Debug, Display};
 
-use serde::{Deserialize, Serialize};
 pub use FakeFlag::*;
 pub use FakeReg::*;
+use serde::{Deserialize, Serialize};
 
 use crate::arch::{Arch, CpuState, Flag, NumberedRegister, Register};
 use crate::oracle::{FallbackBatchObserveIter, MappableArea, Observation, Oracle, OracleError};

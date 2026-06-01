@@ -6,7 +6,7 @@ use std::time::Duration;
 use liblisa::arch::Arch;
 use liblisa::encoding::bitpattern::{Bit, ImmBitOrder, MappingOrBitOrder, PartMapping};
 use liblisa::encoding::mcs::split_encodings_into_overlapping_groups;
-use liblisa::encoding::{merge_encodings_semantically, Encoding, EncodingWithFilters, IntegrityError};
+use liblisa::encoding::{Encoding, EncodingWithFilters, IntegrityError, merge_encodings_semantically};
 use liblisa::instr::InstructionFilter;
 use liblisa::semantics::default::computation::SynthesizedComputation;
 use liblisa::smt::z3::ThreadLocalZ3;

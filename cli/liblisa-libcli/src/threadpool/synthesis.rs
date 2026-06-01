@@ -7,11 +7,11 @@ use std::time::{Duration, Instant};
 use liblisa::arch::Arch;
 use liblisa::encoding::{Encoding, WriteOrdering};
 use liblisa::oracle::Oracle;
-use liblisa::semantics::{Computation, ARG_NAMES};
+use liblisa::semantics::{ARG_NAMES, Computation};
 use liblisa::value::OwnedValue;
-use liblisa_synth::{synthesize_outputs, SynthesisResult, Synthesizer};
-use rand::seq::SliceRandom;
+use liblisa_synth::{SynthesisResult, Synthesizer, synthesize_outputs};
 use rand::Rng;
+use rand::seq::SliceRandom;
 use serde::{Deserialize, Serialize};
 
 use crate::threadpool::work::Work;

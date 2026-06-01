@@ -1,9 +1,9 @@
 use std::time::Duration;
 
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
+use liblisa::arch::Arch;
 use liblisa::arch::fake::AnyArea;
 use liblisa::arch::x64::{GpReg, X64Arch, X64Reg};
-use liblisa::arch::Arch;
 use liblisa::encoding::dataflows::{AccessKind, AddressComputation, Dest, Inputs, MemoryAccess, MemoryAccesses, Size};
 use liblisa::instr::Instruction;
 use liblisa::state::random::StateGen;

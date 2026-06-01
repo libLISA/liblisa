@@ -1,8 +1,8 @@
 use std::time::Duration;
 
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use liblisa::arch::x64::X64Arch;
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use liblisa::arch::CpuState;
+use liblisa::arch::x64::X64Arch;
 use liblisa::instr::Instruction;
 use liblisa::oracle::Oracle;
 use liblisa::state::{Addr, MemoryState, Permissions, SystemState};

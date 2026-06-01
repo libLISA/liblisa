@@ -7,17 +7,17 @@ use itertools::Itertools;
 use liblisa::arch::{Arch, CpuState};
 use liblisa::oracle::{MappableArea, Oracle};
 use liblisa::state::jit::{ComplexJitState, MaybeJitState, SimpleJitState};
-use liblisa::state::random::{randomized_bytes_into_arrayvec, randomized_bytes_select_nth, randomized_value, StateGen};
+use liblisa::state::random::{StateGen, randomized_bytes_into_arrayvec, randomized_bytes_select_nth, randomized_value};
 use liblisa::state::{AsSystemState, StateByte, SystemState, SystemStateByteView};
 use liblisa::value::MutValue;
 use log::{debug, error, info, trace};
-use rand::seq::SliceRandom;
 use rand::Rng;
+use rand::seq::SliceRandom;
 
+use super::DataflowAnalysisError;
 use super::flow::Dataflow;
 use super::results::{AnalysisResult, IgnorableDifferences};
 use super::spec::ButEntry;
-use super::DataflowAnalysisError;
 use crate::dataflow::fuzz::Fuzz;
 use crate::dataflow::results::compute_changed;
 use crate::dataflow::spec::{Equivalence, EquivalenceSpec};
@@ -123,7 +123,7 @@ pub fn modify_state_with_spec<A: Arch, R: Rng>(
                     MutValue::Num(orig) => {
                         let mut new_val = *orig;
                         if let Some(mask) = reg.mask() {
-                            let alt_val: u64 = rng.gen();
+                            let alt_val: u64 = rng.random();
                             for &byte in bytes {
                                 assert!(byte < 8);
                                 let mask = (0xFF << (byte * 8)) & mask;
@@ -136,7 +136,7 @@ pub fn modify_state_with_spec<A: Arch, R: Rng>(
                                     let base = *orig & mask;
                                     let mut new_byte = alt_val & mask;
                                     while new_byte == base {
-                                        new_byte = rng.gen::<u64>() & mask;
+                                        new_byte = rng.random::<u64>() & mask;
                                     }
 
                                     new_byte
@@ -267,7 +267,7 @@ pub fn modify_state_with_spec_possibly_eq<A: Arch, R: Rng>(
                         debug_assert_eq!(*orig & !reg_mask, 0);
                         let mask = full_mask & reg_mask;
                         let new_val = if reg.mask().is_some() {
-                            rng.gen()
+                            rng.random()
                         } else {
                             randomized_value(rng)
                         };
@@ -613,11 +613,7 @@ impl<'a, A: Arch, M: MappableArea> FlowAnalyzer3<'a, A, M> {
                 panic!("Spec was not upheld: {spec:#?} with base = {base:X?} and modified = {modified_in:X?}");
             }
 
-            if adapt_success {
-                Some(modified_in)
-            } else {
-                None
-            }
+            if adapt_success { Some(modified_in) } else { None }
         })) {
             if modified_out.is_ok() {
                 trace!("Non-erroring state: {:?} modified to {:?}", base, modified_in);
@@ -747,11 +743,7 @@ impl<'a, A: Arch, M: MappableArea> FlowAnalyzer3<'a, A, M> {
             num_changed += 1;
         });
 
-        if num_changed <= 1 {
-            changed
-        } else {
-            None
-        }
+        if num_changed <= 1 { changed } else { None }
     }
 
     pub fn run<O: Oracle<A>>(

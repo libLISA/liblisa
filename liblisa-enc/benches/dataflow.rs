@@ -1,4 +1,4 @@
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use liblisa::arch::x64::X64Arch;
 use liblisa::instr::Instruction;
 use liblisa_enc::{DataflowAnalysis, MemoryAccessAnalysis};
@@ -8,7 +8,7 @@ use rand_xoshiro::Xoshiro256PlusPlus;
 
 fn infer(c: &mut Criterion) {
     with_oracle(|mut o| {
-        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().gen());
+        let mut rng = Xoshiro256PlusPlus::seed_from_u64(rand::thread_rng().random());
         let instr = Instruction::new(&[0x30, 0xD0]);
         let memory_accesses = MemoryAccessAnalysis::infer::<X64Arch, _>(&mut o, &instr).unwrap();
         c.bench_function("Dataflow::<X64Arch, PtraceOracle>::infer[XOR al, dl]", |b| {

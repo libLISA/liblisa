@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
-use liblisa::utils::bitmap::GrowingBitmap;
 use liblisa::utils::Symmetric2DMatrix;
+use liblisa::utils::bitmap::GrowingBitmap;
 use liblisa::value::AsValue;
 use log::{debug, info};
 

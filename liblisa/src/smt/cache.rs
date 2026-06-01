@@ -7,9 +7,9 @@ use std::sync::{Arc, Mutex};
 
 use sha1::{Digest, Sha1};
 
+use super::SmtBVArray;
 use super::solver::SolverProvider;
 use super::tree::{BinOp, ConstId, Tree, UnOp};
-use super::SmtBVArray;
 use crate::smt::{Dynamic, SatResult, SmtBV, SmtBool, SmtInt, SmtModel, SmtModelRef, SmtSolver};
 
 /// A hash for a set of assertions executed on a solver.
