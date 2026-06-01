@@ -30,7 +30,7 @@ pub fn init() {
     interrupts::init_idt();
     unsafe { interrupts::PICS.lock().initialize() };
     x86_64::instructions::interrupts::enable();
-    allocator::init(unsafe { &mut HEAP });
+    allocator::init(unsafe { &mut*&raw mut HEAP });
 }
 pub trait Testable {
     fn run(&self) -> ();

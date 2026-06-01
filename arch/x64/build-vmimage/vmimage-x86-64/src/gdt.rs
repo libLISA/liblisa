@@ -13,13 +13,13 @@ pub const STACKED_INTERRUPT_HANDLER_IST_INDEX: u16 = 1;
 static mut TSS: (TaskStateSegment, [u8; 16]) = (TaskStateSegment::new(), [0xff; 16]);
 
 fn init_tss() {
-    let tss = unsafe { &mut TSS.0 };
+    let tss = unsafe { &mut *&raw mut TSS.0 };
     const STACK_SIZE: usize = 4096 * 5;
     tss.interrupt_stack_table[MAIN_INTERRUPT_HANDLER_IST_INDEX as usize] = {
         #[used]
         static mut STACK1: [u8; STACK_SIZE] = [0; STACK_SIZE];
 
-        let stack_start = VirtAddr::new_truncate(unsafe { &STACK1 as *const _ } as u64);
+        let stack_start = VirtAddr::new_truncate(unsafe { &raw const STACK1 as *const _ } as u64);
         let stack_end = stack_start + STACK_SIZE;
         stack_end
     };
@@ -27,11 +27,11 @@ fn init_tss() {
         #[used]
         static mut STACK2: [u8; STACK_SIZE] = [0; STACK_SIZE];
 
-        let stack_start = VirtAddr::new_truncate(unsafe { &STACK2 as *const _ } as u64);
+        let stack_start = VirtAddr::new_truncate(unsafe { &raw const STACK2 as *const _ } as u64);
         let stack_end = stack_start + STACK_SIZE;
         stack_end
     };
-    tss.iomap_base = unsafe { &TSS.1 as *const _ as u64 }
+    tss.iomap_base = unsafe { &raw const TSS.1 as *const _ as u64 }
         .wrapping_sub(tss as *const _ as u64)
         .try_into()
         .expect("IOPRIV_BITMAP too far away");
@@ -45,7 +45,7 @@ lazy_static! {
         let kernel_data_flags = DescriptorFlags::USER_SEGMENT | DescriptorFlags::PRESENT | DescriptorFlags::WRITABLE;
         let code_selector = gdt.add_entry(Descriptor::kernel_code_segment()); // kernel code segment
         let data_selector = gdt.add_entry(Descriptor::UserSegment(kernel_data_flags.bits())); // kernel data segment
-        let tss_selector = gdt.add_entry(Descriptor::tss_segment(unsafe { &TSS.0 })); // task state segment
+        let tss_selector = gdt.add_entry(Descriptor::tss_segment(unsafe { &*&raw const TSS.0 })); // task state segment
         let user_data_selector = gdt.add_entry(Descriptor::user_data_segment()); // user data segment
         let user_code_selector = gdt.add_entry(Descriptor::user_code_segment()); // user code segment
         (

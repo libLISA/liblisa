@@ -152,7 +152,7 @@ static mut GPREGS_WRITE_TARGET: *mut GpRegs = ptr::null_mut();
 #[macro_export]
 macro_rules! generate_interrupt_entry {
     ($id:literal: $name:ident) => {
-        #[naked]
+        #[unsafe(naked)]
         unsafe extern "C" fn $name() {
             naked_asm!(
                 "cld",
@@ -165,7 +165,7 @@ macro_rules! generate_interrupt_entry {
         }
     };
     ($id:literal: $name:ident => $kernel_handler:path) => {
-        #[naked]
+        #[unsafe(naked)]
         unsafe extern "C" fn $name() {
             fn _verify() {
                 let _: extern "x86-interrupt" fn(stack_frame: InterruptStackFrame) = $kernel_handler;
@@ -190,7 +190,7 @@ macro_rules! generate_interrupt_entry {
         }
     };
     ($id:literal(with_error=$error_ty:ty): $name:ident => $kernel_handler:path) => {
-        #[naked]
+        #[unsafe(naked)]
         unsafe extern "C" fn $name() {
             fn _verify() {
                 let _: extern "x86-interrupt" fn(stack_frame: InterruptStackFrame, error_code: $error_ty) = $kernel_handler;
@@ -214,8 +214,8 @@ macro_rules! generate_interrupt_entry {
     }
 }
 
-#[no_mangle]
-#[naked]
+#[unsafe(no_mangle)]
+#[unsafe(naked)]
 pub unsafe extern "C" fn handle_interrupt() {
     // When entering this function, the stack should look like:
     // - [pop'd] original rbx

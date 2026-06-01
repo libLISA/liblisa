@@ -4,7 +4,7 @@
 use vmimage_x86_64::{exit_qemu, serial_print, serial_println, ExitCode};
 use core::panic::PanicInfo;
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn _start() -> ! {
     should_fail();
     serial_println!("[test did not panic]");

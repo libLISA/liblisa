@@ -239,7 +239,7 @@ extern "C" fn check_timer_interrupt() -> bool {
     timeout
 }
 
-#[naked]
+#[unsafe(naked)]
 unsafe extern "C" fn timer_interrupt_handler() {
     naked_asm!(
         // If we're currently not in userspace, bail out to the kernel handler

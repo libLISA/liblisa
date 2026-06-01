@@ -82,7 +82,7 @@ impl ContiguousFrameAllocator {
     }
 }
 
-extern "C" {
+unsafe extern "C" {
     /// UNSAFE: this static functions as a pointer to the end of the ELF binary: do not attempt read its value
     pub static DATA_END: u8;
 }
@@ -160,7 +160,7 @@ impl PageMapper {
             let (p3_addr, p3) = mapper.allocate_page_table();
             assert_eq!(p3_addr, first_frame.start_address() + 4096u64 * (i + 1));
 
-            (*pt)[i as usize].set_frame(PhysFrame::from_start_address(p3_addr).unwrap(), PageTableFlags::PRESENT | PageTableFlags::WRITABLE | PageTableFlags::USER_ACCESSIBLE);
+            (&mut *pt)[i as usize].set_frame(PhysFrame::from_start_address(p3_addr).unwrap(), PageTableFlags::PRESENT | PageTableFlags::WRITABLE | PageTableFlags::USER_ACCESSIBLE);
             *p3 = PageTable::new();
         }
 
