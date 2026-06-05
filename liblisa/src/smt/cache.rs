@@ -272,6 +272,16 @@ impl<'ctx, S: SmtSolver<'ctx> + 'ctx, C: SolverCache> SmtSolver<'ctx> for Cached
         }
     }
 
+    fn bv_array_from_element(&mut self, index_size: u32, element: Self::BV) -> Self::BvArray {
+        CacheBVArray {
+            inner: self.inner.bv_array_from_element(index_size, element.inner),
+            tree: Tree::BvArrayFromElement {
+                index_size,
+                element: Box::new(element.tree),
+            },
+        }
+    }
+
     fn bv_from_int(&mut self, int: Self::Int, size: u32) -> Self::BV {
         CacheBV {
             inner: self.inner.bv_from_int(int.inner, size),

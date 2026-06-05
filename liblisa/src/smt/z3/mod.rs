@@ -110,6 +110,15 @@ impl<'ctx> SmtSolver<'ctx> for Z3Solver<'ctx> {
         BV(z3::ast::BV::from_u64(self.context, val, size))
     }
 
+    fn bv_array_from_element(&mut self, index_size: u32, element: Self::BV) -> Self::BvArray {
+        let domain = z3::Sort::bitvector(self.context, index_size);
+        BvArray {
+            element_size: element.get_size(),
+            index_size,
+            inner: z3::ast::Array::const_array(self.context, &domain, &element.0),
+        }
+    }
+
     fn int_from_i64(&mut self, val: i64) -> Self::Int {
         Int(z3::ast::Int::from_i64(self.context, val))
     }

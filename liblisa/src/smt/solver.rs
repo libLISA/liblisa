@@ -51,6 +51,9 @@ pub trait SmtSolver<'a>: Sized + Debug {
     /// Creates a bitvector from an u64.
     fn bv_from_u64(&mut self, val: u64, size: u32) -> Self::BV;
 
+    /// Creates a bitvector array from an u64 bitvector element.
+    fn bv_array_from_element(&mut self, index_size: u32, element: Self::BV) -> Self::BvArray;
+
     /// Creates a bitvector from an Int.
     fn bv_from_int(&mut self, int: Self::Int, size: u32) -> Self::BV;
 

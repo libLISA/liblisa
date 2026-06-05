@@ -92,6 +92,10 @@ pub(super) enum Tree {
         index_size: u32,
         element_size: u32,
     },
+    BvArrayFromElement {
+        index_size: u32,
+        element: Box<Tree>,
+    },
 }
 
 impl Tree {
@@ -242,6 +246,14 @@ impl Tree {
                 out.push(id);
                 out.extend(index_size.to_ne_bytes());
                 out.extend(element_size.to_ne_bytes());
+            },
+            Tree::BvArrayFromElement {
+                index_size,
+                element,
+            } => {
+                out.push(17);
+                out.extend(index_size.to_ne_bytes());
+                element.to_bytes_internal(map, out);
             },
             Tree::BinOp {
                 op,
