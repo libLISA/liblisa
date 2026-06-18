@@ -13,7 +13,7 @@ use crate::semantics::default::ops::Op;
 use crate::semantics::{Computation, IoType, OutputType};
 use crate::utils::cmov::CmovAnd;
 use crate::utils::{create_from_le_bytes, sign_extend, sign_extend_u64, switch_endianness_u64, switch_endianness_u128};
-use crate::value::{AsValue, OwnedValue, Value};
+use crate::value::{AsValue, OwnedValue, Value, ValueType};
 
 /// A computation using an [`Expr`].
 /// The result of the [`Expr`] is interpreted using an output encoding.
@@ -380,6 +380,20 @@ impl ArgEncoding {
     pub fn is_le(self) -> bool {
         (self as u8) & 1 == 0
     }
+
+    /// By default, `Value::Num` is assumed to be big-endian.
+    /// The value is byte-swapped when requested encoding is little-endian.
+    /// 
+    /// By default, `Value::Bytes` is assumed to be little-endian.
+    /// The value is byte-swapped when requested encoding is big-endian.
+    pub fn should_byteswap(self, value_type: ValueType) -> bool {
+        let input_is_little_endian = match value_type {
+            ValueType::Num => false,
+            ValueType::Bytes(_) => true,
+        };
+
+        input_is_little_endian != self.is_le()
+    }
 }
 
 /// The output encoding of an expression.
@@ -395,7 +409,7 @@ pub enum OutputEncoding {
     UnsignedBigEndian,
 }
 
-/// An argrument for an expression.
+/// An argument for an expression.
 #[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
 #[derive(Copy, Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub enum Arg {

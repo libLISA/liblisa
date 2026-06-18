@@ -7,8 +7,10 @@
 
 use log::trace;
 
+use crate::semantics::{IoType, OutputType};
 use crate::semantics::default::computation::{Arg, ArgEncoding, AsComputationRef, OutputEncoding};
 use crate::semantics::default::ops::Op;
+use crate::value::ValueType;
 
 pub mod sexpr;
 pub mod smt;
@@ -324,19 +326,24 @@ impl<T> Term<T> {
 }
 
 /// Generates code for a computation.
-pub fn codegen_computation<C: CodeGenerator>(g: &mut C, computation: &impl AsComputationRef) -> C::T {
+/// 
+/// Expects you to encode output values as little-endian by default.
+/// This naturally translates to accessing byte N with `(result >> (N * 8)) as u8`.
+pub fn codegen_computation<C: CodeGenerator>(g: &mut C, computation: &impl AsComputationRef, input_types: &[ValueType]) -> C::T {
     let result = codegen_template(
         g,
         computation.expr().ops(),
         computation.arg_interpretation(),
+        input_types,
         computation.consts(),
     );
 
     let num_bits = computation.as_internal().output_type().num_bits();
     let cropped = g.crop(num_bits.try_into().unwrap(), result);
-    match computation.as_internal().output_encoding() {
-        OutputEncoding::UnsignedLittleEndian => g.swap_bytes(num_bits.try_into().unwrap(), cropped),
-        OutputEncoding::UnsignedBigEndian => cropped,
+    match (computation.as_internal().output_type(), computation.as_internal().output_encoding()) {
+        (IoType::Integer { .. }, _) => cropped,
+        (_, OutputEncoding::UnsignedLittleEndian) => cropped,
+        (_, OutputEncoding::UnsignedBigEndian) => g.swap_bytes(num_bits.try_into().unwrap(), cropped),
     }
 }
 
@@ -354,7 +361,7 @@ fn apply_fn2<C: CodeGenerator>(
 }
 
 /// Generates code for an expression template.
-pub fn codegen_template<C: CodeGenerator>(g: &mut C, ops: &[Op], arg_interpretation: &[Arg], consts: &[i128]) -> C::T {
+pub fn codegen_template<C: CodeGenerator>(g: &mut C, ops: &[Op], arg_interpretation: &[Arg], input_types: &[ValueType], consts: &[i128]) -> C::T {
     let mut stack = Vec::<Term<C::T>>::new();
 
     for &op in ops.iter() {
@@ -368,14 +375,14 @@ pub fn codegen_template<C: CodeGenerator>(g: &mut C, ops: &[Op], arg_interpretat
                 } => {
                     // TODO: Eliminate byte swapping, etc. by delaying some operations until we can no longer delay them.
                     let mut val = g.leaf_arg(index as usize);
-                    if matches!(encoding, ArgEncoding::SignedLittleEndian | ArgEncoding::UnsignedLittleEndian) {
+                    if encoding.should_byteswap(input_types[index as usize]) {
                         trace!("Swapping bytes of hole {n} of {num_bits} bits");
                         val.operations.push(TermOp::SwapBytes {
                             num_bits,
                         });
                     }
 
-                    if matches!(encoding, ArgEncoding::SignedLittleEndian | ArgEncoding::SignedBigEndian) && num_bits != 128 {
+                    if encoding.is_signed() && num_bits != 128 {
                         val.operations.push(TermOp::SignExtend {
                             num_bits,
                         });
@@ -467,6 +474,7 @@ mod tests {
     use crate::semantics::default::codegen::sexpr::SExpr;
     use crate::semantics::default::computation::{Arg, ArgEncoding};
     use crate::semantics::default::ops::Op;
+    use crate::value::ValueType;
 
     #[test]
     pub fn double_byteswap_removed() {
@@ -484,6 +492,7 @@ mod tests {
                 num_bits: 32,
                 encoding: ArgEncoding::UnsignedLittleEndian,
             }],
+            &[ ValueType::Num ],
             &[],
         );
 

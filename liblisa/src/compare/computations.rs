@@ -146,6 +146,7 @@ impl<'ctx, A: Arch, S: SmtSolver<'ctx>> LocationToBvMap<'ctx, A, S> {
 struct PreparedComputation<'a, 'ctx, C, S: SmtSolver<'ctx>> {
     computation: &'a C,
     z3_inputs: Vec<S::BV>,
+    input_types: Vec<ValueType>,
     part_assertions: Vec<S::Bool>,
     area: Size,
 }
@@ -348,9 +349,21 @@ impl ComputationEquivalence {
             })
             .collect::<Vec<_>>();
 
+        let input_types = flow
+            .inputs
+            .iter()
+            .map(|input| {
+                match input {
+                    Source::Dest(dest) => dest.value_type(),
+                    Source::Imm(_) | Source::Const { .. } => ValueType::Num,
+                }
+            })
+            .collect::<Vec<_>>();
+
         Some(PreparedComputation {
             area,
             computation,
+            input_types,
             z3_inputs,
             part_assertions,
         })
@@ -776,9 +789,9 @@ impl ComputationEquivalence {
         // TODO: Fast path: If computations and inputs are equivalent, return equivalent
 
         let mut g_a = Z3CodeGen::<S>::new(context, a.z3_inputs.clone());
-        let smt_a = codegen_computation(&mut g_a, a.computation);
+        let smt_a = codegen_computation(&mut g_a, a.computation, &a.input_types);
         let mut g_b = Z3CodeGen::<S>::new(context, b.z3_inputs.clone());
-        let smt_b = codegen_computation(&mut g_b, b.computation);
+        let smt_b = codegen_computation(&mut g_b, b.computation, &b.input_types);
         let smt_a = smt_a.as_bv();
         let smt_b = smt_b.as_bv();
         let target_byte_size = a.area.num_bytes();
@@ -847,7 +860,7 @@ impl ComputationEquivalence {
         prep: PreparedComputation<'_, 'ctx, C, S>, context: &mut S, original: S::BV, original_area: Size,
     ) -> ComputationEquivalence {
         let mut g_a = Z3CodeGen::new(context, prep.z3_inputs);
-        let smt_a = codegen_computation(&mut g_a, prep.computation);
+        let smt_a = codegen_computation(&mut g_a, prep.computation, &prep.input_types);
         let smt_a = smt_a.as_bv();
 
         let a_area = match prep.computation.as_internal().output_type() {

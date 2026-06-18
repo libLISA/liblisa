@@ -188,10 +188,6 @@ impl<'ctx, A: Arch, S: SmtSolver<'ctx>> StorageLocations<'ctx, A, S> {
         let mut bv = self.get_internal(context, key, sizes);
         bv = bv.extract(input_size.end_byte as u32 * 8 + 7, input_size.start_byte as u32 * 8);
 
-        if is_bytes {
-            bv = bv.swap_bytes(input_size.num_bytes());
-        }
-
         bv
     }
 
@@ -236,6 +232,7 @@ impl<'ctx, A: Arch, S: SmtSolver<'ctx>> StorageLocations<'ctx, A, S> {
 struct PreparedComputation<'a, 'ctx, C, S: SmtSolver<'ctx>> {
     computation: &'a C,
     z3_inputs: Vec<S::BV>,
+    input_types: Vec<ValueType>,
     part_assertions: Vec<S::Bool>,
 }
 
@@ -449,9 +446,24 @@ impl<'a, 'ctx, C, S: SmtSolver<'ctx>> PreparedComputation<'a, 'ctx, C, S> {
             })
             .collect::<Vec<_>>();
 
+        let input_types = Self::filled_inputs(output_index, encoding)
+            .map(|filled_input| {
+                match filled_input {
+                    FilledInput::Concrete(Source::Const { .. } | Source::Imm(_)) => ValueType::Num,
+                    FilledInput::Concrete(Source::Dest(dst)) => dst.value_type(),
+                    FilledInput::Part { size, is_bytes, .. } => if is_bytes {
+                        ValueType::Bytes(size.unwrap().num_bytes())
+                    } else {
+                        ValueType::Num
+                    },
+                }
+            })
+            .collect::<Vec<_>>();
+
         Some(PreparedComputation {
             computation,
             z3_inputs,
+            input_types,
             part_assertions: Self::create_part_assertions(context, encoding, storage_locations, &sizes),
         })
     }
@@ -586,7 +598,7 @@ impl<'ctx, A: Arch, S: SmtSolver<'ctx>> Z3Model<'ctx, A, S> {
                     constraints.extend(prepared.part_assertions);
 
                     let mut cg = Z3CodeGen::new(context, prepared.z3_inputs.clone());
-                    let smt = codegen_computation(&mut cg, prepared.computation);
+                    let smt = codegen_computation(&mut cg, prepared.computation, &prepared.input_types);
                     let result = smt.as_bv();
                     result.clone().extract(size - 1, 0)
                 });
@@ -871,5 +883,234 @@ impl<'ctx, A: Arch, S: SmtSolver<'ctx>> ConcreteZ3Model<'ctx, A, S> {
     /// Returns which intermediate indices need to be asserted to obtain correct results in the final output.
     pub fn intermediate_values_needed(&self) -> &[usize] {
         &self.intermediate_values_needed
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::{iter::once, time::Duration};
+    use itertools::Itertools;
+    use rand::SeedableRng;
+    use rand_xoshiro::Xoshiro256PlusPlus;
+
+    use crate::{Instruction, arch::{Register, x64::{GpReg, X64Arch, X64Reg, XmmReg}}, encoding::{Encoding, bitpattern::Bit, dataflows::{AccessKind, AddressComputation, Dataflow, Dataflows, Dest, Inputs, MemoryAccess, MemoryAccesses, Size, Source}}, oracle::MappableArea, semantics::{IoType, default::{Expression, computation::{Arg, ArgEncoding, OutputEncoding, SynthesizedComputation}, ops::Op, smtgen::{FilledLocation, Sizes, StorageLocations, Z3Model}}}, smt::{SatResult, SmtBV, SmtBool, SmtModel, SmtModelRef, SmtSolver, z3::Z3Solver}, state::{Addr, Location, random::StateGen}, value::{Value, ValueType}};
+
+
+    #[derive(Copy, Clone, Debug)]
+    struct Everything;
+
+    impl MappableArea for Everything {
+        fn can_map(&self, _: Addr) -> bool {
+            true
+        }
+    }
+
+    #[test]
+    fn check_smt_execution_equivalence() {
+        let encoding = e();
+        let sizes = Sizes::from_encoding(&encoding);
+        let sg = StateGen::new(&encoding.dataflows.addresses, &Everything).unwrap();
+        let mut rng = Xoshiro256PlusPlus::seed_from_u64(0);
+
+        Z3Solver::with_thread_local(Duration::from_secs(1), |mut solver| {
+            let mut storage = StorageLocations::new(&mut solver);
+            let model = Z3Model::of(&encoding, &mut storage, &mut solver);
+            let concrete = model.compute_concrete_outputs(&encoding, &mut storage, &mut solver);
+            assert!(concrete.intermediate_values_needed().is_empty());
+
+            for df in encoding.dataflows.outputs.iter() {
+                for input in df.inputs.iter() {
+                    println!(
+                        "{input:?} = {}", 
+                        storage.get_sized(
+                            &mut solver, 
+                            FilledLocation::Concrete(Location::try_from(input.unwrap_dest()).unwrap()),
+                            &sizes,
+                            input.size().unwrap(),
+                            matches!(input.unwrap_dest().value_type(), ValueType::Bytes(_))
+                        )
+                    );
+                }
+            }
+
+            const NUM_TESTS: usize = 100;
+            for k in 0..100 {
+                println!("== Testing state {k}/{NUM_TESTS} ==");
+                let input_state = sg.randomize_new(&mut rng).unwrap();
+                let expected_output_state = {
+                    let mut s = input_state.clone();
+                    encoding.dataflows.execute(&mut s);
+                    s
+                };
+                let input_assertions = encoding.dataflows.outputs.iter()
+                    .flat_map(|o| o.inputs.iter())
+                    .map(|loc| Location::try_from(loc).unwrap())
+                    .unique()
+                    .flat_map(|loc| {
+                        let (value_type, size) = match loc {
+                            Location::Reg(reg) => (reg.reg_type(), reg.byte_size()),
+                            Location::Memory(n) => {
+                                let size = encoding.dataflows.addresses[n].size.end as usize;
+                                (ValueType::Bytes(size), size)
+                            },
+                        };
+                        let size = Size::new(0, size - 1);
+                        let bv = storage.get_sized(&mut solver, FilledLocation::Concrete(loc), &sizes, size, matches!(value_type, ValueType::Bytes(_)));
+
+                        let input_val = input_state.get_location(&loc).unwrap();
+                        (0..size.num_bytes()).map(|byte_index| {
+                            let val = input_val.select_byte(byte_index);
+                            let val = solver.bv_from_u64(val as u64, 8);
+                            bv.clone().extract(byte_index as u32 * 8 + 7, byte_index as u32 * 8)._eq(val)
+                        }).collect::<Vec<_>>()
+                    })
+                    .collect::<Vec<_>>();
+                for concrete in concrete.concrete_outputs().iter() {
+                    let output = solver.new_bv_const("output", concrete.target().size().num_bytes() as u32 * 8);
+                    let assertions = input_assertions.iter().cloned()
+                        .chain(once(output.clone()._eq(concrete.smt().unwrap().clone())))
+                        .map(|assertion| assertion.simplify())
+                        .collect::<Vec<_>>();
+                    let SatResult::Sat(z3_output) = solver.check_assertions(&assertions) else { unreachable!() };
+                    let model = z3_output.to_model().unwrap();
+                    let output_val = model.get_const_interp(&output).unwrap();
+                    let z3_output_val = output_val.as_u64().unwrap();
+
+                    let expected_output_val = expected_output_state.get_dest(&concrete.target());
+                    let expected_output = val_as_u64(expected_output_val);
+
+                    if expected_output != z3_output_val {
+                        let loc = Location::try_from(concrete.target()).unwrap();
+                        let loc_val = expected_output_state.get_location(&loc).unwrap();
+                        panic!("Encoding:\n{encoding}\nInput state:\n{input_state:?}\nExpected output state:\n{expected_output_state:?}\nChecked: {:?}\nFOUND: 0x{z3_output_val:X}\nEXP. : 0x{expected_output:X} ({expected_output_val:02X?})\nModel: {model:?}\nFULL LOCATION: {loc_val:02X?}\n\nSMT: {}\nAssertions: {assertions:#?}", concrete.target(), concrete.smt().unwrap());
+                    }
+                }
+            }
+        });
+    }
+
+    fn val_as_u64(input_val: Value<'_>) -> u64 {
+        match input_val {
+            Value::Num(num) => num,
+            Value::Bytes(items) => {
+                let mut num = 0;
+                for (index, &item) in items.iter().enumerate() {
+                    num |= (item as u64) << (index * 8);
+                }
+    
+                num
+            },
+        }
+    }
+    
+    fn e() -> Encoding<X64Arch, SynthesizedComputation> {
+        Encoding {
+            bits: vec![Bit::Fixed(0).into(); 8],
+            errors: vec![false; 8],
+            parts: Vec::new(),
+            write_ordering: Vec::new(),
+            dataflows: Dataflows {
+                addresses: MemoryAccesses {
+                    instr: Instruction::new(&[ 0x00 ]),
+                    memory: vec![
+                        MemoryAccess {
+                            kind: AccessKind::Executable,
+                            inputs: Inputs::sorted(vec![Dest::Reg(X64Reg::GpReg(GpReg::Rip), Size::qword()).into()]),
+                            size: 1..1,
+                            calculation: AddressComputation::unscaled_sum(1),
+                            alignment: 1,
+                        },
+                    ],
+                    use_trap_flag: false,
+                },
+                outputs: vec![
+                    Dataflow {
+                        target: Dest::Reg(X64Reg::GpReg(GpReg::Rax), Size::qword()),
+                        inputs: Inputs::unsorted(vec![ Source::Dest(Dest::Reg(X64Reg::GpReg(GpReg::Rax), Size::qword())) ]),
+                        computation: Some(SynthesizedComputation::new(
+                            Expression::new(vec![ Op::Hole(0) ]),
+                            vec![
+                                Arg::Input { index: 0, encoding: ArgEncoding::UnsignedBigEndian, num_bits: 64 },
+                            ],
+                            Vec::new(),
+                            OutputEncoding::UnsignedBigEndian,
+                            IoType::Integer { num_bits: 64 },
+                        )),
+                        unobservable_external_inputs: false,
+                    },
+                    Dataflow {
+                        target: Dest::Reg(X64Reg::Xmm(XmmReg::Reg(0)), Size::qword()),
+                        inputs: Inputs::unsorted(vec![ Source::Dest(Dest::Reg(X64Reg::GpReg(GpReg::Rax), Size::qword())) ]),
+                        computation: Some(SynthesizedComputation::new(
+                            Expression::new(vec![ Op::Hole(0) ]),
+                            vec![
+                                Arg::Input { index: 0, encoding: ArgEncoding::UnsignedBigEndian, num_bits: 64 },
+                            ],
+                            Vec::new(),
+                            OutputEncoding::UnsignedBigEndian,
+                            IoType::Bytes { num_bytes: 8 },
+                        )),
+                        unobservable_external_inputs: false,
+                    },
+                    Dataflow {
+                        target: Dest::Reg(X64Reg::Xmm(XmmReg::Reg(1)), Size::qword()),
+                        inputs: Inputs::unsorted(vec![ Source::Dest(Dest::Reg(X64Reg::GpReg(GpReg::Rax), Size::qword())) ]),
+                        computation: Some(SynthesizedComputation::new(
+                            Expression::new(vec![ Op::Hole(0) ]),
+                            vec![
+                                Arg::Input { index: 0, encoding: ArgEncoding::UnsignedLittleEndian, num_bits: 64 },
+                            ],
+                            Vec::new(),
+                            OutputEncoding::UnsignedBigEndian,
+                            IoType::Bytes { num_bytes: 8 },
+                        )),
+                        unobservable_external_inputs: false,
+                    },
+                    Dataflow {
+                        target: Dest::Reg(X64Reg::Xmm(XmmReg::Reg(2)), Size::qword()),
+                        inputs: Inputs::unsorted(vec![ Source::Dest(Dest::Reg(X64Reg::GpReg(GpReg::Rax), Size::qword())) ]),
+                        computation: Some(SynthesizedComputation::new(
+                            Expression::new(vec![ Op::Hole(0) ]),
+                            vec![
+                                Arg::Input { index: 0, encoding: ArgEncoding::UnsignedBigEndian, num_bits: 64 },
+                            ],
+                            Vec::new(),
+                            OutputEncoding::UnsignedLittleEndian,
+                            IoType::Bytes { num_bytes: 8 },
+                        )),
+                        unobservable_external_inputs: false,
+                    },
+                    Dataflow {
+                        target: Dest::Reg(X64Reg::Xmm(XmmReg::Reg(3)), Size::qword()),
+                        inputs: Inputs::unsorted(vec![ Source::Dest(Dest::Reg(X64Reg::GpReg(GpReg::Rax), Size::qword())) ]),
+                        computation: Some(SynthesizedComputation::new(
+                            Expression::new(vec![ Op::Hole(0) ]),
+                            vec![
+                                Arg::Input { index: 0, encoding: ArgEncoding::UnsignedLittleEndian, num_bits: 64 },
+                            ],
+                            Vec::new(),
+                            OutputEncoding::UnsignedLittleEndian,
+                            IoType::Bytes { num_bytes: 8 },
+                        )),
+                        unobservable_external_inputs: false,
+                    },
+                    Dataflow {
+                        target: Dest::Reg(X64Reg::Xmm(XmmReg::Reg(10)), Size::qword()),
+                        inputs: Inputs::unsorted(vec![ Source::Dest(Dest::Reg(X64Reg::Xmm(XmmReg::Reg(10)), Size::qword())) ]),
+                        computation: Some(SynthesizedComputation::new(
+                            Expression::new(vec![ Op::Hole(0) ]),
+                            vec![
+                                Arg::Input { index: 0, encoding: ArgEncoding::UnsignedBigEndian, num_bits: 64 },
+                            ],
+                            Vec::new(),
+                            OutputEncoding::UnsignedBigEndian,
+                            IoType::Bytes { num_bytes: 8 },
+                        )),
+                        unobservable_external_inputs: false,
+                    }
+                ],
+                found_dependent_bytes: false,
+            },
+        }
     }
 }
