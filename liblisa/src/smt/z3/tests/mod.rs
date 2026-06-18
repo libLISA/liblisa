@@ -53,7 +53,7 @@ pub fn zero_register_is_zero() {
         assert!(matches!(context.check_assertions(&[eq]), SatResult::Unsat));
 
         // StorageLocations::get_sized
-        let riz = s.get_sized(&mut context, key, &Sizes::default(), Size::qword(), false);
+        let riz = s.get_sized(&mut context, key, &Sizes::default(), Size::qword());
         let eq = !riz._eq(context.bv_from_u64(0, 64));
         assert!(matches!(context.check_assertions(&[eq]), SatResult::Unsat));
 
@@ -170,7 +170,6 @@ pub fn identity_function_should_be_identical() {
                 FilledLocation::Concrete(Location::Memory(1)),
                 &Sizes::from_encoding(&encoding),
                 Size::new(0, 7),
-                true,
             )
             .extract(63, 0);
         let assertions = [

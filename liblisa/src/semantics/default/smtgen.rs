@@ -148,7 +148,7 @@ impl<'ctx, A: Arch, S: SmtSolver<'ctx>> StorageLocations<'ctx, A, S> {
     /// So a simple assertion of `input_bv == output_bv` would fail.
     ///
     /// You should use the function [`StorageLocations::get_sized`] instead, which automatically performs this byte swapping when needed.
-    #[deprecated = "use StorageLocatinos::get_sized instead"]
+    #[deprecated = "use StorageLocations::get_sized instead"]
     pub fn get(&mut self, context: &mut S, key: FilledLocation<A>, sizes: &Sizes) -> S::BV {
         self.get_internal(context, key, sizes)
     }
@@ -183,7 +183,7 @@ impl<'ctx, A: Arch, S: SmtSolver<'ctx>> StorageLocations<'ctx, A, S> {
     ///
     /// Crops the result to the provided `input_size`.
     pub fn get_sized(
-        &mut self, context: &mut S, key: FilledLocation<A>, sizes: &Sizes, input_size: Size, is_bytes: bool,
+        &mut self, context: &mut S, key: FilledLocation<A>, sizes: &Sizes, input_size: Size,
     ) -> S::BV {
         let mut bv = self.get_internal(context, key, sizes);
         bv = bv.extract(input_size.end_byte as u32 * 8 + 7, input_size.start_byte as u32 * 8);
@@ -406,7 +406,7 @@ impl<'a, 'ctx, C, S: SmtSolver<'ctx>> PreparedComputation<'a, 'ctx, C, S> {
                 let input_bit_size = input_size.num_bytes() as u32 * 8;
 
                 let key = FilledLocation::from(filled_input);
-                let mut bv = location_to_bv.get_sized(context, key, sizes, input_size, filled_input.is_bytes());
+                let mut bv = location_to_bv.get_sized(context, key, sizes, input_size);
 
                 if input_bit_size < 128 {
                     bv = bv.zero_ext(128 - input_bit_size)
@@ -787,7 +787,7 @@ impl<'ctx, A: Arch, S: SmtSolver<'ctx>> Z3Model<'ctx, A, S> {
                 } else {
                     let key = FilledLocation::from(FilledOutput::Concrete(target));
                     let is_bytes = matches!(target.value_type(), ValueType::Bytes(_));
-                    let mut smt = storage.get_sized(context, key, &Sizes::default(), target.size(), is_bytes);
+                    let mut smt = storage.get_sized(context, key, &Sizes::default(), target.size());
 
                     if cases.len() > 1 {
                         let mut relevant_write_orderings = Vec::new();
@@ -955,7 +955,7 @@ mod tests {
                             },
                         };
                         let size = Size::new(0, size - 1);
-                        let bv = storage.get_sized(&mut solver, FilledLocation::Concrete(loc), &sizes, size, matches!(value_type, ValueType::Bytes(_)));
+                        let bv = storage.get_sized(&mut solver, FilledLocation::Concrete(loc), &sizes, size);
 
                         let input_val = input_state.get_location(&loc).unwrap();
                         (0..size.num_bytes()).map(|byte_index| {

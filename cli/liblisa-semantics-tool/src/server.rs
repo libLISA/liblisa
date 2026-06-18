@@ -13,6 +13,7 @@ use liblisa::instr::{FilterMap, Instruction};
 use liblisa::semantics::default::codegen::codegen_computation;
 use liblisa::semantics::default::codegen::sexpr::{SExpr, SExprCodeGen};
 use liblisa::semantics::default::computation::SynthesizedComputation;
+use liblisa::value::ValueType;
 use log::info;
 use serde::{Deserialize, Serialize};
 
@@ -311,7 +312,11 @@ impl Server {
                             .map(|output| {
                                 let mut g = SExprCodeGen::new();
                                 let computation = output.computation.as_ref().unwrap();
-                                let computation = codegen_computation(&mut g, computation);
+                                let input_types = output.inputs.iter().map(|input| match input {
+                                    Source::Dest(dest) => dest.value_type(),
+                                    Source::Imm(_) | Source::Const { .. } => ValueType::Num,
+                                }).collect::<Vec<_>>();
+                                let computation = codegen_computation(&mut g, computation, &input_types);
 
                                 OutputRepr {
                                     write_target: output.target.into(),
