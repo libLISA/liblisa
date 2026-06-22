@@ -214,7 +214,7 @@ impl ComputationEquivalence {
                             .bits
                             .iter()
                             .enumerate()
-                            .filter(|(_, bit)| **bit == Bit::Part(part_index))
+                            .filter(|&(_, &bit)| bit == Bit::Part(part_index as u8))
                             .map(|(index, _)| index),
                     );
 
@@ -285,7 +285,7 @@ impl ComputationEquivalence {
                                     .bits
                                     .iter()
                                     .enumerate()
-                                    .filter(|&(_, &bit)| bit == Bit::Part(part_index))
+                                    .filter(|&(_, &bit)| bit == Bit::Part(part_index as u8))
                                     .map(|(index, _)| index),
                             )
                             .zero_ext(128 - *size as u32);
@@ -540,7 +540,7 @@ impl ComputationEquivalence {
                             .bits
                             .iter()
                             .enumerate()
-                            .filter(|(_, bit)| **bit == Bit::Part(*part_index))
+                            .filter(|(_, bit)| **bit == Bit::Part(*part_index as u8))
                             .enumerate()
                             .map(|(shift, (index, _))| {
                                 instr

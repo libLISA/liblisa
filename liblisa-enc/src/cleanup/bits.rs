@@ -18,7 +18,7 @@ pub fn remove_useless_bits<A: Arch>(encoding: &mut Encoding<A, ()>) {
                     .bits
                     .iter()
                     .enumerate()
-                    .filter(|(_, bit)| bit == &&Bit::Part(part_index))
+                    .filter(|(_, bit)| bit == &&Bit::Part(part_index as u8))
                     .nth(bit_index)
                     .unwrap()
                     .0;
@@ -39,7 +39,7 @@ pub fn remove_useless_bits<A: Arch>(encoding: &mut Encoding<A, ()>) {
                     .bits
                     .iter()
                     .enumerate()
-                    .filter(|(_, bit)| bit == &&Bit::Part(part_index))
+                    .filter(|(_, bit)| bit == &&Bit::Part(part_index as u8))
                     .nth(bit_index)
                     .unwrap()
                     .0;

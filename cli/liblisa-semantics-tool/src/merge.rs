@@ -64,7 +64,7 @@ impl Merge {
                                         let mut indices_to_remove = Vec::new();
                                         let bit_indices = encoding.bits.iter()
                                             .enumerate()
-                                            .filter(|&(_, &bit)| bit == Bit::Part(part_index))
+                                            .filter(|&(_, &bit)| bit == Bit::Part(part_index as u8))
                                             .map(|(index, _)| index)
                                             .collect::<Vec<_>>();
                                         let mut n = 0;

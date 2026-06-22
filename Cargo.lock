@@ -884,6 +884,7 @@ dependencies = [
  "hex",
  "itertools 0.12.1",
  "log",
+ "mem_dbg",
  "memoffset 0.9.1",
  "rand 0.9.4",
  "rand_xoshiro",
@@ -1073,6 +1074,27 @@ dependencies = [
  "serde",
  "serde-big-array",
  "thiserror",
+]
+
+[[package]]
+name = "mem_dbg"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "256baafaaed96f2358e588047add018b8e5f1fc58e1cb58deb026528dd42488e"
+dependencies = [
+ "bitflags 2.11.1",
+ "mem_dbg-derive",
+]
+
+[[package]]
+name = "mem_dbg-derive"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f266c6ba1558dee16c56363c3dc6093a97a2451ddf29f928d5da042ee330537b"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]

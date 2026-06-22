@@ -21,10 +21,11 @@ pub const PART_NAMES: &[&str] = &[
 
 /// The purpose of a bit in an encoding.
 #[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "mem_dbg", derive(mem_dbg::MemSize))]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum Bit {
     /// A bit that belongs to a part.
-    Part(usize),
+    Part(u8),
 
     // TODO: Enforce correctness via typing
     /// A fixed bit.
@@ -52,7 +53,7 @@ impl Bit {
     /// Otherwise, returns `None`.
     pub fn part_index(&self) -> Option<usize> {
         match self {
-            Bit::Part(index) => Some(*index),
+            Bit::Part(index) => Some(*index as usize),
             _ => None,
         }
     }
@@ -61,7 +62,7 @@ impl Bit {
 impl Debug for Bit {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Bit::Part(n) => f.write_str(PART_NAMES[*n]),
+            Bit::Part(n) => f.write_str(PART_NAMES[*n as usize]),
             Bit::Fixed(v) => write!(f, "{v}"),
             Bit::DontCare => f.write_str("_"),
         }

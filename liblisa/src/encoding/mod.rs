@@ -146,9 +146,9 @@ impl<A: Arch, C> Encoding<A, C> {
                 },
                 (Bit::DontCare, _) => (),
                 (Bit::Part(part_index), instr_bit) => {
-                    let v = &mut part_values[part_index];
-                    k[part_index] -= 1;
-                    *v |= (instr_bit as u64) << k[part_index];
+                    let v = &mut part_values[part_index as usize];
+                    k[part_index as usize] -= 1;
+                    *v |= (instr_bit as u64) << k[part_index as usize];
                 },
             }
         }
@@ -199,7 +199,7 @@ impl<A: Arch, C> Encoding<A, C> {
             let kind = self.bits[index];
 
             if let Bit::Part(n) = kind {
-                if let Some(part_value) = &mut shift_values[n] {
+                if let Some(part_value) = &mut shift_values[n as usize] {
                     if index % 8 == 0 {
                         let num_matching = &self.bits[index + 1..].iter().take_while(|&&k| k == kind).count() + 1;
 
@@ -245,8 +245,8 @@ impl<A: Arch, C> Encoding<A, C> {
             let kind = self.bits[index];
 
             if let Bit::Part(n) = kind {
-                let part_value = &mut shift_values[n];
-                if index % 8 == 0 {
+                let part_value = &mut shift_values[n as usize];
+                if index.is_multiple_of(8) {
                     let num_matching = &self.bits[index + 1..].iter().take_while(|&&k| k == kind).count() + 1;
 
                     if num_matching >= 8 {
@@ -285,7 +285,7 @@ impl<A: Arch, C> Encoding<A, C> {
         self.bits
             .iter()
             .enumerate()
-            .filter(move |&(_, &bit)| bit == Bit::Part(part_index))
+            .filter(move |&(_, &bit)| bit == Bit::Part(part_index as u8))
             .map(|(index, _)| index)
     }
 
@@ -460,7 +460,7 @@ impl<A: Arch, C> Encoding<A, C> {
                     .map(|b| match b {
                         Bit::Fixed(v) => (1, *v),
                         Bit::Part(n) => {
-                            if let Some(&index) = incomplete_choices_map.get(n) {
+                            if let Some(&index) = incomplete_choices_map.get(&(*n as usize)) {
                                 let bit_filter = &incomplete_choice_filters[index].1[values[index]];
 
                                 let shift = ks[index];
@@ -509,10 +509,10 @@ impl<A: Arch, C> Encoding<A, C> {
     fn value_bits(&self, n: usize) -> usize {
         let mut result = 0;
         for bit in self.bits.iter() {
-            if let Bit::Part(v) = bit {
-                if n == *v {
-                    result += 1;
-                }
+            if let Bit::Part(v) = bit
+                && n == *v as usize
+            {
+                result += 1;
             }
         }
 
@@ -548,15 +548,16 @@ impl<A: Arch, C> Encoding<A, C> {
 
         for (index, kind) in self.bits.iter().enumerate() {
             match kind {
-                Bit::Part(n) if values.contains(n) => {
+                Bit::Part(n) if values.contains(&(*n as usize)) => {
+                    let n = *n as usize;
                     // If there are less than 6 bits, we're just going to set the lowest 2 bits instead of doing a checkerboard pattern.
                     if self.bits.iter().filter(|b| b == &kind).count() >= 6 {
-                        choices[*n] |= ((1 ^ (index & 1)) as u64) << base[*n];
-                    } else if base[*n] <= 1 {
-                        choices[*n] |= 1 << base[*n];
+                        choices[n] |= ((1 ^ (index & 1)) as u64) << base[n];
+                    } else if base[n] <= 1 {
+                        choices[n] |= 1 << base[n];
                     }
 
-                    base[*n] += 1;
+                    base[n] += 1;
                 },
                 _ => {},
             }
@@ -565,7 +566,7 @@ impl<A: Arch, C> Encoding<A, C> {
 
     fn fill_addr_imms(&self, choices: &mut [u64], values: HashSet<usize>) {
         for index in values.iter() {
-            let count = self.bits.iter().filter(|b| b == &&Bit::Part(*index)).count();
+            let count = self.bits.iter().filter(|b| b == &&Bit::Part(*index as u8)).count();
             choices[*index] = match count.cmp(&3) {
                 Ordering::Less => 0,
                 Ordering::Equal => 0b010,
@@ -646,8 +647,8 @@ impl<A: Arch, C> Encoding<A, C> {
         for (bit_index, bit) in self.bits.iter().enumerate() {
             match bit {
                 Bit::Part(n) => {
-                    parts[*n] |= (instr.nth_bit_from_right(bit_index) as u64) << part_indices[*n];
-                    part_indices[*n] += 1;
+                    parts[*n as usize] |= (instr.nth_bit_from_right(bit_index) as u64) << part_indices[*n as usize];
+                    part_indices[*n as usize] += 1;
                 },
                 Bit::Fixed(v) => {
                     assert_eq!(
@@ -689,7 +690,7 @@ impl<A: Arch, C> Encoding<A, C> {
         }
 
         for (part_index, part) in self.parts.iter().enumerate() {
-            if part.size != self.bits.iter().filter(|&&bit| bit == Bit::Part(part_index)).count() {
+            if part.size != self.bits.iter().filter(|&&bit| bit == Bit::Part(part_index as u8)).count() {
                 return Err(IntegrityError::PartSizeDoesNotMatchBits {
                     part_index,
                 })
@@ -902,7 +903,7 @@ impl<A: Arch, C> Encoding<A, C> {
         let bit_value = self.instr().nth_bit_from_right(bit_index);
         match bit {
             Bit::Part(part_index) => {
-                let part = &self.parts[part_index];
+                let part = &self.parts[part_index as usize];
                 let bit_index_in_part = self
                     .bits
                     .iter()
@@ -938,7 +939,7 @@ impl<A: Arch, C> Encoding<A, C> {
     /// Note: If the `bit` is an *immediate value* that is used in the computation of a memory address, false is returned.
     pub fn is_bit_involved_with_address_reg_or_computation(&self, bit: Bit) -> bool {
         if let Bit::Part(n) = bit {
-            match &self.parts[n].mapping {
+            match &self.parts[n as usize].mapping {
                 PartMapping::Imm {
                     ..
                 } => false,
@@ -959,7 +960,7 @@ impl<A: Arch, C> Encoding<A, C> {
     /// Returns true if the provided `bit` affects a register used in a dataflow.
     pub fn is_bit_involved_with_dataflow_reg(&self, bit: Bit) -> bool {
         if let Bit::Part(n) = bit {
-            match &self.parts[n].mapping {
+            match &self.parts[n as usize].mapping {
                 PartMapping::Imm {
                     ..
                 } => false,
@@ -980,7 +981,7 @@ impl<A: Arch, C> Encoding<A, C> {
     /// Returns true if the provided `bit` is part of an immediate value.
     pub fn is_bit_imm(&self, bit: Bit) -> bool {
         if let Bit::Part(n) = bit {
-            matches!(&self.parts[n].mapping, PartMapping::Imm { .. })
+            matches!(&self.parts[n as usize].mapping, PartMapping::Imm { .. })
         } else {
             false
         }
@@ -989,7 +990,7 @@ impl<A: Arch, C> Encoding<A, C> {
     /// Returns true if the provided `bit` is part of an immediate value that is used in at least one dataflow.
     pub fn is_bit_dataflow_imm(&self, bit: Bit) -> bool {
         if let Bit::Part(n) = bit {
-            matches!(&self.parts[n].mapping, PartMapping::Imm { locations, .. } if locations.iter().any(|loc| matches!(loc, FlowInputLocation::InputForOutput { .. })))
+            matches!(&self.parts[n as usize].mapping, PartMapping::Imm { locations, .. } if locations.iter().any(|loc| matches!(loc, FlowInputLocation::InputForOutput { .. })))
         } else {
             false
         }
@@ -1415,7 +1416,7 @@ impl<A: Arch, C: Computation> Encoding<A, C> {
     pub fn fix(&mut self) -> bool {
         // Make sure all immediate values are correctly numbered
         for (part_index, part) in self.parts.iter_mut().enumerate() {
-            part.size = self.bits.iter().filter(|&&bit| bit == Bit::Part(part_index)).count();
+            part.size = self.bits.iter().filter(|&&bit| bit == Bit::Part(part_index as u8)).count();
 
             if let PartMapping::Imm {
                 locations, ..
@@ -1502,8 +1503,8 @@ impl<A: Arch, C: Computation> Encoding<A, C> {
             .copied()
             .enumerate()
             .map(|(i, b)| match b {
-                Bit::Part(n) => match new_indices[n] {
-                    Some(new) => Bit::Part(new),
+                Bit::Part(n) => match new_indices[n as usize] {
+                    Some(new) => Bit::Part(new as u8),
                     None => Bit::Fixed(dataflows.instr().nth_bit_from_right(i)),
                 },
                 other => other,
@@ -1556,14 +1557,14 @@ impl<A: Arch, C: Computation> Encoding<A, C> {
 
         match bit {
             Bit::Part(part_index) => {
-                let part = &mut self.parts[part_index];
+                let part = &mut self.parts[part_index as usize];
                 if part.size <= 1 {
                     // Remove the entire part
                     let values = self
                         .extract_parts(self.instr())
                         .into_iter()
                         .enumerate()
-                        .map(|(n, v)| if n == part_index { Some(v) } else { None })
+                        .map(|(n, v)| if n == part_index as usize { Some(v) } else { None })
                         .collect::<Vec<_>>();
 
                     *self = self.instantiate_partially(&values)?;
@@ -1657,7 +1658,7 @@ impl<A: Arch, C: Computation> Encoding<A, C> {
                         self.write_ordering
                     );
                     self.write_ordering.retain_mut(|wo| {
-                        if let Some(val) = &mut wo.part_values[part_index] {
+                        if let Some(val) = &mut wo.part_values[part_index as usize] {
                             let (new_val, removed) = remove_bit(*val, bit_index_in_part);
                             *val = new_val;
                             matches!((removed, new_bit), (true, Bit::Fixed(1)) | (false, Bit::Fixed(0)))
@@ -1936,7 +1937,7 @@ impl<A: Arch, C: Computation> Encoding<A, C> {
 
     /// Returns the number of `Part` bits in the encoding.
     pub fn part_size(&self, index: usize) -> usize {
-        self.bits.iter().filter(|&&b| b == Bit::Part(index)).count()
+        self.bits.iter().filter(|&&b| b == Bit::Part(index as u8)).count()
     }
 
     /// Iterates over all possible instructions that match the encoding.
@@ -2158,12 +2159,12 @@ impl<A: Arch, C: Computation> Encoding<A, C> {
                 .bits
                 .iter()
                 .enumerate()
-                .all(|(index, &bit)| bit != Bit::Part(part_index) || filter.nth_bit_from_right(index) != FilterBit::Wildcard)
+                .all(|(index, &bit)| bit != Bit::Part(part_index as u8) || filter.nth_bit_from_right(index) != FilterBit::Wildcard)
             {
                 // We're setting all bits of this part!
                 let mut instr = *result.instr();
                 for (index, &bit) in result.bits.iter().enumerate() {
-                    if bit == Bit::Part(part_index) {
+                    if bit == Bit::Part(part_index as u8) {
                         instr.set_nth_bit_from_right(index, filter.nth_bit_from_right(index).as_u8().unwrap());
                     }
                 }
@@ -2207,7 +2208,7 @@ impl<A: Arch, C: Computation> Encoding<A, C> {
                         locations,
                         mapping,
                         ..
-                    } = &result.parts[part_index].mapping
+                    } = &result.parts[part_index as usize].mapping
                     {
                         if let Some(loc) = locations.iter().find(|loc| match loc {
                             FlowInputLocation::MemoryAddress {
@@ -2268,7 +2269,7 @@ impl<A: Arch, C: Computation> Encoding<A, C> {
                     .iter()
                     .copied()
                     .enumerate()
-                    .filter(|&(_, bit)| bit == Bit::Part(part_index))
+                    .filter(|&(_, bit)| bit == Bit::Part(part_index as u8))
                     .collect::<Vec<_>>();
                 let mut part_values = vec![None; result.parts.len()];
                 part_values[part_index] = Some(part_value as u64);

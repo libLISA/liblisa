@@ -288,7 +288,7 @@ impl<'a, 'ctx, C, S: SmtSolver<'ctx>> PreparedComputation<'a, 'ctx, C, S> {
                             .bits
                             .iter()
                             .enumerate()
-                            .filter(|(_, bit)| **bit == Bit::Part(part_index))
+                            .filter(|&(_, &bit)| bit == Bit::Part(part_index as u8))
                             .map(|(index, _)| index),
                     );
 
@@ -927,7 +927,6 @@ mod tests {
                             FilledLocation::Concrete(Location::try_from(input.unwrap_dest()).unwrap()),
                             &sizes,
                             input.size().unwrap(),
-                            matches!(input.unwrap_dest().value_type(), ValueType::Bytes(_))
                         )
                     );
                 }

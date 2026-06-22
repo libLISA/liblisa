@@ -143,8 +143,8 @@ fn is_merge_candidate<A: Arch, C: Computation + AsComputationRef + PartialEq>(
     }
 
     let imm_part_bits_identical = a.bits.iter().zip(b.bits.iter()).all(|(&bit_a, &bit_b)| match (bit_a, bit_b) {
-        (Bit::Part(n), _) if a.is_bit_imm(bit_a) => Some(bit_b) == mapping.try_a_to_b(n).map(Bit::Part),
-        (_, Bit::Part(n)) if b.is_bit_imm(bit_b) => Some(bit_a) == mapping.try_b_to_a(n).map(Bit::Part),
+        (Bit::Part(n), _) if a.is_bit_imm(bit_a) => Some(bit_b) == mapping.try_a_to_b(n as usize).map(|n| Bit::Part(n as u8)),
+        (_, Bit::Part(n)) if b.is_bit_imm(bit_b) => Some(bit_a) == mapping.try_b_to_a(n as usize).map(|n| Bit::Part(n as u8)),
         _ => true,
     });
     if !imm_part_bits_identical {
@@ -163,7 +163,7 @@ fn is_merge_candidate<A: Arch, C: Computation + AsComputationRef + PartialEq>(
     }
 
     let parts_overlap = a.bits.iter().zip(b.bits.iter()).any(|(&a, &b)| match (a, b) {
-        (Bit::Part(n_a), Bit::Part(n_b)) => n_a != mapping.b_to_a(n_b),
+        (Bit::Part(n_a), Bit::Part(n_b)) => n_a as usize != mapping.b_to_a(n_b as usize),
         _ => false,
     });
 
@@ -176,8 +176,8 @@ fn is_merge_candidate<A: Arch, C: Computation + AsComputationRef + PartialEq>(
         .iter()
         .zip(b.bits.iter())
         .enumerate()
-        .filter(|(_, (bit_a, bit_b))| {
-            matches!(bit_a, Bit::Part(n) if matches!(a.parts[*n].mapping, PartMapping::Register { .. }))
+        .filter(|&(_, (&bit_a, &bit_b))| {
+            matches!(bit_a, Bit::Part(n) if matches!(a.parts[n as usize].mapping, PartMapping::Register { .. }))
                 && matches!(bit_b, Bit::Part(_))
         })
         .map(|(index, _)| index)
@@ -280,7 +280,7 @@ fn merge<A: Arch, C: Computation>(a: &EncodingWithFilters<A, C>, b: &EncodingWit
         .zip(b.bits.iter().copied())
         .map(|(a, b)| match (a, b) {
             (Bit::Part(n_a), Bit::Part(n_b)) => {
-                assert_eq!(n_b, mapping.a_to_b(n_a));
+                assert_eq!(n_b as usize, mapping.a_to_b(n_a as usize));
                 Bit::Part(n_a)
             },
             (Bit::Part(n), Bit::Fixed(_)) | (Bit::Part(n), Bit::DontCare) | (Bit::Fixed(_), Bit::Part(n)) => Bit::Part(n),
@@ -310,7 +310,7 @@ fn merge<A: Arch, C: Computation>(a: &EncodingWithFilters<A, C>, b: &EncodingWit
                 let bit_indices = merged_bits
                     .iter()
                     .enumerate()
-                    .filter(|&(_, &b)| b == Bit::Part(a_part_index))
+                    .filter(|&(_, &b)| b == Bit::Part(a_part_index as u8))
                     .map(|(index, _)| index)
                     .collect::<Vec<_>>();
                 Part {

@@ -29,18 +29,18 @@ impl Mapping {
         let mut mapping = HashMap::new();
         let mut reverse_mapping = HashMap::new();
         for ((bit_a, use_a), (bit_b, use_b)) in a.zip(b) {
-            if let Part(x) = bit_a {
-                if use_a {
-                    a_len = a_len.max(x + 1);
-                    a_indices.set(x);
-                }
+            if let Part(x) = bit_a
+                && use_a
+            {
+                a_len = a_len.max(x + 1);
+                a_indices.set(x as usize);
             }
 
-            if let Part(y) = bit_b {
-                if use_b {
-                    b_len = b_len.max(y + 1);
-                    b_indices.set(y);
-                }
+            if let Part(y) = bit_b
+                && use_b
+            {
+                b_len = b_len.max(y + 1);
+                b_indices.set(y as usize);
             }
 
             if use_a && use_b {
@@ -73,12 +73,12 @@ impl Mapping {
         }
 
         trace!("Mapping: {mapping:?}, reverse mapping: {reverse_mapping:?}");
-        let mut b_to_a = repeat(None).take(b_len).collect::<Vec<_>>();
-        let mut a_to_b = repeat(None).take(a_len).collect::<Vec<_>>();
+        let mut b_to_a = std::iter::repeat_n(None, b_len as usize).collect::<Vec<_>>();
+        let mut a_to_b = std::iter::repeat_n(None, a_len as usize).collect::<Vec<_>>();
 
         for (&x, &y) in mapping.iter() {
-            b_to_a[y] = Some(x);
-            a_to_b[x] = Some(y);
+            b_to_a[y as usize] = Some(x as usize);
+            a_to_b[x as usize] = Some(y as usize);
         }
 
         Some(Mapping {

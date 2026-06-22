@@ -613,7 +613,7 @@ fn create_parts<'a, A: Arch>(dataflows: &mut Dataflows<A, ()>, bit_changes: &'a 
                     part_index
                 };
 
-                bits.push(Bit::Part(index));
+                bits.push(Bit::Part(index.try_into().unwrap()));
             },
         }
     }
@@ -644,7 +644,7 @@ impl<'borrow, A: Arch, O: Oracle<A> + 'borrow, C: EncodingAnalysisCache<A>> Enco
             let mut k = 0;
             for (index, bit) in bits.iter().enumerate() {
                 match bit {
-                    Bit::Part(n) if *n == part_index => {
+                    Bit::Part(n) if *n as usize == part_index => {
                         new_instr = new_instr.with_nth_bit_from_right(index, (v >> k) as u8 & 1);
                         k += 1;
                     },
@@ -985,7 +985,7 @@ impl<'borrow, A: Arch, O: Oracle<A> + 'borrow, C: EncodingAnalysisCache<A>> Enco
         for (bit_index, bit) in bits.iter_mut().enumerate() {
             match bit {
                 Bit::Part(n) => {
-                    if let Some(remapped) = remapping[*n] {
+                    if let Some(remapped) = remapping[*n as usize] {
                         *n = remapped;
                     } else {
                         *bit = Bit::Fixed(dataflows.addresses.instr.nth_bit_from_right(bit_index));
@@ -1070,7 +1070,7 @@ impl<'borrow, A: Arch, O: Oracle<A> + 'borrow, C: EncodingAnalysisCache<A>> Enco
                         let expected_offset = bits
                             .iter()
                             .enumerate()
-                            .filter(|(_, bit)| bit == &&Bit::Part(part_index))
+                            .filter(|(_, bit)| bit == &&Bit::Part(part_index as u8))
                             .zip(bit_order.iter())
                             .map(|((index, _), order)| (order, dataflows.addresses.instr.nth_bit_from_right(index) as u64))
                             .fold(0, |acc: u64, (bit, bit_value)| {
@@ -1101,7 +1101,7 @@ impl<'borrow, A: Arch, O: Oracle<A> + 'borrow, C: EncodingAnalysisCache<A>> Enco
         dataflows = dataflows.map(
             dataflows.addresses.instr,
             |_, source| match source {
-                Source::Imm(n) => remapping[*n].map(Source::Imm),
+                Source::Imm(n) => remapping[*n].map(|n| Source::Imm(n as usize)),
                 other => Some(*other),
             },
             |memory_index, calculation| {

@@ -40,6 +40,7 @@ arrayvec = { version = "0.7", features = [ "serde" ] }
 hashbrown = "0.14.3"
 bitcode = "0.5.0"
 schemars = { version = "0.8.16", features = ["arrayvec07"], optional = true }
+mem_dbg = { version = "0.3.2", optional = true }
 rayon = "1.5"
 fxhash = "0.2.1"
 sha1 = "0.10.6"
