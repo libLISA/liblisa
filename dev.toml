@@ -1,0 +1,5 @@
+
+[build]
+commands = [
+    "sudo apt-get update && sudo apt-get -y install curl clang linux-headers-generic libclang-dev cmake pkg-config unicorn llvm-dev z3 libz3-dev"
+]
