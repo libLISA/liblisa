@@ -1,6 +1,6 @@
 [package]
 name = "liblisa-x64"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 description = "A tool for automated discovery and analysis of the ISA of a CPU."
 license = "AGPL-3.0-only"
@@ -14,9 +14,9 @@ nolog = ["log/release_max_level_off"]
 
 [dependencies]
 env_logger = "0.10"
-liblisa-libcli = { version = "0.2.0", path = "../../cli/liblisa-libcli" }
-liblisa = { version = "0.2.0", path = "../../liblisa" }
-liblisa-x64-observer = { version = "0.2.0", path = "../../arch/x64/liblisa-x64-observer" }
+liblisa-libcli = { version = "0.3.0", path = "../../cli/liblisa-libcli" }
+liblisa = { version = "0.3.0", path = "../../liblisa" }
+liblisa-x64-observer = { version = "0.3.0", path = "../../arch/x64/liblisa-x64-observer" }
 clap = { version = "4.4.8", features = ["derive"] }
 log = "0.4.0"
 

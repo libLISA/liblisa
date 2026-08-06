@@ -1,6 +1,6 @@
 [package]
 name = "liblisa"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 description = "A tool for automated discovery and analysis of the ISA of a CPU."
 license = "AGPL-3.0-only"

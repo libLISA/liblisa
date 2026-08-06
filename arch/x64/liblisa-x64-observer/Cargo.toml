@@ -1,6 +1,6 @@
 [package]
 name = "liblisa-x64-observer"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 description = "A tool for automated discovery and analysis of the ISA of a CPU."
 license = "AGPL-3.0-only"
@@ -29,11 +29,11 @@ harness = false
 itertools = "0.12.0"
 log = "0.4"
 nix = { version = "0.27.1", features = ["process", "signal", "sched"] }
-liblisa = { version = "0.2.0", path = "../../../liblisa" }
+liblisa = { version = "0.3.0", path = "../../../liblisa" }
 shared_memory = "0.12.4"
 rand = "0.9"
 tempfile = "3.3"
-liblisa-x64-observer-shmqueue = { version = "0.2.0", path = "../liblisa-x64-observer-shmqueue" }
+liblisa-x64-observer-shmqueue = { version = "0.3.0", path = "../liblisa-x64-observer-shmqueue" }
 thiserror = "1"
 
 [build-dependencies]

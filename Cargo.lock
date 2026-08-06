@@ -229,7 +229,7 @@ dependencies = [
 
 [[package]]
 name = "build-vmimage"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "bootloader",
 ]
@@ -871,7 +871,7 @@ checksum = "68ab91017fe16c622486840e4c83c9a37afeff978bd239b5293d61ece587de66"
 
 [[package]]
 name = "liblisa"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "arbitrary",
  "arrayvec",
@@ -902,7 +902,7 @@ dependencies = [
 
 [[package]]
 name = "liblisa-enc"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "arrayvec",
  "criterion",
@@ -923,7 +923,7 @@ dependencies = [
 
 [[package]]
 name = "liblisa-libcli"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "clap",
  "colored",
@@ -947,7 +947,7 @@ dependencies = [
 
 [[package]]
 name = "liblisa-semantics-tool"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "bincode",
  "clap",
@@ -965,7 +965,7 @@ dependencies = [
 
 [[package]]
 name = "liblisa-synth"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "arrayvec",
  "criterion",
@@ -987,7 +987,7 @@ dependencies = [
 
 [[package]]
 name = "liblisa-x64"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "clap",
  "env_logger 0.10.2",
@@ -1000,7 +1000,7 @@ dependencies = [
 
 [[package]]
 name = "liblisa-x64-observer"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "bootloader",
  "criterion",
@@ -1020,7 +1020,7 @@ dependencies = [
 
 [[package]]
 name = "liblisa-x64-observer-shmqueue"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "memoffset 0.9.1",
  "static_assertions",
