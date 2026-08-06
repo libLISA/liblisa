@@ -43,6 +43,6 @@ fxhash = "0.2.1"
 criterion = "0.5"
 env_logger = "0.10"
 test-log = "0.2.10"
-liblisa-x64-observer = { version = "0.3.0", path = "../arch/x64/liblisa-x64-observer" }
+liblisa-x64-observer = { version = "0.3.1", path = "../arch/x64/liblisa-x64-observer" }
 serde_json = "1.0"
 rmp-serde = "1.1.1"

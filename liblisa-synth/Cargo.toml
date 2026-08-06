@@ -31,7 +31,7 @@ hashbrown = "0.14.3"
 rayon = "1.5"
 
 [dev-dependencies]
-liblisa-x64-observer = { version = "0.3.0", path = "../arch/x64/liblisa-x64-observer" }
+liblisa-x64-observer = { version = "0.3.1", path = "../arch/x64/liblisa-x64-observer" }
 criterion = "0.5"
 test-log = "0.2.10"
 env_logger = "0.10"

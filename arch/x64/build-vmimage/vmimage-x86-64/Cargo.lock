@@ -49,9 +49,9 @@ checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
 
 [[package]]
 name = "bootloader_api"
-version = "0.11.7"
+version = "0.11.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a35ba5100c2431e20b924c8103c2cf8adb919ed9880f625e8770c3cb9d1b06aa"
+checksum = "49f4c2ef60a76c1858ef43c30b6b95c2f5ee4d7c4f9bc47409c3a8dc8910adb9"
 
 [[package]]
 name = "lazy_static"
@@ -64,7 +64,7 @@ dependencies = [
 
 [[package]]
 name = "liblisa-x64-observer-shmqueue"
-version = "0.2.0"
+version = "0.3.1"
 dependencies = [
  "memoffset",
  "static_assertions",
@@ -213,7 +213,7 @@ checksum = "8ccb82d61f80a663efe1f787a51b16b5a51e3314d6ac365b08639f52387b33f3"
 
 [[package]]
 name = "vmimage-x86-64"
-version = "0.2.0"
+version = "0.3.1"
 dependencies = [
  "arr_macro",
  "arrayvec",

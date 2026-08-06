@@ -204,9 +204,9 @@ dependencies = [
 
 [[package]]
 name = "bootloader"
-version = "0.11.15"
+version = "0.11.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b5fb69232f250c0d5b74eeb285702b4b0479f574980f45dc9bef97b2c65e2021"
+checksum = "d861319d747a01da5d4d680500b7f808607f902a286b476bd51f991612e39d8e"
 dependencies = [
  "anyhow",
  "bootloader-boot-config",
@@ -220,16 +220,16 @@ dependencies = [
 
 [[package]]
 name = "bootloader-boot-config"
-version = "0.11.15"
+version = "0.11.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "10a5e475c13d3d988e105b76b92aeea94614c12590c33495165c02b16e895375"
+checksum = "4b688f587df1a3157a22f82d5f6426e8625d13d0706a4672424398aaee7e33cd"
 dependencies = [
  "serde",
 ]
 
 [[package]]
 name = "build-vmimage"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "bootloader",
 ]
@@ -987,7 +987,7 @@ dependencies = [
 
 [[package]]
 name = "liblisa-x64"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "clap",
  "env_logger 0.10.2",
@@ -1000,7 +1000,7 @@ dependencies = [
 
 [[package]]
 name = "liblisa-x64-observer"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "bootloader",
  "criterion",
@@ -1020,7 +1020,7 @@ dependencies = [
 
 [[package]]
 name = "liblisa-x64-observer-shmqueue"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "memoffset 0.9.1",
  "static_assertions",
