@@ -383,7 +383,7 @@ impl ArgEncoding {
 
     /// By default, `Value::Num` is assumed to be big-endian.
     /// The value is byte-swapped when requested encoding is little-endian.
-    /// 
+    ///
     /// By default, `Value::Bytes` is assumed to be little-endian.
     /// The value is byte-swapped when requested encoding is big-endian.
     pub fn should_byteswap(self, value_type: ValueType) -> bool {

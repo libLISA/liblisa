@@ -7,9 +7,9 @@
 
 use log::trace;
 
-use crate::semantics::{IoType, OutputType};
 use crate::semantics::default::computation::{Arg, ArgEncoding, AsComputationRef, OutputEncoding};
 use crate::semantics::default::ops::Op;
+use crate::semantics::{IoType, OutputType};
 use crate::value::ValueType;
 
 pub mod sexpr;
@@ -326,7 +326,7 @@ impl<T> Term<T> {
 }
 
 /// Generates code for a computation.
-/// 
+///
 /// Expects you to encode output values as little-endian by default.
 /// This naturally translates to accessing byte N with `(result >> (N * 8)) as u8`.
 pub fn codegen_computation<C: CodeGenerator>(g: &mut C, computation: &impl AsComputationRef, input_types: &[ValueType]) -> C::T {
@@ -340,8 +340,16 @@ pub fn codegen_computation<C: CodeGenerator>(g: &mut C, computation: &impl AsCom
 
     let num_bits = computation.as_internal().output_type().num_bits();
     let cropped = g.crop(num_bits.try_into().unwrap(), result);
-    match (computation.as_internal().output_type(), computation.as_internal().output_encoding()) {
-        (IoType::Integer { .. }, _) => cropped,
+    match (
+        computation.as_internal().output_type(),
+        computation.as_internal().output_encoding(),
+    ) {
+        (
+            IoType::Integer {
+                ..
+            },
+            _,
+        ) => cropped,
         (_, OutputEncoding::UnsignedLittleEndian) => cropped,
         (_, OutputEncoding::UnsignedBigEndian) => g.swap_bytes(num_bits.try_into().unwrap(), cropped),
     }
@@ -361,7 +369,9 @@ fn apply_fn2<C: CodeGenerator>(
 }
 
 /// Generates code for an expression template.
-pub fn codegen_template<C: CodeGenerator>(g: &mut C, ops: &[Op], arg_interpretation: &[Arg], input_types: &[ValueType], consts: &[i128]) -> C::T {
+pub fn codegen_template<C: CodeGenerator>(
+    g: &mut C, ops: &[Op], arg_interpretation: &[Arg], input_types: &[ValueType], consts: &[i128],
+) -> C::T {
     let mut stack = Vec::<Term<C::T>>::new();
 
     for &op in ops.iter() {
@@ -492,7 +502,7 @@ mod tests {
                 num_bits: 32,
                 encoding: ArgEncoding::UnsignedLittleEndian,
             }],
-            &[ ValueType::Num ],
+            &[ValueType::Num],
             &[],
         );
 

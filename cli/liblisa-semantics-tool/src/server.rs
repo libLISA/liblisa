@@ -312,10 +312,17 @@ impl Server {
                             .map(|output| {
                                 let mut g = SExprCodeGen::new();
                                 let computation = output.computation.as_ref().unwrap();
-                                let input_types = output.inputs.iter().map(|input| match input {
-                                    Source::Dest(dest) => dest.value_type(),
-                                    Source::Imm(_) | Source::Const { .. } => ValueType::Num,
-                                }).collect::<Vec<_>>();
+                                let input_types = output
+                                    .inputs
+                                    .iter()
+                                    .map(|input| match input {
+                                        Source::Dest(dest) => dest.value_type(),
+                                        Source::Imm(_)
+                                        | Source::Const {
+                                            ..
+                                        } => ValueType::Num,
+                                    })
+                                    .collect::<Vec<_>>();
                                 let computation = codegen_computation(&mut g, computation, &input_types);
 
                                 OutputRepr {

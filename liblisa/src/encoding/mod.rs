@@ -2155,12 +2155,9 @@ impl<A: Arch, C: Computation> Encoding<A, C> {
 
         // Fast path to eliminate an entire part if we're setting all bits to a concrete value
         for (part_index, _) in self.parts.iter().enumerate().rev() {
-            if self
-                .bits
-                .iter()
-                .enumerate()
-                .all(|(index, &bit)| bit != Bit::Part(part_index as u8) || filter.nth_bit_from_right(index) != FilterBit::Wildcard)
-            {
+            if self.bits.iter().enumerate().all(|(index, &bit)| {
+                bit != Bit::Part(part_index as u8) || filter.nth_bit_from_right(index) != FilterBit::Wildcard
+            }) {
                 // We're setting all bits of this part!
                 let mut instr = *result.instr();
                 for (index, &bit) in result.bits.iter().enumerate() {

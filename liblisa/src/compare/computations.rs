@@ -352,11 +352,12 @@ impl ComputationEquivalence {
         let input_types = flow
             .inputs
             .iter()
-            .map(|input| {
-                match input {
-                    Source::Dest(dest) => dest.value_type(),
-                    Source::Imm(_) | Source::Const { .. } => ValueType::Num,
-                }
+            .map(|input| match input {
+                Source::Dest(dest) => dest.value_type(),
+                Source::Imm(_)
+                | Source::Const {
+                    ..
+                } => ValueType::Num,
             })
             .collect::<Vec<_>>();
 
