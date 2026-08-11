@@ -5,6 +5,7 @@ use std::ops::{Add, BitAnd, BitOr, BitXor, Mul, Not, Sub};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 
+use log::warn;
 use sha1::{Digest, Sha1};
 
 use super::SmtBVArray;
@@ -143,6 +144,7 @@ pub struct CachedSolver<'ctx, S: SmtSolver<'ctx>, C: SolverCache> {
     inner: S,
     cache: C,
     const_id_counter: u64,
+    force_model_creation: bool,
     _phantom: PhantomData<&'ctx ()>,
 }
 
@@ -156,6 +158,21 @@ impl<'ctx, S: SmtSolver<'ctx>, C: SolverCache> CachedSolver<'ctx, S, C> {
             inner,
             cache,
             const_id_counter: 0,
+            force_model_creation: false,
+            _phantom: PhantomData,
+        }
+    }
+
+    /// See [`Self::new`].
+    ///
+    /// Compared to [`Self::new`], this method creates a solver that always returns a model.
+    /// When a set of assertions is SAT, the cache is not used and the solver is always invoked.
+    pub fn new_always_with_model(inner: S, cache: C) -> Self {
+        Self {
+            inner,
+            cache,
+            const_id_counter: 0,
+            force_model_creation: true,
             _phantom: PhantomData,
         }
     }
@@ -405,7 +422,25 @@ impl<'ctx, S: SmtSolver<'ctx> + 'ctx, C: SolverCache> SmtSolver<'ctx> for Cached
         if let Some(entry) = self.cache.get(&hash) {
             match entry {
                 CacheResult::Unsat => SatResult::Unsat,
-                CacheResult::Sat => SatResult::Sat(CacheModelRef(None)),
+                CacheResult::Sat => {
+                    if self.force_model_creation {
+                        let assertions = assertions.iter().map(|b| b.inner.clone()).collect::<Vec<_>>();
+                        match self.inner.check_assertions(&assertions) {
+                            SatResult::Unknown => {
+                                self.cache.insert(hash, CacheResult::Unknown);
+                                SatResult::Unknown
+                            },
+                            SatResult::Sat(m) => SatResult::Sat(CacheModelRef(Some(m))),
+                            SatResult::Unsat => {
+                                warn!("Cache is inconsistent: found SAT, but found UNSAT when building model");
+                                self.cache.insert(hash, CacheResult::Unsat);
+                                SatResult::Unsat
+                            },
+                        }
+                    } else {
+                        SatResult::Sat(CacheModelRef(None))
+                    }
+                },
                 CacheResult::Unknown => SatResult::Unknown,
             }
         } else {
